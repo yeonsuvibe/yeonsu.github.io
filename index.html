@@ -1623,5 +1623,27 @@
 </footer>
 
 <script src="script.js"></script>
+
+<script>
+    // Intersection Observer for scroll animations
+    document.addEventListener("DOMContentLoaded", () => {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('in-view');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, {
+            threshold: 0.15,
+            rootMargin: "0px"
+        });
+
+        document.querySelectorAll('[data-animate]').forEach((el) => {
+            observer.observe(el);
+        });
+    });
+</script>
 </body>
+
 </html>
