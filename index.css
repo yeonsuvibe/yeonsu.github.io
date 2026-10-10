@@ -487,3 +487,19 @@ footer {
     .hero h1 { font-size: 3.5rem; }
     .section { padding: 80px 5%; }
 }
+
+/* 3D museum entry link (added alongside the Art Portfolio section) */
+.museum-cta {
+  display: inline-block;
+  margin: 0 0 34px;
+  padding: 13px 26px;
+  border: 1px solid #c3a86f;
+  color: #c3a86f;
+  background: transparent;
+  text-decoration: none;
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+.museum-cta:hover { background: #c3a86f; color: #16130f; }

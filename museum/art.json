@@ -1,0 +1,18 @@
+{
+  "title": "AHN YEONSU",
+  "subtitle": "Art Museum",
+  "note": "Dates are taken from the original Art Portfolio captions.",
+  "works": [
+    { "no": "01", "date": "2018-10-06", "file": "art/04344F03-ED69-4122-B452-149E29714822.jpg" },
+    { "no": "02", "date": "2018-12-08", "file": "art/20181208_164140.jpg" },
+    { "no": "03", "date": "2019-12-11", "file": "art/1565617423567.jpg" },
+    { "no": "04", "date": "2020-10-07", "file": "art/IMG_0649.jpg" },
+    { "no": "05", "date": "2021-08-30", "file": "art/IMG_0101.jpg" },
+    { "no": "06", "date": "2021-09-18", "file": "art/IMG_1206.jpg" },
+    { "no": "07", "date": "2023-07-02", "file": "art/IMG_4371.jpg" },
+    { "no": "08", "date": "2024-08-25", "file": "art/IMG_5319.jpg" },
+    { "no": "09", "date": "2025-04-26", "file": "art/IMG_5885.jpg" },
+    { "no": "10", "date": "2026-01-19", "file": "art/IMG_8140.jpg" },
+    { "no": "11", "date": "2026-02-04", "file": "art/IMG_7061.jpg" }
+  ]
+}

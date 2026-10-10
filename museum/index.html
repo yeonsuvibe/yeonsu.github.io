@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>Ahn Yeonsu — Art Museum (3D)</title>
+<meta name="description" content="A virtual 3D museum of the original artworks of Ahn Yeonsu — walk the galleries and view each captioned work." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<div class="loader" id="loader">
+  <div class="loader-inner">
+    <h1>AHN YEONSU</h1>
+    <p>Art Museum · virtual galleries</p>
+    <div class="loader-track"><div class="loader-bar" id="loaderBar"></div></div>
+  </div>
+</div>
+
+<canvas class="webgl"></canvas>
+
+<div class="hud" id="hud">
+  <div class="topbar">
+    <span class="brand">AHN YEONSU · Art Museum</span>
+    <span class="ticks" id="ticks"></span>
+  </div>
+  <div class="crosshair" id="crosshair"></div>
+  <div class="focus" id="focus"></div>
+  <div class="hint" id="hint"><b>W A S D</b> or arrows to walk · <b>mouse</b> to look · <b>click</b> to capture the pointer · <b>Esc</b> to release</div>
+  <div class="endnote" id="endNote">
+    <b>Thank you for visiting.</b>
+    <span>You have walked all three rooms — the full Art Portfolio, 2018–2026.</span>
+  </div>
+</div>
+
+<div class="intro" id="intro">
+  <div class="intro-card">
+    <p class="kicker">A virtual exhibition</p>
+    <h1>Ahn Yeonsu<em>Art Museum</em></h1>
+    <p class="lede">Eleven original works, hung in chronological order across three connected galleries. Walk the rooms, stand in front of a piece, and its caption appears.</p>
+    <ul class="controls">
+      <li><span>Move</span> W A S D / arrow keys · drag on touch</li>
+      <li><span>Look</span> mouse (click to lock) · drag on touch</li>
+      <li><span>Release</span> Esc</li>
+    </ul>
+    <button id="startBtn">Enter the museum</button>
+    <p class="foot"><a href="../index.html">← Back to the portfolio</a></p>
+  </div>
+</div>
+
+<script type="module" src="main.js"></script>
+</body>
+</html>
