@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 <title>Ahn Yeonsu — Art Museum (3D)</title>
-<meta name="description" content="A virtual 3D museum of the original artworks of Ahn Yeonsu — walk the galleries and view each captioned work." />
+<meta name="description" content="A virtual 3D museum of the original artworks of Ahn Yeonsu — move from work to work and the view follows each piece, in date order." />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
@@ -25,14 +25,26 @@
 <div class="hud" id="hud">
   <div class="topbar">
     <span class="brand">AHN YEONSU · Art Museum</span>
-    <span class="ticks" id="ticks"></span>
+    <span class="counter" id="counter">01 / 11</span>
   </div>
-  <div class="crosshair" id="crosshair"></div>
-  <div class="focus" id="focus"></div>
-  <div class="hint" id="hint"><b>W A S D</b> or arrows to walk · <b>mouse</b> to look · <b>click</b> to capture the pointer · <b>Esc</b> to release</div>
+  <div class="ticks" id="ticks"></div>
+
+  <button class="nav prev" id="prevBtn" aria-label="Previous work">&#8592;</button>
+  <button class="nav next" id="nextBtn" aria-label="Next work">&#8594;</button>
+
+  <div class="caption" id="caption">
+    <div class="caption-body">
+      <b id="captionNo">No. 01</b>
+      <span id="captionDate"></span>
+      <p id="captionText">work info</p>
+    </div>
+  </div>
+
+  <div class="hint" id="hint"><b>&#8592; &#8594;</b> next work · <b>drag</b> to look around · <b>click</b> to advance</div>
+
   <div class="endnote" id="endNote">
     <b>Thank you for visiting.</b>
-    <span>You have walked all three rooms — the full Art Portfolio, 2018–2026.</span>
+    <span>You have seen all eleven works — the full Art Portfolio, 2018–2026.</span>
   </div>
 </div>
 
@@ -40,11 +52,11 @@
   <div class="intro-card">
     <p class="kicker">A virtual exhibition</p>
     <h1>Ahn Yeonsu<em>Art Museum</em></h1>
-    <p class="lede">Eleven original works, hung in chronological order across three connected galleries. Walk the rooms, stand in front of a piece, and its caption appears.</p>
+    <p class="lede">Eleven original works, hung in chronological order across three galleries. The view is always centred on the piece in front of you — press <b>→</b> and the museum walks you on to the next one, in order.</p>
     <ul class="controls">
-      <li><span>Move</span> W A S D / arrow keys · drag on touch</li>
-      <li><span>Look</span> mouse (click to lock) · drag on touch</li>
-      <li><span>Release</span> Esc</li>
+      <li><span>Next</span> → / D / Space · or the arrow button</li>
+      <li><span>Previous</span> ← / A</li>
+      <li><span>Look</span> drag to look around · click to re-centre</li>
     </ul>
     <button id="startBtn">Enter the museum</button>
     <p class="foot"><a href="../index.html">← Back to the portfolio</a></p>

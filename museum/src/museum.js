@@ -1,5 +1,4 @@
 import * as THREE from '../vendor/three.module.min.js';
-import { PointerLockControls } from './PointerLockControls.js';
 import { makePanels, makeChromeFrame, makeLabel } from './gallery.js';
 import { makeHud } from './hud.js';
 

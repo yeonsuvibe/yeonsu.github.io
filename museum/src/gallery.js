@@ -93,6 +93,7 @@ export function makePanels(entries, data, textures, hud) {
 
       holder.userData.work = work;
       holder.userData.isPanel = true;
+      holder.userData.size = { w, h };
       group.add(holder);
       hoverables.push(art);
       panelMats.set(work.no, { mat: art.material, base: 0.72 });
