@@ -1,12 +1,13 @@
 import * as THREE from './vendor/three.module.min.js';
-import { initMuseum } from './src/museum.js';
+import { initMuseum, GALLERY } from './src/museum.js';
 import { makeHud } from './src/hud.js';
-import { TourGuide, collectTargets } from './src/guide.js';
+import { WallTour } from './src/guide.js';
 
 /* ---------------------------------------------------------------
    Ahn Yeonsu — 3D Art Museum
-   Guided tour: the visitor always stands in front of the current
-   work; ← → (or A/D) move the view from piece to piece, work first.
+   One continuous hall. The camera rides a rail parallel to the art
+   wall; ← → slide it along the wall, so the view never turns away
+   from a work. The wheel fades the distance slightly.
    --------------------------------------------------------------- */
 
 const canvas = document.querySelector('canvas.webgl');
@@ -16,77 +17,64 @@ const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPrefere
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 renderer.setSize(innerWidth, innerHeight);
 renderer.outputColorSpace = THREE.SRGBColorSpace;
-renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.05;
+renderer.toneMapping = THREE.NoToneMapping;      // keep the works true to their own colour
 
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x0b0a09);
-scene.fog = new THREE.Fog(0x0b0a09, 20, 58);
+scene.background = new THREE.Color(0xf2eee6);
+scene.fog = new THREE.Fog(0xf2eee6, 26, 58);
 
-const camera = new THREE.PerspectiveCamera(72, innerWidth / innerHeight, 0.05, 200);
+const camera = new THREE.PerspectiveCamera(48, innerWidth / innerHeight, 0.05, 200);
 
 const data = await fetch('art.json').then((r) => r.json());
 
 hud.loading(0.25);
 const { panels } = await initMuseum({ renderer, scene, camera, data, hud });
-hud.setTotal(data.works.length);
 hud.loading(1);
 
-const targets = collectTargets(panels.group, data.works);
-const guide = new TourGuide({ camera, targets, hud });
-guide.onMoveStart = () => { hud.captionText.textContent = 'walking to the next piece…'; };
-guide.onArrive = (i, work) => { hud.captionText.textContent = work ? 'original work, Art Portfolio 2018–2026' : ''; };
-
-guide.goTo(0, { instant: true });
+const tour = new WallTour({ camera, targets: panels.holders, hud });
+tour.onMoveStart = () => hud.setMoving(true);
+tour.onArrive = (i, work) => {
+  hud.setMoving(false);
+  hud.setFraming(tour.framing(panels.holders[i]));
+  hud.captionText.textContent = work ? 'original work · Art Portfolio 2018–2026' : '';
+};
+tour.goTo(0, { instant: true });
 
 /* ---------------- input ---------------- */
 
-let dragging = false;
-let last = { x: 0, y: 0 };
-let moved = 0;
-
-canvas.addEventListener('pointerdown', (e) => {
-  dragging = true; moved = 0;
-  last = { x: e.clientX, y: e.clientY };
-  canvas.setPointerCapture(e.pointerId);
-  canvas.classList.add('grabbing');
-});
-canvas.addEventListener('pointermove', (e) => {
-  if (!dragging) return;
-  const dx = e.clientX - last.x;
-  const dy = e.clientY - last.y;
-  last = { x: e.clientX, y: e.clientY };
-  moved += Math.abs(dx) + Math.abs(dy);
-  if (moved > 6) guide.look(dx, dy);
-});
-const endDrag = () => { dragging = false; canvas.classList.remove('grabbing'); };
-canvas.addEventListener('pointerup', endDrag);
-canvas.addEventListener('pointercancel', endDrag);
-
-// click the canvas: advance, or look again after a look-away offset
-canvas.addEventListener('click', () => {
-  if (moved > 6) return;
-  if (guide.offset.yaw || guide.offset.pitch) guide.goTo(guide.index, { instant: true });
-  else guide.next();
-});
-
 addEventListener('keydown', (e) => {
   switch (e.code) {
-    case 'ArrowRight': case 'KeyD': case 'PageDown': case 'Space': guide.next(); break;
-    case 'ArrowLeft': case 'KeyA': case 'PageUp': guide.prev(); break;
-    case 'Home': guide.goTo(0); break;
-    case 'End': guide.goTo(targets.length - 1); break;
+    case 'ArrowRight': case 'KeyD': case 'Space': case 'PageDown': tour.next(); break;
+    case 'ArrowLeft': case 'KeyA': case 'PageUp': tour.prev(); break;
+    case 'Equal': case 'NumpadAdd': tour.zoomBy(-100); break;
+    case 'Minus': case 'NumpadSubtract': tour.zoomBy(100); break;
+    case 'Home': tour.goTo(0); break;
+    case 'End': tour.goTo(panels.holders.length - 1); break;
     default: return;
   }
   e.preventDefault();
 });
 
-document.getElementById('prevBtn').addEventListener('click', (e) => { e.stopPropagation(); guide.prev(); });
-document.getElementById('nextBtn').addEventListener('click', (e) => { e.stopPropagation(); guide.next(); });
-hud.caption.addEventListener('click', (e) => {
-  e.stopPropagation();
-  hud.caption.classList.toggle('open');
+canvas.addEventListener('wheel', (e) => {
+  e.preventDefault();
+  tour.zoomBy(e.deltaY);
+}, { passive: false });
+
+// touch: swipe left/right to change work, pinch is left to the browser
+let touchStart = null;
+canvas.addEventListener('touchstart', (e) => {
+  if (e.touches.length === 1) touchStart = { x: e.touches[0].clientX, y: e.touches[0].clientY };
 });
+canvas.addEventListener('touchend', (e) => {
+  if (!touchStart || !e.changedTouches.length) return;
+  const dx = e.changedTouches[0].clientX - touchStart.x;
+  const dy = e.changedTouches[0].clientY - touchStart.y;
+  if (Math.abs(dx) > 44 && Math.abs(dx) > Math.abs(dy)) (dx < 0 ? tour.next() : tour.prev());
+  touchStart = null;
+});
+
+document.getElementById('prevBtn').addEventListener('click', (e) => { e.stopPropagation(); tour.prev(); });
+document.getElementById('nextBtn').addEventListener('click', (e) => { e.stopPropagation(); tour.next(); });
 document.getElementById('startBtn').addEventListener('click', (e) => {
   e.stopPropagation();
   hud.intro.classList.add('gone');
@@ -97,7 +85,7 @@ document.getElementById('startBtn').addEventListener('click', (e) => {
 const clock = new THREE.Clock();
 function animate() {
   const dt = Math.min(0.05, clock.getDelta());
-  guide.update(dt);
+  tour.update(dt);
   renderer.render(scene, camera);
   requestAnimationFrame(animate);
 }
@@ -112,4 +100,4 @@ addEventListener('resize', () => {
 });
 
 // handle used by the headless verification spike
-window.__museum = { camera, scene, guide, panels, data, hud };
+window.__museum = { camera, scene, tour, panels, data, hud, GALLERY };

@@ -1,10 +1,15 @@
-// One-off generator for museum textures (wood floor / plaster wall).
-// Pure JS PNG writer — no dependencies. Run: node tools/gen-textures.mjs
 import fs from 'node:fs';
 import zlib from 'node:zlib';
 import path from 'node:path';
 
+/* ------------------------------------------------------------------
+   One-off generator for the museum textures. Pure JS PNG writer, no
+   dependencies. Run: node tools/gen-textures.mjs
+   Swap the TREATMENT switch to try another material for the art wall.
+   ------------------------------------------------------------------ */
+
 const OUT = path.join(import.meta.dirname ?? '.', '..', 'museum', 'textures');
+const TREATMENT = 'plaster';   // 'plaster' | 'woven'
 
 function crc32(buf) {
   let c, table = [];
@@ -21,8 +26,7 @@ function crc32(buf) {
 function chunk(type, data) {
   const len = Buffer.alloc(4);
   len.writeUInt32BE(data.length);
-  const t = Buffer.from(type, 'ascii');
-  const body = Buffer.concat([t, data]);
+  const body = Buffer.concat([Buffer.from(type, 'ascii'), data]);
   const crc = Buffer.alloc(4);
   crc.writeUInt32BE(crc32(body));
   return Buffer.concat([len, body, crc]);
@@ -54,45 +58,75 @@ function noise(x, y, seed) {
   h = (h ^ (h >>> 13)) * 1274126177;
   return ((h ^ (h >>> 16)) >>> 0) / 4294967296;
 }
+const smooth = (t) => t * t * (3 - 2 * t);
+function valueNoise(x, y, seed) {
+  const xi = Math.floor(x), yi = Math.floor(y);
+  const xf = smooth(x - xi), yf = smooth(y - yi);
+  const a = noise(xi, yi, seed), b = noise(xi + 1, yi, seed);
+  const c = noise(xi, yi + 1, seed), d = noise(xi + 1, yi + 1, seed);
+  return (a * (1 - xf) + b * xf) * (1 - yf) + (c * (1 - xf) + d * xf) * yf;
+}
 
-function woodFloor(size = 512) {
+/** A quiet, pale floor: matte oak stone, low contrast — never competes with the works. */
+function floor(size = 512) {
   const rgb = Buffer.alloc(size * size * 3);
-  const plankH = size / 4, plankW = size;
+  const plankH = size / 4;
   for (let y = 0; y < size; y++) {
     const row = Math.floor(y / plankH);
-    const off = (row % 2) * (plankW / 3);
+    const off = (row % 2) * (size / 3);
     for (let x = 0; x < size; x++) {
-      const px = (x + off) % plankW;
-      const n = 0.62 + 0.38 * noise(x, y, 7);
-      const grain = 0.92 + 0.08 * Math.sin(px * 0.05 + row * 2.1) * Math.sin(px * 0.013);
-      const edge = Math.min(px, plankW - px) < 2 ? 0.55 : 1;
-      const rowEdge = Math.min(y % plankH, plankH - 1 - (y % plankH)) < 2 ? 0.5 : 1;
-      const k = n * grain * edge * rowEdge;
-      const r = Math.min(255, Math.round(120 * k + 34));
-      const g = Math.min(255, Math.round(86 * k + 22));
-      const b = Math.min(255, Math.round(62 * k + 15));
+      const px = (x + off) % size;
+      const grain = valueNoise(px * 0.06, row * 40 + px * 0.01, 5);
+      const n = valueNoise(x * 0.09, y * 0.09, 7) * 0.5 + valueNoise(x * 0.4, y * 0.4, 9) * 0.5;
+      const seam = Math.min(px, size - px) < 1.6 ? 0.86 : 1;
+      const joint = Math.min(y % plankH, plankH - 1 - (y % plankH)) < 1.6 ? 0.88 : 1;
+      const v = (196 + (n - 0.5) * 16 + (grain - 0.5) * 18) * seam * joint;
       const i = (y * size + x) * 3;
-      rgb[i] = r; rgb[i + 1] = g; rgb[i + 2] = b;
+      rgb[i] = Math.min(255, Math.round(v + 6));
+      rgb[i + 1] = Math.min(255, Math.round(v + 1));
+      rgb[i + 2] = Math.min(255, Math.round(v - 8));
     }
   }
   return { rgb, size };
 }
 
+/** Bare plaster. Soft, colourless, evenly lit. */
 function plasterWall(size = 512) {
   const rgb = Buffer.alloc(size * size * 3);
   for (let y = 0; y < size; y++) {
     for (let x = 0; x < size; x++) {
-      const n = noise(x, y, 3) * 0.6 + noise(x >> 2, y >> 2, 11) * 0.4;
-      const v = 214 + (n - 0.5) * 22;
+      const n = valueNoise(x * 0.02, y * 0.02, 3) * 0.65 + valueNoise(x * 0.09, y * 0.09, 11) * 0.35;
+      const v = 240 + (n - 0.5) * 10;
       const i = (y * size + x) * 3;
-      rgb[i] = Math.round(v); rgb[i + 1] = Math.round(v - 3); rgb[i + 2] = Math.round(v - 9);
+      rgb[i] = Math.round(v);
+      rgb[i + 1] = Math.round(v - 1);
+      rgb[i + 2] = Math.round(v - 4);
+    }
+  }
+  return { rgb, size };
+}
+
+/** Alternative art-wall treatment: fine woven linen weave. */
+function wovenWall(size = 512) {
+  const rgb = Buffer.alloc(size * size * 3);
+  const period = 4;
+  for (let y = 0; y < size; y++) {
+    for (let x = 0; x < size; x++) {
+      const warp = Math.sin((x / period) * Math.PI) ** 2;
+      const weft = Math.sin((y / period) * Math.PI) ** 2;
+      const n = valueNoise(x * 1.4, y * 1.4, 13);
+      const v = 232 + (warp * 0.5 + weft * 0.5 - 0.5) * 9 + (n - 0.5) * 6;
+      const i = (y * size + x) * 3;
+      rgb[i] = Math.round(v);
+      rgb[i + 1] = Math.round(v - 2);
+      rgb[i + 2] = Math.round(v - 8);
     }
   }
   return { rgb, size };
 }
 
 fs.mkdirSync(OUT, { recursive: true });
-const a = woodFloor(512);
-console.log('floor.png', writePNG(path.join(OUT, 'floor.png'), a.size, a.size, a.rgb));
-const b = plasterWall(512);
-console.log('wall.png', writePNG(path.join(OUT, 'wall.png'), b.size, b.size, b.rgb));
+const f = floor(512);
+console.log('floor.png', writePNG(path.join(OUT, 'floor.png'), f.size, f.size, f.rgb));
+const art = TREATMENT === 'woven' ? wovenWall(512) : plasterWall(512);
+console.log(`plaster.png (${TREATMENT})`, writePNG(path.join(OUT, 'plaster.png'), art.size, art.size, art.rgb));

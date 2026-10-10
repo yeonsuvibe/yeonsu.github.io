@@ -37,7 +37,8 @@ canvas.webgl {
   z-index: 60;
   display: grid;
   place-items: center;
-  background: radial-gradient(circle at 50% 45%, #1a1714 0%, #0b0a09 70%);
+  background: radial-gradient(circle at 50% 45%, #ffffff 0%, #efeae1 78%);
+  color: #2a2723;
   transition: opacity 0.9s ease, visibility 0.9s ease;
 }
 .loader.done { opacity: 0; visibility: hidden; }
@@ -256,4 +257,99 @@ canvas.webgl.grabbing { cursor: grabbing; }
   .ticks { top: 46px; gap: 4px; }
   .tick { width: 12px; }
   .hint { bottom: 10px; font-size: 10px; text-align: center; width: 100%; }
+}
+
+/* ---------------- light hall pass (10-11) ----------------
+   The room is pale and quiet; the chrome must not compete with the
+   works either. Flat, thin, low-contrast ink on paper.            */
+
+body { color: #2a2723; }
+
+.loader-inner h1 { color: #2a2723; letter-spacing: 0.36em; }
+.loader-inner p { color: #9a9287; }
+.loader-track { background: #e2ddd3; }
+.loader-bar { background: #c8a15e; }
+
+.topbar {
+  color: rgba(42, 39, 35, 0.62);
+  background: linear-gradient(to bottom, rgba(247, 244, 238, 0.92), rgba(247, 244, 238, 0));
+}
+.counter { color: #8a6f3f; }
+
+.tick { background: rgba(42, 39, 35, 0.16); }
+.tick.on { background: #c8a15e; box-shadow: none; }
+
+.nav {
+  color: rgba(42, 39, 35, 0.7);
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(42, 39, 35, 0.14);
+  box-shadow: 0 2px 10px rgba(60, 50, 35, 0.06);
+}
+.nav:hover { background: #c8a15e; border-color: #c8a15e; color: #fff; }
+
+.caption {
+  border: 1px solid rgba(42, 39, 35, 0.12);
+  background: rgba(255, 255, 255, 0.86);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 6px 24px rgba(60, 50, 35, 0.07);
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+.caption b { color: #2a2723; }
+.caption span { color: #8a6f3f; }
+.caption p { color: rgba(42, 39, 35, 0.66); }
+.caption.moving { transform: translateX(-50%) translateY(4px); }
+
+.hint { color: rgba(42, 39, 35, 0.45); }
+.hint b { color: #8a6f3f; }
+
+.endnote {
+  border: 1px solid rgba(42, 39, 35, 0.12);
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 10px 34px rgba(60, 50, 35, 0.1);
+}
+.endnote b { color: #2a2723; }
+.endnote span { color: #9a9287; }
+
+.intro { background: rgba(247, 244, 238, 0.86); }
+.intro-card {
+  border: 1px solid rgba(42, 39, 35, 0.12);
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 14px 44px rgba(60, 50, 35, 0.08);
+}
+.kicker { color: #8a6f3f; }
+.intro-card h1 { color: #2a2723; }
+.intro-card h1 em { color: #8a6f3f; }
+.lede { color: rgba(42, 39, 35, 0.7); }
+.controls { color: #9a9287; }
+.controls li { border-bottom: 1px solid rgba(42, 39, 35, 0.08); }
+.controls span { color: #8a6f3f; }
+.intro-card button { border-color: #c8a15e; color: #2a2723; }
+.intro-card button:hover { background: #c8a15e; color: #fff; }
+.intro-card .foot a { color: #9a9287; }
+.intro-card .foot a:hover { color: #8a6f3f; }
+
+/* ---------------- room at a glance (10-11) ----------------
+   A hairline elevation of the wall, so the visitor can see where the
+   current work sits in the sequence.                              */
+
+.panel-light {
+  position: absolute;
+  left: 50%; top: 74px;
+  transform: translateX(-50%);
+  width: min(680px, 66vw);
+  height: 26px;
+  border-bottom: 1px solid rgba(42, 39, 35, 0.18);
+  opacity: 0.5;
+}
+.panel-light::after {
+  content: "";
+  position: absolute;
+  bottom: -1px; left: 0;
+  width: 26px; height: 3px;
+  background: #c8a15e;
+  transform: translateX(var(--px, 0px));
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+@media (max-width: 640px) {
+  .panel-light { top: 62px; width: calc(100% - 60px); }
 }
