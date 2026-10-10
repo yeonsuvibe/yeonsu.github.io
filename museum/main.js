@@ -20,15 +20,15 @@ renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.toneMapping = THREE.NoToneMapping;      // keep the works true to their own colour
 
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0xf2eee6);
-scene.fog = new THREE.Fog(0xf2eee6, 26, 58);
+scene.background = new THREE.Color(0xefeae1);
+scene.fog = new THREE.Fog(0xefeae1, 30, 62);
 
-const camera = new THREE.PerspectiveCamera(48, innerWidth / innerHeight, 0.05, 200);
+const camera = new THREE.PerspectiveCamera(56, innerWidth / innerHeight, 0.05, 200);
 
 const data = await fetch('art.json').then((r) => r.json());
 
 hud.loading(0.25);
-const { panels } = await initMuseum({ renderer, scene, camera, data, hud });
+const { panels } = await initMuseum({ scene, data, hud });
 hud.loading(1);
 
 const tour = new WallTour({ camera, targets: panels.holders, hud });
@@ -100,4 +100,4 @@ addEventListener('resize', () => {
 });
 
 // handle used by the headless verification spike
-window.__museum = { camera, scene, tour, panels, data, hud, GALLERY };
+window.__museum = { camera, scene, tour, panels, data, hud, GALLERY, THREE, raycaster: new THREE.Raycaster() };

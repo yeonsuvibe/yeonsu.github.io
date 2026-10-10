@@ -2,19 +2,20 @@ import * as THREE from '../vendor/three.module.min.js';
 import { GALLERY, workZ } from './museum.js';
 
 const FOCAL = (48 * Math.PI) / 180;    // the nominal lens of the tour camera
-const EYE = 1.45;                      // the camera never changes height (work centre height)
-const ZOOM_MIN = 0.86;   // a little closer than the framed view
-const ZOOM_MAX = 1.5;    // a little further back
-const MIN_T = 0.7;
-const MAX_T = 2.4;
-const SPEED = 4.0;                     // metres per second along the wall
+const EYE = 1.45;                      // fixed viewing height (= work centre height)
+const ZOOM_MIN = 0.88;                 // a little closer than the framed view
+const ZOOM_MAX = 1.45;                 // a little further back
+const MIN_T = 0.65;
+const MAX_T = 2.1;
+const SPEED = 3.6;                     // metres per second along the wall
 
 /**
- * Camera-on-rails along the art wall.
+ * Camera on a rail parallel to the art wall.
  *
- *  - position: (x, EYE, workZ(i)) — the view axis is always the -X wall
- *    normal, so every work is seen dead centre.
- *  - next/prev: the camera only slides along ±Z, along the wall. No turn.
+ *  - position: (wallX - dist, EYE, workZ(i)). The view axis is always the
+ *    wall normal, so the work in hand sits dead centre.
+ *  - next/prev: the camera slides along +Z / -Z only. +Z is the visitor's
+ *    right, so "next" always reads as moving right along the wall.
  *  - wheel: fades the distance to the wall between ZOOM_MIN..ZOOM_MAX.
  */
 export class WallTour {
@@ -29,41 +30,34 @@ export class WallTour {
     this.onArrive = null;
   }
 
-  /** Horizontal or vertical half-angle tangent, whichever is tighter. */
-  get effTan() {
-    const aspect = this.camera.aspect || 1.6;
-    return Math.tan(FOCAL / 2) * Math.min(1, aspect);
+  sizeOf(holder) {
+    return holder?.userData?.size || { w: 1.5, h: 1.1 };
   }
 
   /**
-   * Distance at which the current work is framed. The height always
-   * fits; on narrow screens the width may crop a little rather than
-   * pushing the camera through the opposite wall.
+   * Distance at which the work in hand is framed. The height always fits;
+   * on narrow screens the width may crop a little rather than walking the
+   * camera through the opposite wall.
    */
   get fitDist() {
-    const s = this.sizeOf(this.targets[this.index]) || { w: 1.5, h: 1.1 };
+    const s = this.sizeOf(this.targets[this.index]);
     const tanV = Math.tan(FOCAL / 2);
-    const tanH = Math.max(tanV * (this.camera.aspect || 1.6), tanV * 0.62);
-    const dH = (s.h / 2 + 0.18) / tanV;
-    const dW = (s.w / 2 + 0.18) / tanH;
-    return Math.min(3.0, Math.max(dH, dW));
+    const tanH = Math.max(tanV * this.camera.aspect, tanV * 0.62);
+    const dH = (s.h / 2 + 0.62) / tanV;   // leave the hall visible around the work
+    const dW = (s.w / 2 + 0.42) / tanH;
+    return Math.max(dH, dW);
   }
 
   /** Live distance to the art plane: the wheel moves this only. */
   get dist() {
     const d = Math.max(0.9, this.fitDist * this.zoom);
-    // never cross the opposite wall (the hall stays readable)
-    return Math.min(d, GALLERY.wallX + 2.2);
+    return Math.min(d, GALLERY.wallX + 2.0);   // never through the far wall
   }
 
-  /** 0..1 — how much of the frame the work fills (used to weight the caption). */
+  /** 0..1 — how much of the frame the work fills (weights the caption). */
   framing(holder) {
     const s = this.sizeOf(holder);
-    return Math.min(1, s.h / (2 * this.dist * this.effTan));
-  }
-
-  sizeOf(holder) {
-    return holder?.userData?.size || { w: 1.5, h: 1.1 };
+    return Math.min(1, s.h / (2 * this.dist * Math.tan(FOCAL / 2)));
   }
 
   goTo(i, { instant = false } = {}) {
@@ -71,10 +65,8 @@ export class WallTour {
     if (idx === this.index) return;
     if (this.index < 0 || instant) {
       this.index = idx;
-      if (typeof idx === 'number' && this.targets[idx]) {
-        this.camera.position.set(GALLERY.wallX - this.dist, EYE, workZ(idx));
-        this.camera.rotation.set(0, -Math.PI / 2, 0);
-      }
+      this.camera.position.set(GALLERY.wallX - this.dist, EYE, workZ(idx));
+      this.camera.rotation.set(0, -Math.PI / 2, 0);
       this.arrive(idx);
       return;
     }
@@ -118,8 +110,9 @@ export class WallTour {
       }
     } else if (this.index >= 0) {
       const want = GALLERY.wallX - this.dist;
-      this.camera.position.x += (want - this.camera.position.x) * (1 - Math.exp(-dt * 9));
-      this.camera.position.y += (EYE - this.camera.position.y) * (1 - Math.exp(-dt * 9));
+      const k = 1 - Math.exp(-dt * 9);
+      this.camera.position.x += (want - this.camera.position.x) * k;
+      this.camera.position.y += (EYE - this.camera.position.y) * k;
       this.camera.position.z = workZ(this.index);
     }
     // the view axis never leaves the wall normal

@@ -1,47 +1,49 @@
 import * as THREE from '../vendor/three.module.min.js';
-import { makePanels, GALLERY, workZ } from './gallery.js';
+import { makePanels, GALLERY, workZ, hallEnds } from './gallery.js';
 
 /* ---------------------------------------------------------------
    Ahn Yeonsu — 3D Art Museum
 
-   One continuous hall. The camera rides a horizontal rail at a fixed
-   height about 2.6 m out from the art wall, and the view axis stays
-   perpendicular to the wall: moving to the next work slides the
-   camera along the wall to the right, it never turns to approach.
-   The camera height never changes, so the works are always seen at
-   eye level and never read as hung high on the wall.
+   A single gallery hall with the weight of a real museum building:
+   a stone dado along the floor, deep coffered bays overhead, a raised
+   central skylight, and picture lights on every work. Walls are tiled
+   with the art — one row along the long wall, and a few on the opposite
+   wall to open the room. The visitor reads them by sliding along the
+   wall to the right.
+
+   The camera rides a rail parallel to the art wall at a child's eye
+   height; it never turns away from the wall normal, so the picture in
+   hand is always dead centre.
    --------------------------------------------------------------- */
 
 export const MUSEUM = {
-  width: 6.0,          // wall to wall across the hall
-  margin: 2.4,         // extra hall length beyond the first/last work
-  height: 3.55,
-  wallT: 0.35,
+  width: 9.4,          // wall to wall
+  height: 5.0,         // floor to the underside of the coffered roof
+  endZ: 2.4,           // hall overhang past the first/last bay
+  wallT: 0.4,
 };
 
-/** Walk distance to each work; the rail sits on the -X side. */
-export const RAIL_X = 0.8;                 // where the visitor stands
-export const DOOR = { zA: 4.6, zB: -3.6, h: 1.56 };   // service door in the art wall
-
-export function museumFloorY() { return 0; }
+/** Service door in the art wall, local Z (the work in hand must clear it). */
+export const DOOR = { z0: -6.3, z1: -1.7, h: 1.62 };
 
 /* ------------------------------------------------------------------ */
 
 function loadTextures() {
   const loader = new THREE.TextureLoader();
-  const load = (url, repeat) =>
+  const load = (url, repeat, filter) =>
     new Promise((resolve) => {
       loader.load(url, (t) => {
         t.wrapS = t.wrapT = THREE.RepeatWrapping;
         t.repeat.set(repeat[0], repeat[1]);
         t.colorSpace = THREE.SRGBColorSpace;
         t.anisotropy = 8;
+        if (filter) { t.magFilter = filter; }
         resolve(t);
       }, undefined, () => resolve(null));
     });
   return Promise.all([
-    load('textures/floor.png', [3, 22]),
-    load('textures/plaster.png', [16, 1.1]),
+    load('textures/floor.png', [3, 18]),
+    load('textures/plaster.png', [18, 1.6]),
   ]).then(([floor, plaster]) => ({ floor, plaster }));
 }
 
@@ -55,81 +57,136 @@ export async function initMuseum({ scene, data, hud }) {
   const tex = await loadTextures();
   const W = MUSEUM.width;
   const H = MUSEUM.height;
-  const zFront = MUSEUM.margin;                 // +Z end
-  const zBack = workZ(data.works.length - 1) - MUSEUM.margin;
-  const L = zFront - zBack;
-  const zMid = (zFront + zBack) / 2;
   const xa = GALLERY.wallX;
 
   const mat = {
-    floor: new THREE.MeshStandardMaterial({ color: 0xf0ece3, map: tex.floor, roughness: 0.72, metalness: 0 }),
-    artWall: new THREE.MeshStandardMaterial({ color: 0xfbf8f2, map: tex.plaster, roughness: 0.99 }),
-    plainWall: new THREE.MeshStandardMaterial({ color: 0xf3efe7, roughness: 0.99 }),
-    ceiling: new THREE.MeshStandardMaterial({ color: 0xf8f5ef, roughness: 1 }),
-    soffit: new THREE.MeshStandardMaterial({ color: 0xe9e4da, roughness: 1 }),
-    sky: new THREE.MeshBasicMaterial({ color: 0xfffbf2 }),
-    stone: new THREE.MeshStandardMaterial({ color: 0xe8e3d9, roughness: 0.92 }),
+    floor: new THREE.MeshStandardMaterial({ color: 0xd2cabd, map: tex.floor, roughness: 0.7, metalness: 0.02 }),
+    artWall: new THREE.MeshStandardMaterial({ color: 0xf7f4ee, map: tex.plaster, roughness: 0.98 }),
+    plainWall: new THREE.MeshStandardMaterial({ color: 0xefeae2, roughness: 0.99 }),
+    ceiling: new THREE.MeshStandardMaterial({ color: 0xf1ece4, roughness: 1 }),
+    coving: new THREE.MeshStandardMaterial({ color: 0xded6c9, roughness: 0.97 }),
+    dado: new THREE.MeshStandardMaterial({ color: 0xcbc1b1, roughness: 0.86 }),
+    stone: new THREE.MeshStandardMaterial({ color: 0xdcd5ca, roughness: 0.88 }),
+    sky: new THREE.MeshBasicMaterial({ color: 0xfffbf1 }),
+    skyGlow: new THREE.MeshBasicMaterial({ color: 0xfff8ea, transparent: true, opacity: 0.5 }),
+    lamp: new THREE.MeshBasicMaterial({ color: 0xfff4e2 }),
   };
 
   const group = new THREE.Group();
   group.name = 'architecture';
   scene.add(group);
 
-  /* floor */
-  group.add(box(W + 0.8, 0.12, L + 0.8, mat.floor, 0, -0.06, zMid));
+  /* span of the hall is fixed once the works are laid out */
+  const panels0 = makePanels(data, tex, hud);
+  const { zNear, zFar } = hallEnds(panels0.holders.length);
+  const L = zFar - zNear;
+  const zMid = (zNear + zFar) / 2;
+  const xArt = xa + 0.16;         // inner face of the art wall
+  const xOpp = -(W / 2);          // inner face of the opposite wall
 
-  /* art wall (+X), built around the service door */
-  const xw = xa + 0.15;
-  const doorHeight = DOOR.h;
+  /* ---- floor: stone field with a darker border, like a real gallery ---- */
+  group.add(box(W + 0.8, 0.16, L + 0.8, mat.floor, 0, -0.08, zMid));
+  const bw = 0.42;
+  group.add(box(bw, 0.03, L + 0.8, mat.stone, xArt - bw / 2, 0.015, zMid));
+  group.add(box(bw, 0.03, L + 0.8, mat.stone, xOpp + bw / 2, 0.015, zMid));
+  group.add(box(W + 0.8, 0.03, bw, mat.stone, 0, 0.015, zNear - 0.2));
+  group.add(box(W + 0.8, 0.03, bw, mat.stone, 0, 0.015, zFar + 0.2));
+
+  /* ---- art wall (+X): plaster panels around the service door ---- */
+  const dh = DOOR.h;
   const leaves = [
-    [0.18, H, zFront + 0.4, DOOR.zA],                       // front of the door
-    [0.18, H, DOOR.zB, zBack - 0.4],                        // behind the door
-    [0.18, doorHeight, DOOR.zA, DOOR.zB],                   // below
-    [0.18, H - doorHeight - 0.28, DOOR.zA, DOOR.zB],        // lintel
+    [0.20, H, zNear - 0.4, DOOR.z0],
+    [0.20, H, DOOR.z1, zFar + 0.4],
+    [0.20, dh, DOOR.z0, DOOR.z1],
+    [0.20, H - dh - 0.34, DOOR.z0, DOOR.z1],
   ];
   for (const [t, h, z0, z1] of leaves) {
-    group.add(box(t, h, Math.abs(z1 - z0), mat.artWall, xw, h / 2, (z0 + z1) / 2));
+    group.add(box(t, h, Math.abs(z1 - z0), mat.artWall, xArt + t / 2, h / 2, (z0 + z1) / 2));
   }
-  // reveal, so the opening reads as a real door
-  group.add(box(0.9, DOOR.h, 0.16, mat.plainWall, xa + 0.5, DOOR.h / 2, DOOR.zA));
-  group.add(box(0.9, DOOR.h, 0.16, mat.plainWall, xa + 0.5, DOOR.h / 2, DOOR.zB));
-  group.add(box(0.7, 0.06, DOOR.zA - DOOR.zB, mat.stone, xa + 0.4, 0.03, (DOOR.zA + DOOR.zB) / 2));
+  // door reveal + stepped architrave
+  for (const z of [DOOR.z0, DOOR.z1]) {
+    group.add(box(0.85, dh, 0.14, mat.plainWall, xArt + 0.5, dh / 2, z));
+    group.add(box(0.10, dh + 0.14, 0.26, mat.stone, xArt + 0.03, (dh + 0.14) / 2, z + (z === DOOR.z0 ? -0.11 : 0.11)));
+  }
+  group.add(box(0.10, 0.2, DOOR.z1 - DOOR.z0 + 0.5, mat.stone, xArt + 0.03, dh + 0.16, (DOOR.z0 + DOOR.z1) / 2));
 
-  /* opposite wall (-X) */
-  group.add(box(MUSEUM.wallT, H, L + 0.8, mat.plainWall, -(W / 2 - MUSEUM.wallT / 2), H / 2, zMid));
+  /* ---- opposite wall, ends, and a stone dado on every wall ---- */
+  group.add(box(MUSEUM.wallT, H, L + 1.6, mat.plainWall, xOpp - MUSEUM.wallT / 2, H / 2, zMid));
+  group.add(box(W + 1.4, H, MUSEUM.wallT, mat.plainWall, 0, H / 2, zNear - 0.6));
+  group.add(box(W + 1.4, H, MUSEUM.wallT, mat.plainWall, 0, H / 2, zFar + 0.6));
+  for (const [w, d, x, z] of [
+    [0.07, L + 1.6, xArt, zMid], [0.07, L + 1.6, xOpp + 0.05, zMid],
+    [W + 1.4, 0.07, 0, zNear - 0.28], [W + 1.4, 0.07, 0, zFar + 0.28],
+  ]) {
+    group.add(box(Math.max(w, 0.06), 0.14, Math.max(d, 0.06), mat.dado, x, 0.07, z));
+  }
 
-  /* end walls */
-  group.add(box(W + 1, H, MUSEUM.wallT, mat.plainWall, 0, H / 2, zFront + 0.4));
-  group.add(box(W + 1, H, MUSEUM.wallT, mat.plainWall, 0, H / 2, zBack - 0.4));
+  /* ---- coffered ceiling: a raised glazed strip and deep bays ---- */
+  const roofH = H + 0.9;
+  // outer ceiling, dropped, leaving the central well
+  const well = 3.9;
+  const sideW = (W + 0.8 - well) / 2;
+  group.add(box(sideW, 0.34, L + 0.8, mat.ceiling, xArt - sideW / 2, H - 0.17, zMid));
+  group.add(box(sideW, 0.34, L + 0.8, mat.ceiling, xOpp + sideW / 2, H - 0.17, zMid));
+  // the lantern above the well
+  group.add(box(0.5, roofH - H, L + 0.8, mat.coving, well / 2 - 0.25, (roofH + H) / 2, zMid));
+  group.add(box(0.5, roofH - H, L + 0.8, mat.coving, -well / 2 + 0.25, (roofH + H) / 2, zMid));
+  group.add(box(well, 0.3, L + 0.8, mat.ceiling, 0, roofH + 0.15, zMid));
+  group.add(box(well - 0.9, 0.06, L - 1.0, mat.sky, 0, H + 0.55, zMid));
+  group.add(box(well - 1.6, 0.04, L - 1.4, mat.skyGlow, 0, H + 0.2, zMid));
+  // bays: a transverse rib every 3.4 m across the ceiling
+  for (let z = zNear + 1.7; z < zFar; z += 3.4) {
+    group.add(box(W + 0.8, 0.26, 0.36, mat.coving, 0, H - 0.13, z));
+    group.add(box(well, 0.22, 0.3, mat.coving, 0, H + 0.34, z));
+  }
 
-  /* ceiling: a flat pale slab with one long skylight strip centred on the hall */
-  group.add(box(W + 0.8, 0.28, L + 0.8, mat.ceiling, 0, H + 0.14, zMid));
-  group.add(box(2.4, 0.24, L + 0.8, mat.soffit, 0.4, H - 0.12, zMid));
-  group.add(box(1.9, 0.05, L - 1.4, mat.sky, 0.4, H - 0.26, zMid));
+  /* ---- pilasters on the art wall: a bay around every work ---- */
+  const bays = [];
+  for (const holder of panels0.holders) {
+    const z = holder.position.z;
+    const hw = holder.userData.size.w / 2;
+    bays.push(z - hw - 0.5, z + hw + 0.5);
+  }
+  for (const z of bays) {
+    group.add(box(0.34, H, 0.44, mat.artWall, xArt - 0.17, H / 2, z));
+    group.add(box(0.42, 0.46, 0.54, mat.dado, xArt - 0.19, 0.23, z));
+    group.add(box(0.4, 0.14, 0.5, mat.stone, xArt - 0.18, H - 0.44, z));
+  }
 
-  /* a suspension slot along the art wall, reading as the lighting track */
-  group.add(box(0.34, 0.1, L - 1.2, mat.stone, xa - 0.45, H - 0.16, zMid));
+  /* ---- pilasters opposite the works: they give the hall its depth ---- */
+  for (let z = zNear + 1.2; z < zFar; z += 3.4) {
+    group.add(box(0.55, H - 0.3, 0.52, mat.coving, xOpp + 0.3, (H - 0.3) / 2, z));
+    group.add(box(0.72, 0.34, 0.68, mat.dado, xOpp + 0.36, 0.17, z));
+    group.add(box(0.72, 0.16, 0.68, mat.stone, xOpp + 0.36, 0.42, z));
+    group.add(box(0.72, 0.2, 0.68, mat.stone, xOpp + 0.36, H - 0.34, z));
+  }
 
-  const panels = makePanels(data, tex, hud);
-  group.add(panels.group);
-
-  /* lighting: even, colourless daylight — the works hold the only colour */
-  scene.add(new THREE.HemisphereLight(0xffffff, 0xdcd6cb, 1.25));
-  scene.add(new THREE.AmbientLight(0xffffff, 0.42));
-  for (let z = zFront - 3; z > zBack + 2; z -= 7.5) {
-    const l = new THREE.PointLight(0xfff8ee, 8, 18, 2);
-    l.position.set(0, H - 0.7, z);
+  /* ---- lighting: even, colourless daylight from the lantern ---- */
+  scene.add(new THREE.HemisphereLight(0xffffff, 0xcdc6ba, 1.05));
+  scene.add(new THREE.AmbientLight(0xffffff, 0.3));
+  for (let z = zNear + 1; z < zFar; z += 4.5) {
+    const l = new THREE.PointLight(0xfff8ec, 12, 22, 2);
+    l.position.set(0, H + 0.2, z);
     scene.add(l);
   }
-  // a soft wash on the works themselves, from above and behind the rail
-  for (let z = zFront - 2; z > zBack + 1; z -= 3.4) {
-    const l = new THREE.PointLight(0xffffff, 4, 6.5, 2);
-    l.position.set(RAIL_X + 0.9, H - 0.4, z);
-    scene.add(l);
+  // picture lights: a slim hood above each frame, aimed at the work
+  const spots = [];
+  for (const holder of panels0.holders) {
+    const size = holder.userData.size;
+    const yTop = GALLERY.workHeight + size.h / 2 + 0.34;
+    const s = new THREE.SpotLight(0xfff0d6, 7, 6, 0.7, 0.85, 2);
+    s.position.set(holder.position.x - 0.42, yTop, holder.position.z);
+    s.target.position.set(holder.position.x, GALLERY.workHeight - 0.2, holder.position.z);
+    group.add(s, s.target);
+    // the fixture itself: a thin bar just off the wall, above the sheet
+    group.add(box(0.2, 0.055, size.w * 0.5, mat.lamp, holder.position.x - 0.34, yTop, holder.position.z));
+    spots.push(s);
   }
 
-  return { panels, zFront, zBack };
+  scene.add(panels0.group);
+
+  return { panels: panels0, zNear, zFar, door: DOOR };
 }
 
-export { workZ, GALLERY };
+export { GALLERY, workZ };
 export const WALL_X = GALLERY.wallX;

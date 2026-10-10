@@ -1,18 +1,18 @@
 import * as THREE from '../vendor/three.module.min.js';
 
 /* ---------------------------------------------------------------
-   The eleven works, hung as one row on the art wall (+X), in date
-   order, walking towards -Z.  Every work is sized to the same visual
-   mass so the row reads evenly, and hangs at the same centre height.
+   The eleven works, hung in one row on the art wall (+X), in date
+   order.  The row runs towards +Z, which is the visitor's right
+   hand: pressing "next" slides the camera right along the wall.
    --------------------------------------------------------------- */
 
 export const GALLERY = {
-  workHeight: 1.45,     // centre of every work above the floor (= tour eye height)
-  z0: -1.35,            // first work
+  workHeight: 1.45,     // centre of every work above the floor (= the viewing height)
+  z0: 1.35,             // first work
   step: 1.7,            // nominal spacing along the wall
   maxW: 1.5,
   maxH: 1.15,
-  minGap: 0.9,          // clear wall between neighbouring works
+  minGap: 1.55,         // clear wall between neighbouring works (room for a pilaster)
   wallX: 2.6,           // the plane the works hang on
 };
 
@@ -22,19 +22,16 @@ export function setLayout(sizes) {
   const z = [GALLERY.z0];
   for (let i = 1; i < sizes.length; i++) {
     const gap = Math.max(GALLERY.step, sizes[i - 1].w / 2 + sizes[i].w / 2 + GALLERY.minGap);
-    z.push(z[i - 1] - gap);
+    z.push(z[i - 1] + gap);
   }
   layout = z;
 }
 /** Z of work i — follows the laid-out widths, or the nominal step before layout. */
 export function workZ(i) {
-  return layout[i] ?? (GALLERY.z0 - i * GALLERY.step);
+  return layout[i] ?? (GALLERY.z0 + i * GALLERY.step);
 }
-
-export function hallRange(count) {
-  const first = workZ(0) + 1.7;
-  const last = workZ(count - 1) - 1.7;
-  return { zStart: first, zEnd: last };   // walking +Z -> -Z
+export function hallEnds(count) {
+  return { zNear: workZ(0) - 2.7, zFar: workZ(count - 1) + 2.7 };
 }
 
 export function makePanels(data, extra, hud) {
@@ -59,10 +56,11 @@ export function makePanels(data, extra, hud) {
 
     const art = new THREE.Mesh(
       new THREE.PlaneGeometry(size.w, size.h),
-      new THREE.MeshStandardMaterial({ map: t, roughness: 0.85, metalness: 0 }),
+      new THREE.MeshStandardMaterial({ map: t, roughness: 0.86, metalness: 0 }),
     );
     art.position.z = 0.015;
     art.userData.work = work;
+    art.castShadow = true;
 
     // a hairline mount beneath the sheet — no ornate frame, nothing to compete
     const mount = new THREE.Mesh(
@@ -70,6 +68,7 @@ export function makePanels(data, extra, hud) {
       new THREE.MeshStandardMaterial({ color: 0xfcfaf5, roughness: 0.96 }),
     );
     mount.position.z = 0.006;
+    mount.castShadow = true;
 
     holder.add(mount, art);
     holder.userData.work = work;
