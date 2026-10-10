@@ -12,7 +12,7 @@ export const GALLERY = {
   step: 1.7,            // nominal spacing along the wall
   maxW: 1.5,
   maxH: 1.15,
-  minGap: 1.55,         // clear wall between neighbouring works (room for a pilaster)
+  minGap: 1.2,          // clear wall between neighbouring frames
   wallX: 2.6,           // the plane the works hang on
 };
 
@@ -58,19 +58,27 @@ export function makePanels(data, extra, hud) {
       new THREE.PlaneGeometry(size.w, size.h),
       new THREE.MeshStandardMaterial({ map: t, roughness: 0.86, metalness: 0 }),
     );
-    art.position.z = 0.015;
+    art.position.z = 0.035;
     art.userData.work = work;
     art.castShadow = true;
 
-    // a hairline mount beneath the sheet — no ornate frame, nothing to compete
-    const mount = new THREE.Mesh(
-      new THREE.PlaneGeometry(size.w + 0.05, size.h + 0.05),
-      new THREE.MeshStandardMaterial({ color: 0xfcfaf5, roughness: 0.96 }),
+    // black frame: a flat moulding around the sheet, wide on the sides
+    const fw = 0.1;
+    const frame = new THREE.Mesh(
+      new THREE.PlaneGeometry(size.w + fw * 2, size.h + fw * 2),
+      new THREE.MeshStandardMaterial({ color: 0x141414, roughness: 0.66, metalness: 0.04 }),
     );
-    mount.position.z = 0.006;
-    mount.castShadow = true;
+    frame.position.z = 0.02;
+    frame.castShadow = true;
 
-    holder.add(mount, art);
+    // a hairline white liner, so the sheet sits on light not on black
+    const liner = new THREE.Mesh(
+      new THREE.PlaneGeometry(size.w + 0.02, size.h + 0.02),
+      new THREE.MeshStandardMaterial({ color: 0xfbfbfb, roughness: 0.95 }),
+    );
+    liner.position.z = 0.03;
+
+    holder.add(frame, liner, art);
     holder.userData.work = work;
     holder.userData.isPanel = true;
     holder.userData.size = size;
@@ -79,7 +87,7 @@ export function makePanels(data, extra, hud) {
   });
 
   hud?.setTotal(holders.length);
-  void extra;
+  void extra; // (tex no longer used by the panels)
   return { group, holders };
 }
 

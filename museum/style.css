@@ -37,7 +37,7 @@ canvas.webgl {
   z-index: 60;
   display: grid;
   place-items: center;
-  background: radial-gradient(circle at 50% 45%, #ffffff 0%, #efeae1 78%);
+  background: radial-gradient(circle at 50% 45%, #ffffff 0%, #eaeaea 78%);
   color: #2a2723;
   transition: opacity 0.9s ease, visibility 0.9s ease;
 }

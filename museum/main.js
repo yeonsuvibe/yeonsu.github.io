@@ -20,8 +20,8 @@ renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.toneMapping = THREE.NoToneMapping;      // keep the works true to their own colour
 
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0xefeae1);
-scene.fog = new THREE.Fog(0xefeae1, 30, 62);
+scene.background = new THREE.Color(0xf2f2f2);
+scene.fog = new THREE.Fog(0xf2f2f2, 34, 70);
 
 const camera = new THREE.PerspectiveCamera(56, innerWidth / innerHeight, 0.05, 200);
 
