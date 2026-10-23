@@ -22,7 +22,7 @@ header *{pointer-events:auto}
 .brand{font-family:var(--serif);font-size:.95rem;letter-spacing:.4em;font-weight:600}
 .dnav{display:flex;gap:16px;font-size:.6rem;letter-spacing:.26em;text-transform:uppercase;color:var(--soft)}
 .dnav a{color:inherit;text-decoration:none;opacity:.75}
-.dnav a.on{color:var(--ink);border-bottom:2px solid var(--crimson);padding-bottom:3px;opacity:1}
+.dnav a.on,.dnav a.active{color:var(--ink);border-bottom:2px solid var(--crimson);padding-bottom:3px;opacity:1}
 
 /* caption card — transparent, text floats directly over the artwork */
 .tourcard{position:fixed;left:38px;bottom:48px;z-index:7;width:min(330px,28vw);
@@ -73,8 +73,13 @@ header *{pointer-events:auto}
 </div>
 
 <header>
-  <div class="brand">YEONSU · B</div>
-  <nav class="dnav"><a href="index.html">Home</a></nav>
+  <div class="brand"><a href="index.html" style="color:inherit;text-decoration:none">Ahn Yeonsu</a></div>
+  <nav class="dnav">
+    <a href="index.html">Home</a>
+    <a href="variant-b.html?auto=0" class="on">Art Gallery</a>
+    <a href="journeys.html">Cultural Journeys</a>
+    <a href="articles.html">Ahn Yeonsu &middot; Press</a>
+  </nav>
 </header>
 
 <canvas class="webgl"></canvas>
