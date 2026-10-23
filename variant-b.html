@@ -130,16 +130,21 @@ body.sheet header{visibility:hidden}
 </div>
 <div class="hint" id="hint">press → · wheel · tap a frame to visit · Esc for the room</div>
 
-<div class="wallpage" id="sheetBar" style="align-items:flex-start;background:none;pointer-events:none">
-  <div class="wp-bar" style="width:100%;background:rgba(20,18,15,.5);backdrop-filter:none">
-    <span id="sbTitle">wall sheet</span><button class="wp-x" id="sbX" style="pointer-events:auto;color:#fff;border-color:rgba(255,255,255,.5)">✕ close · Esc</button>
+<div class="wallpage" id="wallJ">
+  <div class="wp-card">
+    <div class="wp-bar"><span>Cultural Journeys · the east wall</span><button class="wp-x" id="wjX">✕ close · Esc</button></div>
+    <iframe title="Cultural Journeys" loading="lazy"></iframe>
   </div>
 </div>
-<div id="css3d"></div>
+<div class="wallpage" id="wallP">
+  <div class="wp-card">
+    <div class="wp-bar"><span>Ahn Yeonsu · Press · the rear wall</span><button class="wp-x" id="wpX">✕ close · Esc</button></div>
+    <iframe title="Press" loading="lazy"></iframe>
+  </div>
+</div>
 
 <script type="module">
 import * as THREE from './museum/vendor/three.module.min.js';
-import { CSS3DRenderer, CSS3DObject } from './museum/vendor/CSS3DRenderer.js';
 
 const WORKS=[
  ['2018-10-06','museum/art/04344F03-ED69-4122-B452-149E29714822.jpg','charcoal on paper',
@@ -420,61 +425,36 @@ for(const [i,wall,u,y,size] of HANGS){
   spots.push(trackSpot(-W/2+2.2,12.2,-W/2,12.2));
 })();
 
-/* ---- CSS-3D wall sheets: the page DOM is planted on the wall plane itself ---- */
+/* ---- wall sheets: fly into the wall, then lift the plain DOM page over the screen ---- */
 let wallOpen=null;                      // 'J' | 'P' | null
-const cssHost=document.getElementById('css3d');
-const sheetBar=document.getElementById('sheetBar'), sbTitle=document.getElementById('sbTitle');
-const cssRenderer=new CSS3DRenderer({element:cssHost});
-cssRenderer.setSize(innerWidth,innerHeight);
-const cssScene=new THREE.Scene();
-const SHEETS={ J:{file:'journeys.html',title:'Cultural Journeys · the east wall',
-                  plane:{w:2.7,h:3.0,x:W/2-0.04,y:1.72,z:-1,ry:-Math.PI/2,d:3.4}},  // the bare right-hand wall — nothing hangs there
-              P:{file:'articles.html',title:'Ahn Yeonsu · Press · the rear wall',
-                  plane:{w:2.7,h:3.0,x:-2.5,y:1.72,z:D/2-0.04,ry:Math.PI,d:3.4}} };    // same scale, rear wall
-function sheetPane(k){
-  const s=SHEETS[k]; if(s.obj) return s;
-  const PX=440; // css px per metre → 1188px page ≈ 2.7m wall print
-  const el=document.createElement('div'); el.className='sheet-pane';
-  el.style.width=Math.round(s.plane.w*PX)+'px'; el.style.height=Math.round(s.plane.h*PX)+'px';
-  el.style.fontSize=PX+'px';
-  el.style.border='2px solid rgba(20,18,15,.35)';   // a mounting line, like a large print on the wall
-  const f=document.createElement('iframe'); f.src=s.file+'?wall=1'; f.title=s.title;
-  el.appendChild(f);
-  const obj=new CSS3DObject(el);
-  obj.scale.setScalar(1/PX);
-  obj.position.set(s.plane.x,s.plane.y,s.plane.z);
-  obj.rotation.y=s.plane.ry;
-  cssScene.add(obj);
-  s.obj=obj; s.el=el; return s;
-}
+const wallJ=document.getElementById('wallJ'), wallP=document.getElementById('wallP');
+const WALLS={ J:{el:wallJ,file:'journeys.html',
+    pose:new THREE.Vector3(W/2-0.04,1.72,-1), eye:new THREE.Vector3(W/2-3.4,1.72,-1)},        // east wall (bare)
+              P:{el:wallP,file:'articles.html',
+    pose:new THREE.Vector3(-2.5,1.62,D/2),    eye:new THREE.Vector3(-2.5,1.62,D/2-3.4)} };     // rear wall
 function openWall(k){
   wallOpen=k; card.classList.remove('show'); hint.classList.remove('show');
   document.body.classList.add('sheet');
   items.forEach(r=>{ if(r.ring) r.ring.material.opacity=0; });
   document.querySelector('.controls').style.visibility='hidden';
-  const s=sheetPane(k);
-  if(SHEETS.J.obj) SHEETS.J.el.style.display=(k==='J')?'block':'none';
-  if(SHEETS.P.obj) SHEETS.P.el.style.display=(k==='P')?'block':'none';
-  const p=s.plane;
-  const dir=(k==='J')?new THREE.Vector3(-1,0,0):new THREE.Vector3(0,0,-1); // J stands in the room facing the east wall; P faces the rear wall
-  const eye=new THREE.Vector3(p.x,p.y,p.z).addScaledVector(dir,p.d); // stand at the print's viewing distance
-  const pose=new THREE.Vector3(p.x,p.y,p.z);
-  const m=new THREE.Matrix4().lookAt(eye,pose,new THREE.Vector3(0,1,0));
-  cssHost.classList.remove('live');
-  fly({p:eye.clone(),q:new THREE.Quaternion().setFromRotationMatrix(m),fov:50},()=>{
-    mode='wall'; sbTitle.textContent=s.title; sheetBar.classList.add('show'); cssHost.classList.add('live');
+  const w=WALLS[k];
+  const f=w.el.querySelector('iframe'); if(!f.src) f.src=w.file+'?wall=1';   // load only when first visited
+  const m=new THREE.Matrix4().lookAt(w.eye,w.pose,new THREE.Vector3(0,1,0));
+  fly({p:w.eye.clone(),q:new THREE.Quaternion().setFromRotationMatrix(m),fov:50},()=>{
+    mode='wall'; w.el.classList.add('show');                                  // DOM rises after the flight lands
   });
 }
 function closeWall(){
   if(!wallOpen) return;
   document.body.classList.remove('sheet');
-  cssHost.classList.remove('live'); sheetBar.classList.remove('show');
+  wallJ.classList.remove('show'); wallP.classList.remove('show');
   document.querySelector('.controls').style.visibility='';
   wallOpen=null; room();
 }
 document.getElementById('jB').onclick=()=>openWall('J');
 document.getElementById('pB').onclick=()=>openWall('P');
-document.getElementById('sbX').onclick=closeWall;
+document.getElementById('wjX').onclick=closeWall;
+document.getElementById('wpX').onclick=closeWall;
 function openHome(){
   wallOpen='H'; card.classList.remove('show'); hint.classList.remove('show');
   items.forEach(r=>{ if(r.ring) r.ring.material.opacity=0; });
@@ -690,12 +670,8 @@ addEventListener('keydown',e=>{
   if(e.key==='ArrowLeft'||e.key==='ArrowUp') prev();
   if(e.key==='Escape') room();
 });
-let wAcc=0,wT=0,busy=false,wPend=0,wScheduled=0;
-addEventListener('wheel',e=>{ if(wallOpen){ e.preventDefault();            // wheel inside a CSS3D transform escapes to the parent — relay it into the sheet, batched per frame (a 134-photo page can't afford one forced scroll per event)
-  const s=SHEETS[wallOpen]; const f=s.obj && s.el.querySelector('iframe');
-  if(f && f.contentDocument){ wPend+=e.deltaY;
-    if(!wScheduled){ wScheduled=1; requestAnimationFrame(()=>{ wScheduled=0; f.contentWindow.scrollBy(0,wPend); wPend=0; }); }
-  } return; }
+let wAcc=0,wT=0,busy=false;
+addEventListener('wheel',e=>{ if(wallOpen) return;                       // plain DOM sheet scrolls natively — no relay, no 3D transform cost
   if(mode==='fly')return; const n=performance.now();
   if(n-wT>700) wAcc=0; wAcc+=e.deltaY; wT=n;
   if(Math.abs(wAcc)>120){ wAcc>0?next():prev(); wAcc=0; wT=performance.now(); } }, {passive:false});
@@ -712,7 +688,7 @@ addEventListener('pointerdown',e=>{ if(wallOpen||e.target.closest('.controls,.in
   const hits=ray.intersectObjects(items.map(r=>r.art));
   if(hits.length){ const rec=items.find(r=>r.art===hits[0].object); focus(rec.i); } });
 
-function resize(){ renderer.setSize(innerWidth,innerHeight); cssRenderer.setSize(innerWidth,innerHeight);
+function resize(){ renderer.setSize(innerWidth,innerHeight);
   renderer.setPixelRatio(Math.min(MOBILE?1.5:2,devicePixelRatio)); // phones: fewer shaded pixels, steadier fps
   const pr=Math.min(2,devicePixelRatio);
   rt.setSize(Math.floor(innerWidth*pr),Math.floor(innerHeight*pr));
@@ -802,7 +778,6 @@ renderer.setAnimationLoop(()=>{
   renderer.setRenderTarget(rt); renderer.render(scene,camera); renderer.setRenderTarget(null);
   renderer.render(postScene,postCam);
   }
-  cssRenderer.render(cssScene,camera);   // the DOM sheets ride the same camera as the 3D walls
 });
 addEventListener('resize',()=>{ wallIdle=0; });
 </script>
