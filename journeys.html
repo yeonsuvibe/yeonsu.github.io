@@ -1308,7 +1308,7 @@
 <script>
 if(window.top!==window.self && /[?&]wall=1/.test(location.search)){
   document.querySelectorAll('nav').forEach(n=>n.style.display='none');   // the sheet bar replaces the page nav
-  const st=document.createElement('style'); st.textContent='header{padding-top:40px!important}'; document.head.appendChild(st);
+  const st=document.createElement('style'); st.textContent='html,body{background:transparent!important}header{padding-top:40px!important}'; document.head.appendChild(st);
   addEventListener('keydown',e=>{ if(e.key==='Escape') parent.postMessage('closeWall','*'); });
 }
 </script>
