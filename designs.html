@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>연수 — 디자인 시안 4종 (Design Drafts)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+:root{--paper:#f4f1ea;--ink:#16150f;--soft:#5c574c;--rule:rgba(22,21,15,.16);--gilt:#9a7b46;--crimson:#b31b1b;
+--serif:'Cormorant Garamond',serif;--sans:'Jost',sans-serif}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-weight:300;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+.top{display:flex;justify-content:space-between;align-items:center;padding:22px 4vw;border-bottom:1px solid var(--rule);position:sticky;top:0;background:rgba(244,241,234,.94);backdrop-filter:blur(6px);z-index:10}
+.top .brand{font-family:var(--serif);letter-spacing:.4em;font-weight:600;font-size:.9rem}
+.top a.back{font-size:.6rem;letter-spacing:.3em;text-transform:uppercase;border:1px solid var(--ink);padding:9px 18px;transition:.35s}
+.top a.back:hover{background:var(--ink);color:var(--paper)}
+.hero{padding:11vh 4vw 7vh;text-align:center}
+.hero h1{font-family:var(--serif);font-weight:500;font-size:clamp(2.4rem,6vw,4.4rem);letter-spacing:.04em}
+.hero h1 em{color:var(--crimson);font-style:italic}
+.hero p{color:var(--soft);max-width:640px;margin:1.6rem auto 0;font-size:.95rem;line-height:2.1;letter-spacing:.04em}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(440px,92vw),1fr));gap:5vh 3.5vw;padding:4vh 4vw 14vh;max-width:1900px;margin:0 auto}
+.card{border:1px solid var(--rule);background:#fff;display:flex;flex-direction:column;transition:transform .6s cubic-bezier(.19,1,.22,1),box-shadow .6s}
+.card:hover{transform:translateY(-8px);box-shadow:0 40px 60px -30px rgba(22,21,15,.4)}
+.view{position:relative;height:300px;overflow:hidden;border-bottom:1px solid var(--rule);background:#111}
+.view iframe{position:absolute;top:0;left:50%;width:1440px;height:900px;border:0;transform:translateX(-50%) scale(.42);transform-origin:top center;pointer-events:none}
+.view .tap{position:absolute;inset:0;z-index:2}
+.meta{padding:26px 28px 30px}
+.meta .no{font-size:.58rem;letter-spacing:.4em;text-transform:uppercase;color:var(--gilt)}
+.meta h2{font-family:var(--serif);font-weight:500;font-size:1.7rem;margin:8px 0 10px}
+.meta p{font-size:.8rem;color:var(--soft);line-height:1.95;letter-spacing:.03em}
+.meta .tags{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 20px}
+.meta .tags span{font-size:.56rem;letter-spacing:.2em;text-transform:uppercase;border:1px solid var(--rule);padding:5px 10px;color:var(--soft)}
+.meta .go{display:inline-block;border:1px solid var(--ink);padding:12px 30px;font-size:.62rem;letter-spacing:.32em;text-transform:uppercase;transition:.4s}
+.meta .go:hover{background:var(--ink);color:var(--paper)}
+.note{padding:0 4vw 12vh;max-width:900px;margin:0 auto;text-align:center;color:var(--soft);font-size:.72rem;letter-spacing:.14em;line-height:2.2}
+.note b{color:var(--ink)}
+</style>
+</head>
+<body>
+<div class="top">
+  <span class="brand">YEONSU · DRAFTS</span>
+  <a class="back" href="index.html">← 본 사이트 (Home)</a>
+</div>
+
+<div class="hero">
+  <h1>시안 4종 — <em>코넬 인재상</em> × 입체</h1>
+  <p>같은 열한 점의 원화, 네 가지 다른 초상. A는 참조 사이트(thevertmenthe.dault-lafon.fr)의 WebGL 노이즈 전환을 재현한 다크 홀, B는 실제 걸어서 지나는 3D 회랑, C는 코넬의 교훈을 벽면 삼은 살롱, D는 항공우편 엽서 다발. 미리보기는 정지 프레임입니다 — 클릭하면 라이브로 걷습니다.</p>
+</div>
+
+<div class="grid">
+  <article class="card">
+    <div class="view"><iframe src="variant-a.html" loading="lazy" tabindex="-1"></iframe><a class="tap" href="variant-a.html" aria-label="open draft A"></a></div>
+    <div class="meta">
+      <span class="no">Draft A</span>
+      <h2>The Dark Hall — WebGL</h2>
+      <p>검은 매트룸 한복판에 작품 하나가 숨쉬듯 떠 있다. 스크롤·드래그·방향키로 전환되면 소음(노이즈) 맵이 화면을 찢듯 다음 작품으로 흘러간다 — dault-lafon gallery 기법의 1:1 재현(직교 쿼드 + 노이즈 변위 셰이더 + GSAP 대신 자체 이징). 0→11 카운트업 로더 포함.</p>
+      <div class="tags"><span>three.js 셰이더</span><span>노이즈 전환</span><span>다크·몰입</span><span>키보드 내비</span></div>
+      <a class="go" href="variant-a.html">Open Draft A</a>
+    </div>
+  </article>
+
+  <article class="card">
+    <div class="view"><iframe src="variant-b.html" loading="lazy" tabindex="-1"></iframe><a class="tap" href="variant-b.html" aria-label="open draft B"></a></div>
+    <div class="meta">
+      <span class="no">Draft B</span>
+      <h2>The White Cube — guided 3D</h2>
+      <p>밝은 채광의 화이트 큐브 전시장: 입실하면 열한 점이 걸린 방 전체가 먼저 한눈에 보이고, guided 투어가 자동으로 시작되어 카메라가 작품 앞으로 날아가며 영·한 설명 카드와 금색 포커스 링이 하나씩 켜진다. ←→·휠·터치 순회, 액자 클릭 점프, Esc 조망 복귀.</p>
+      <div class="tags"><span>전체 조망 → 순차 투어</span><span>카메라 플라이인</span><span>영·한 도록 카드</span><span>스카이라이트·트랙 조명</span></div>
+      <a class="go" href="variant-b.html">Walk the Cube</a>
+    </div>
+  </article>
+
+  <article class="card">
+    <div class="view"><iframe src="variant-c.html" loading="lazy" tabindex="-1"></iframe><a class="tap" href="variant-c.html" aria-label="open draft C"></a></div>
+    <div class="meta">
+      <span class="no">Draft C</span>
+      <h2>Cornell Salon</h2>
+      <p>코넬을 정면으로 걸었다. 크림슨 포인트, 백그라운드에 'ANY PERSON · ANY STUDY' 워터마크 조판, 히어로엔 3D 카덱(카드 더미)이 손끝을 따라 기울고, 살롱 벽의 열한 점은 커서가 지나면 액자째 당신에게로 회전한다. 지원동기 인용 밴드 포함.</p>
+      <div class="tags"><span>코넬 정체성</span><span>마우스 3D 틸트</span><span>페이퍼·크림슨</span><span>에세이 톤</span></div>
+      <a class="go" href="variant-c.html">Open Draft C</a>
+    </div>
+  </article>
+
+  <article class="card">
+    <div class="view"><iframe src="variant-d.html" loading="lazy" tabindex="-1"></iframe><a class="tap" href="variant-d.html" aria-label="open draft D"></a></div>
+    <div class="meta">
+      <span class="no">Draft D</span>
+      <h2>Postcard Index</h2>
+      <p>열한 점을 원형 3D 캐러셀로 회전시키고, 아래 책상엔 박물관 여행 엽서들이 흩어져 있다 — 마우스를 올리면 엽서가 책상에서 떠오르고, 캐러셀은 드래그로 돈다. ' 외교관 노트를 가진 화가'라는 한 문장을 시각으로 번 역.</p>
+      <div class="tags"><span>coverflow 캐러셀</span><span>엽서scatter·부양</span><span>parallax</span><span>_BY AIR_ 스탬프</span></div>
+      <a class="go" href="variant-d.html">Open Draft D</a>
+    </div>
+  </article>
+</div>
+
+<p class="note">모든 시안은 같은 원본 파일(<b>photos/art</b> 11점, <b>photos/musium</b> 여정 기록)을 사용하며, 실제 배포본 <b>index.html</b>은 그대로입니다.<br/>
+반영할 초안을 골라주시면 — 예: “B의 회랑에 C의 코넬 카피” — 그 조합으로 본 사이트를 갈아입히겠습니다.</p>
+</body>
+</html>
