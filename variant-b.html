@@ -67,7 +67,7 @@ header *{pointer-events:auto}
 /* HOME: same dressing as the intro (THE WHITE CUBE) page — full paper field, centered column */
 .homepage{position:fixed;inset:0;z-index:9;display:none;flex-direction:column;align-items:center;justify-content:center;
   gap:18px;background:rgba(242,241,237,.45);text-align:center;padding:24px;   /* translucent over the front view */
-  backdrop-filter:blur(6px) saturate(1.05);-webkit-backdrop-filter:blur(6px) saturate(1.05);
+  backdrop-filter:blur(3px) saturate(1.05);-webkit-backdrop-filter:blur(3px) saturate(1.05);
   opacity:0;transition:opacity .55s ease;pointer-events:none;overflow:hidden}
 .homepage.show{display:flex;opacity:1;pointer-events:auto}
 .hp-kick{font-family:var(--sans);font-weight:500;font-size:.62rem;letter-spacing:.5em;text-transform:uppercase;color:var(--crimson);text-shadow:0 0 12px rgba(246,245,241,.95)}
@@ -395,7 +395,12 @@ for(const [i,wall,u,y,size] of HANGS){
     frame.geometry.dispose();
     frame.geometry=new THREE.PlaneGeometry(Math.max(aw,0.4)+0.16+0.06,ah+0.18+0.06);
     rec._pose=null;                                   // OBB changed → refresh poses
-    if(mode==='room'){ ovPose=overviewPose(); camera.fov=ovPose.fov; camera.updateProjectionMatrix(); }
+    wallIdle=0;                                       // wake the frozen renderer so the arrival is actually painted
+    if(mode==='room'||(mode==='wall'&&wallOpen==='H')){
+      ovPose=overviewPose();                          // works arrived → the establishing shot gets its final framing
+      camera.fov=ovPose.fov; camera.updateProjectionMatrix();
+      if(mode==='wall'){ camera.position.copy(ovPose.pos); camera.lookAt(ovPose.look); }  // HOME's backdrop must re-frame too
+    }
   });
   spots.push(trackSpot(wall==='back'?u:-W/2+2.2, wall==='back'?-D/2+2.2:u,
                        wall==='back'?u:-W/2,      wall==='back'?-D/2:u));  // subtle light on this work only
