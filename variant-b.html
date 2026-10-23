@@ -60,6 +60,8 @@ header *{pointer-events:auto}
   .tourcard{bottom:110px;width:92vw;left:4vw} .hint{width:92vw;text-align:center;bottom:86px;letter-spacing:.22em}
   header{padding:16px 18px} .brand{font-size:1rem} }
 @supports not (backdrop-filter:blur(1px)){ .tourcard{background:rgba(246,245,241,.9)} }
+/* ---- top navigation: a separate page (nav.html) overlaid permanently on everything ---- */
+.navframe{position:fixed;top:0;left:0;width:100%;height:66px;border:0;z-index:20;background:transparent}
 .wallpage{position:fixed;inset:0;z-index:8;display:none;align-items:stretch;justify-content:stretch;background:none}
 .wallpage.show{display:flex}
 /* HOME: same dressing as the intro (THE WHITE CUBE) page — full paper field, centered column */
@@ -113,15 +115,7 @@ body.sheet header{visibility:hidden}
   <div class="homechip"><a href="designs.html" style="font-size:.6rem;letter-spacing:.3em;text-transform:uppercase;color:var(--soft);text-decoration:none">← All drafts</a></div>
 </div>
 
-<header>
-  <div class="brand"><a href="index.html" style="color:inherit;text-decoration:none">Ahn Yeonsu</a></div>
-  <nav class="dnav">
-    <a href="index.html">Home</a>
-    <a href="variant-b.html?auto=0" class="on">Art Gallery</a>
-    <a href="journeys.html">Cultural Journeys</a>
-    <a href="articles.html">Ahn Yeonsu &middot; Press</a>
-  </nav>
-</header>
+<iframe class="navframe" id="navFrame" src="nav.html" title="site navigation"></iframe>
 
 <canvas class="webgl"></canvas>
 
@@ -136,22 +130,16 @@ body.sheet header{visibility:hidden}
 <div class="controls">
   <button class="ctl" id="prevB" aria-label="previous">←</button>
   <button class="ctl" id="nextB" aria-label="next">→</button>
-  <button class="ctl wide" id="roomB">⤺ Whole room</button>
-  <button class="ctl wide" id="jB">▤ Travel wall</button>
-  <button class="ctl wide" id="pB">▥ Press wall</button>
-  <button class="ctl wide" id="hB">⌂ Home wall</button>
 </div>
 <div class="hint" id="hint">press → · wheel · tap a frame to visit · Esc for the room</div>
 
 <div class="wallpage" id="wallJ">
   <div class="wp-card">
-    <div class="wp-bar"><span>Cultural Journeys · the east wall</span><button class="wp-x" id="wjX">✕ close · Esc</button></div>
     <iframe title="Cultural Journeys" loading="lazy"></iframe>
   </div>
 </div>
 <div class="wallpage" id="wallP">
   <div class="wp-card">
-    <div class="wp-bar"><span>Ahn Yeonsu · Press · the rear wall</span><button class="wp-x" id="wpX">✕ close · Esc</button></div>
     <iframe title="Press" loading="lazy"></iframe>
   </div>
 </div>
@@ -453,38 +441,43 @@ const WALLS={ J:{el:wallJ,file:'journeys.html',
     pose:new THREE.Vector3(W/2-0.04,1.72,-1), eye:new THREE.Vector3(W/2-3.4,1.72,-1)},        // east wall (bare)
               P:{el:wallP,file:'articles.html',
     pose:new THREE.Vector3(-2.5,1.62,D/2),    eye:new THREE.Vector3(-2.5,1.62,D/2-3.4)} };     // rear wall
+function setNav(k){ const nf=document.getElementById('navFrame');   // tell the overlaid nav which section is live
+  if(nf && nf.contentWindow) nf.contentWindow.postMessage('nav:'+k,'*'); }
 function openWall(k){
   wallOpen=k; card.classList.remove('show'); hint.classList.remove('show');
   document.body.classList.add('sheet');
   items.forEach(r=>{ if(r.ring) r.ring.material.opacity=0; });
-  document.querySelector('.controls').style.visibility='hidden';
   const w=WALLS[k];
   const f=w.el.querySelector('iframe'); if(!f.src) f.src=w.file+'?wall=1';   // load only when first visited
   const m=new THREE.Matrix4().lookAt(w.eye,w.pose,new THREE.Vector3(0,1,0));
   fly({p:w.eye.clone(),q:new THREE.Quaternion().setFromRotationMatrix(m),fov:50},()=>{
     mode='wall'; w.el.classList.add('show');                                  // DOM rises after the flight lands
+    setNav(k==='J'?'travel':'press');
   });
 }
 function closeWall(){
   if(!wallOpen) return;
   document.body.classList.remove('sheet');
   wallJ.classList.remove('show'); wallP.classList.remove('show'); homeEl.classList.remove('show');
-  document.querySelector('.controls').style.visibility='';
-  wallOpen=null; room();
+  wallOpen=null; room(); setNav('gallery');
 }
-document.getElementById('jB').onclick=()=>openWall('J');
-document.getElementById('pB').onclick=()=>openWall('P');
-document.getElementById('wjX').onclick=closeWall;
-document.getElementById('wpX').onclick=closeWall;
 function openHome(){
   wallOpen='H'; card.classList.remove('show'); hint.classList.remove('show');
+  document.body.classList.add('sheet');
   items.forEach(r=>{ if(r.ring) r.ring.material.opacity=0; });
-  document.querySelector('.controls').style.visibility='hidden';
   // HOME = the intro-style page — it appears immediately, no fly-in (same feel as THE WHITE CUBE opening)
-  mode='wall'; homeEl.classList.add('show');
+  mode='wall'; homeEl.classList.add('show'); setNav('home');
 }
-document.getElementById('hB').onclick=openHome;
-addEventListener('message',e=>{ if(e.data==='closeWall') closeWall(); }); // Esc pressed while the sheet has focus
+addEventListener('message',e=>{
+  if(e.data==='closeWall'){ closeWall(); return; }             // Esc pressed while a sheet has focus
+  if(typeof e.data==='string' && e.data.startsWith('nav:')){   // commands from the overlaid nav.html
+    const k=e.data.slice(4);
+    if(k==='home') openHome();
+    else if(k==='travel'){ closeWall(); openWall('J'); }
+    else if(k==='press'){ closeWall(); openWall('P'); }
+    else if(k==='gallery'){ if(wallOpen) closeWall(); else room(); }
+  }
+});
 
 /* gold focus ring (added per item lazily) */
 function ringFor(rec){
@@ -656,7 +649,7 @@ function room(){ cur=-1; card.classList.remove('show');
   items.forEach(r=>{ if(r.ring) r.ring.material.opacity=0; });
   ovPose=overviewPose();
   const m=new THREE.Matrix4().lookAt(ovPose.pos,ovPose.look,new THREE.Vector3(0,1,0));
-  fly({p:ovPose.pos.clone(),q:new THREE.Quaternion().setFromRotationMatrix(m),fov:ovPose.fov},()=>{mode='room';});
+  fly({p:ovPose.pos.clone(),q:new THREE.Quaternion().setFromRotationMatrix(m),fov:ovPose.fov},()=>{mode='room'; setNav('gallery');});
   hint.classList.add('show'); }
 
 const order=[0,1,2,3,4,5,6,7,8,9,10];
@@ -681,7 +674,7 @@ document.getElementById('startBtn').onclick=()=>{
 if(new URLSearchParams(location.search).has('auto')) document.getElementById('startBtn').click(); // preview convenience: ?auto=1 skips the intro
 document.getElementById('nextB').onclick=next;
 document.getElementById('prevB').onclick=prev;
-document.getElementById('roomB').onclick=room;
+
 addEventListener('keydown',e=>{
   if(e.key==='Escape' && wallOpen){ closeWall(); return; }
   if(wallOpen) return;                              // sheets own the keyboard while open
