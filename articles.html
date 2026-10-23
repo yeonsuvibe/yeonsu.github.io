@@ -169,7 +169,7 @@
 <script>
 if(window.top!==window.self && /[?&]wall=1/.test(location.search)){
   document.querySelectorAll('nav').forEach(n=>n.style.display='none');   // the sheet bar replaces the page nav
-  const st=document.createElement('style'); st.textContent='html,body{background:transparent!important}header{padding-top:26px!important}'; document.head.appendChild(st);
+  const st=document.createElement('style'); st.textContent='html,body,.honor div{background:transparent!important}body{color:#1a1815;text-shadow:0 0 10px rgba(246,245,241,.75),0 0 2px rgba(246,245,241,.9)}img{box-shadow:0 6px 18px rgba(0,0,0,.25)!important}header{padding-top:26px!important}'; document.head.appendChild(st);
   addEventListener('keydown',e=>{ if(e.key==='Escape') parent.postMessage('closeWall','*'); });
 }
 </script>
