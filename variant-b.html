@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%23f4f3ef'/%3E%3Crect x='3' y='3' width='10' height='10' fill='none' stroke='%2314120f'/%3E%3C/svg%3E"/>
 <link rel="icon" href="data:,"/>
-<title>Ahn Yeonsu — The White Cube (Guided 3D)</title>
+<title>Ahn Yeonsu — Gallery</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet"/>
@@ -66,18 +66,19 @@ header *{pointer-events:auto}
 .wallpage.show{display:flex}
 /* HOME: same dressing as the intro (THE WHITE CUBE) page — full paper field, centered column */
 .homepage{position:fixed;inset:0;z-index:9;display:none;flex-direction:column;align-items:center;justify-content:center;
-  gap:18px;background:rgba(242,241,237,.5);text-align:center;padding:24px;   // translucent — the gallery glows behind HOME
-  backdrop-filter:blur(1.5px);-webkit-backdrop-filter:blur(1.5px);
+  gap:18px;background:rgba(242,241,237,.45);text-align:center;padding:24px;   // translucent over the front view
+  backdrop-filter:blur(6px) saturate(1.05);-webkit-backdrop-filter:blur(6px) saturate(1.05);
   opacity:0;transition:opacity .55s ease;pointer-events:none;overflow:hidden}
 .homepage.show{display:flex;opacity:1;pointer-events:auto}
-.hp-kick{font-family:var(--sans);font-weight:400;font-size:.62rem;letter-spacing:.5em;text-transform:uppercase;color:var(--crimson)}
-.hp-name{font-family:var(--serif);font-weight:600;font-size:clamp(2.2rem,6vw,4.2rem);letter-spacing:.32em;text-transform:uppercase;color:var(--ink);line-height:1.1;text-indent:.32em}
-.hp-lede{font-size:.8rem;color:var(--soft);max-width:560px;line-height:2.1}
-.hp-ko{font:300 .72rem/1.9 var(--sans);letter-spacing:.14em;color:var(--soft)}
+.hp-kick{font-family:var(--sans);font-weight:500;font-size:.62rem;letter-spacing:.5em;text-transform:uppercase;color:var(--crimson);text-shadow:0 0 12px rgba(246,245,241,.95)}
+.hp-name{font-family:var(--serif);font-weight:600;font-size:clamp(2.2rem,6vw,4.2rem);letter-spacing:.32em;text-transform:uppercase;color:var(--ink);line-height:1.1;text-indent:.32em;text-shadow:0 0 14px rgba(246,245,241,.95)}
+.hp-lede{font-size:.82rem;color:#1d1a16;font-weight:400;max-width:560px;line-height:2.1;text-shadow:0 0 10px rgba(246,245,241,.95),0 0 3px rgba(246,245,241,.9)}
+.hp-ko{font:400 .74rem/1.9 var(--sans);letter-spacing:.14em;color:#2c281f;text-shadow:0 0 10px rgba(246,245,241,.95),0 0 3px rgba(246,245,241,.9)}
 .hp-inner .wp-x{background:none;border:1px solid var(--ink);color:var(--ink);
   font:400 .62rem/1 var(--sans);letter-spacing:.4em;text-transform:uppercase;padding:15px 46px;margin-top:14px;cursor:pointer;transition:.4s;border-radius:0}
 .hp-inner .wp-x:hover{background:var(--ink);color:#fff}
 body.sheet header{visibility:hidden}
+body.sheet .controls,body.sheet .hint{display:none}          // arrows belong to the gallery only — not HOME, not the sheets
 .wp-card{width:100vw;height:100vh;display:flex;flex-direction:column;overflow:hidden;border:0;border-radius:0;
   background:transparent;box-shadow:none}
 .wp-bar{display:flex;justify-content:space-between;align-items:center;padding:8px 14px;border-bottom:1px solid rgba(20,19,17,.15);
@@ -106,14 +107,6 @@ body.sheet header{visibility:hidden}
 <script type="importmap">{"imports":{"three":"./museum/vendor/three.module.min.js"}}</script>
 </head>
 <body>
-
-<div class="intro" id="intro">
-  <div class="kick">Final Proposal · Three-Dimensional</div>
-  <h1>THE WHITE CUBE</h1>
-  <p>A sunlit L-shaped gallery — eleven works on two walls meeting at a right angle (six front, five side), each lit by a real rail fixture on the ceiling. On entering, the horizon levels to zero degrees at the collection's centre. No auto tour: every button, arrow key or wheel notch brings its frame dead-centre.</p>
-  <button id="startBtn">Enter the hall</button>
-  <div class="homechip"><a href="designs.html" style="font-size:.6rem;letter-spacing:.3em;text-transform:uppercase;color:var(--soft);text-decoration:none">← All drafts</a></div>
-</div>
 
 <iframe class="navframe" id="navFrame" src="nav.html" title="site navigation"></iframe>
 
@@ -443,6 +436,8 @@ const WALLS={ J:{el:wallJ,file:'journeys.html',
     pose:new THREE.Vector3(-2.5,1.62,D/2),    eye:new THREE.Vector3(-2.5,1.62,D/2-3.4)} };     // rear wall
 function setNav(k){ const nf=document.getElementById('navFrame');   // tell the overlaid nav which section is live
   if(nf && nf.contentWindow) nf.contentWindow.postMessage('nav:'+k,'*'); }
+function navSync(){ setNav(wallOpen==='H'?'home':wallOpen==='J'?'travel':wallOpen==='P'?'press':'gallery'); }  // the frame may load after we boot — replay the state
+addEventListener('load',navSync);
 function openWall(k){
   wallOpen=k; card.classList.remove('show'); hint.classList.remove('show');
   document.body.classList.add('sheet');
@@ -461,12 +456,19 @@ function closeWall(){
   wallJ.classList.remove('show'); wallP.classList.remove('show'); homeEl.classList.remove('show');
   wallOpen=null; room(); setNav('gallery');
 }
+function gotoRoom(done){ ovPose=overviewPose();
+  const m=new THREE.Matrix4().lookAt(ovPose.pos,ovPose.look,new THREE.Vector3(0,1,0));
+  fly({p:ovPose.pos.clone(),q:new THREE.Quaternion().setFromRotationMatrix(m),fov:ovPose.fov},done);
+}
 function openHome(){
+  if(wallOpen==='H') return;
   wallOpen='H'; card.classList.remove('show'); hint.classList.remove('show');
   document.body.classList.add('sheet');
   items.forEach(r=>{ if(r.ring) r.ring.material.opacity=0; });
-  // HOME = the intro-style page — it appears immediately, no fly-in (same feel as THE WHITE CUBE opening)
-  mode='wall'; homeEl.classList.add('show'); setNav('home');
+  wallJ.classList.remove('show'); wallP.classList.remove('show');   // whatever sheet was up, the wall empties first
+  const reveal=()=>{ mode='wall'; homeEl.classList.add('show'); setNav('home'); };
+  // HOME always arrives over the front view: unless we already stand in the room, move to the establishing shot first
+  if(mode==='room'){ reveal(); } else { gotoRoom(reveal); }
 }
 addEventListener('message',e=>{
   if(e.data==='closeWall'){ closeWall(); return; }             // Esc pressed while a sheet has focus
@@ -663,15 +665,14 @@ function next(){ const w=cur>=0 && order.indexOf(cur)===order.length-1;
 function prev(){ const w=cur>=0 && order.indexOf(cur)===0;
   let k=cur<0?order.length-1:order.indexOf(cur)-1; if(k<0)k=order.length-1; focus(order[k],w); }
 
-document.getElementById('startBtn').onclick=()=>{
-  document.getElementById('intro').classList.add('done');
+/* The museum opens on the front view with HOME lifted over it — no intro card, no enter button */
+(function boot(){
   ovPose=overviewPose(); mode='room';
   camera.fov=ovPose.fov; camera.position.copy(ovPose.pos);
   const m=new THREE.Matrix4().lookAt(ovPose.pos,ovPose.look,new THREE.Vector3(0,1,0));
   camera.quaternion.copy(m); camera.updateProjectionMatrix();
-  setTimeout(()=>{hint.classList.add('show');},900);   // no auto walk — wait for input
-};
-if(new URLSearchParams(location.search).has('auto')) document.getElementById('startBtn').click(); // preview convenience: ?auto=1 skips the intro
+  openHome();
+})();
 document.getElementById('nextB').onclick=next;
 document.getElementById('prevB').onclick=prev;
 
