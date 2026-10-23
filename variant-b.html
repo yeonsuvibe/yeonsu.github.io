@@ -428,12 +428,12 @@ const cssRenderer=new CSS3DRenderer({element:cssHost});
 cssRenderer.setSize(innerWidth,innerHeight);
 const cssScene=new THREE.Scene();
 const SHEETS={ J:{file:'journeys.html',title:'Cultural Journeys · the west wall',
-                  plane:{w:2.4,h:2.67,x:-W/2+0.04,y:1.72,z:-1,ry:Math.PI/2,d:2.5}},   // poster-scale page on the left wall
+                  plane:{w:2.7,h:3.0,x:-W/2+0.04,y:1.72,z:-1,ry:Math.PI/2,d:3.4}},   // full-height wall print, side strips of wall remain
               P:{file:'articles.html',title:'Ahn Yeonsu · Press · the rear wall',
-                  plane:{w:2.4,h:2.67,x:-2.5,y:1.72,z:D/2-0.04,ry:Math.PI,d:2.5}} };    // same scale, rear wall
+                  plane:{w:2.7,h:3.0,x:-2.5,y:1.72,z:D/2-0.04,ry:Math.PI,d:3.4}} };    // same scale, rear wall
 function sheetPane(k){
   const s=SHEETS[k]; if(s.obj) return s;
-  const PX=375; // css px per metre → 900px page = 2.4m wide poster on the wall
+  const PX=440; // css px per metre → 1188px page ≈ 2.7m wall print
   const el=document.createElement('div'); el.className='sheet-pane';
   el.style.width=Math.round(s.plane.w*PX)+'px'; el.style.height=Math.round(s.plane.h*PX)+'px';
   el.style.fontSize=PX+'px';
@@ -455,9 +455,9 @@ function openWall(k){
   const s=sheetPane(k);
   if(SHEETS.J.obj) SHEETS.J.el.style.display=(k==='J')?'block':'none';
   if(SHEETS.P.obj) SHEETS.P.el.style.display=(k==='P')?'block':'none';
-  const p=s.plane;   // stand 2.6m square in front of the very sheet we planted
+  const p=s.plane;
   const dir=(k==='J')?new THREE.Vector3(1,0,0):new THREE.Vector3(0,0,-1);
-  const eye=new THREE.Vector3(p.x,p.y,p.z).addScaledVector(dir,p.d); // step back to poster viewing distance
+  const eye=new THREE.Vector3(p.x,p.y,p.z).addScaledVector(dir,p.d); // stand at the print's viewing distance
   const pose=new THREE.Vector3(p.x,p.y,p.z);
   const m=new THREE.Matrix4().lookAt(eye,pose,new THREE.Vector3(0,1,0));
   cssHost.classList.remove('live');
