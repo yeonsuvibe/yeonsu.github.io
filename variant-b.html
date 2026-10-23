@@ -690,10 +690,12 @@ addEventListener('keydown',e=>{
   if(e.key==='ArrowLeft'||e.key==='ArrowUp') prev();
   if(e.key==='Escape') room();
 });
-let wAcc=0,wT=0,busy=false;
-addEventListener('wheel',e=>{ if(wallOpen){ e.preventDefault();            // wheel inside a CSS3D transform escapes to the parent — relay it into the sheet
+let wAcc=0,wT=0,busy=false,wPend=0,wScheduled=0;
+addEventListener('wheel',e=>{ if(wallOpen){ e.preventDefault();            // wheel inside a CSS3D transform escapes to the parent — relay it into the sheet, batched per frame (a 134-photo page can't afford one forced scroll per event)
   const s=SHEETS[wallOpen]; const f=s.obj && s.el.querySelector('iframe');
-  if(f && f.contentDocument) f.contentWindow.scrollBy(0, e.deltaY); return; }
+  if(f && f.contentDocument){ wPend+=e.deltaY;
+    if(!wScheduled){ wScheduled=1; requestAnimationFrame(()=>{ wScheduled=0; f.contentWindow.scrollBy(0,wPend); wPend=0; }); }
+  } return; }
   if(mode==='fly')return; const n=performance.now();
   if(n-wT>700) wAcc=0; wAcc+=e.deltaY; wT=n;
   if(Math.abs(wAcc)>120){ wAcc>0?next():prev(); wAcc=0; wT=performance.now(); } }, {passive:false});
