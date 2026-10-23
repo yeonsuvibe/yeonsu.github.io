@@ -691,9 +691,12 @@ addEventListener('keydown',e=>{
   if(e.key==='Escape') room();
 });
 let wAcc=0,wT=0,busy=false;
-addEventListener('wheel',e=>{ if(mode==='fly'||wallOpen)return; const n=performance.now();
+addEventListener('wheel',e=>{ if(wallOpen){ e.preventDefault();            // wheel inside a CSS3D transform escapes to the parent — relay it into the sheet
+  const s=SHEETS[wallOpen]; const f=s.obj && s.el.querySelector('iframe');
+  if(f && f.contentDocument) f.contentWindow.scrollBy(0, e.deltaY); return; }
+  if(mode==='fly')return; const n=performance.now();
   if(n-wT>700) wAcc=0; wAcc+=e.deltaY; wT=n;
-  if(Math.abs(wAcc)>120){ wAcc>0?next():prev(); wAcc=0; wT=performance.now(); } }, {passive:true});
+  if(Math.abs(wAcc)>120){ wAcc>0?next():prev(); wAcc=0; wT=performance.now(); } }, {passive:false});
 let tx=null;
 addEventListener('touchstart',e=>tx=e.touches[0].clientX,{passive:true});
 addEventListener('touchend',e=>{if(tx==null)return;const d=e.changedTouches[0].clientX-tx;
