@@ -771,6 +771,7 @@ window.__dbg={get mode(){return mode;},get cur(){return cur;},get wall(){return 
     return {x0:Math.round(x0),x1:Math.round(x1),y0:Math.round(y0),y1:Math.round(y1),
       cxOff:+(((x0+x1)/2)/innerWidth-0.5).toFixed(3), cyOff:+(((y0+y1)/2)/innerHeight-0.5).toFixed(3),
       vw:innerWidth,vh:innerHeight}; }};
+let wallIdle=0;                        // the wall is static once we land — repaint the 3D only then, DOM scroll runs free
 renderer.setAnimationLoop(()=>{
   const dt=Math.min(clock.getDelta(),0.05);
   if(mode==='fly'){ ft+=dt/(to.arc?2.6:FDUR);          // the wrap-around walk gets its own, slower timing
@@ -791,13 +792,17 @@ renderer.setAnimationLoop(()=>{
     camera.position.copy(ovPose.pos);
     camera.lookAt(ovPose.look);                         // level 0° establishing shot — no drift
   }
+  if(mode!=='wall') wallIdle=0; else wallIdle++;
+  if(wallIdle<=1){                     // one settled frame, then WebGL rests and the compositor gets the machine back
   aoMat.uniforms.uProj.value=camera.projectionMatrix;      // fov changes per mode — keep the ray cone exact
   const th=Math.tan(THREE.MathUtils.degToRad(camera.fov/2));
   aoMat.uniforms.uTan.value.set(th*camera.aspect,th);
   renderer.setRenderTarget(rt); renderer.render(scene,camera); renderer.setRenderTarget(null);
   renderer.render(postScene,postCam);
+  }
   cssRenderer.render(cssScene,camera);   // the DOM sheets ride the same camera as the 3D walls
 });
+addEventListener('resize',()=>{ wallIdle=0; });
 </script>
 </body>
 </html>
