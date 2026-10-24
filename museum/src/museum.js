@@ -1,5 +1,6 @@
 import * as THREE from '../vendor/three.module.min.js';
 import { makePanels, GALLERY, workZ, hallEnds } from './gallery.js';
+import { installLights, wallFalloffTexture, floorStoneTexture, floorEdgeTexture } from './lighting.js';
 
 /* ---------------------------------------------------------------
    Ahn Yeonsu — 3D Art Museum
@@ -39,14 +40,23 @@ export async function initMuseum({ scene, data, hud }) {
   const H = MUSEUM.height;
   const xa = GALLERY.wallX;
 
-  /* ---- the palette is monochrome, and only monochrome ---- */
+  /* ---- the palette is monochrome, and only monochrome ----
+     Every surface now carries where it sits in the room: the wall is
+     mapped with a vertical falloff, the floor with tiled stone, and the
+     environment map does the rest. Roughness is the one honest lever we
+     have in a white room — paint and stone are not the same surface. */
+  const wallMap = wallFalloffTexture();
+  const stone = floorStoneTexture();
+  const edge = floorEdgeTexture();
+
   const mat = {
-    floor: new THREE.MeshStandardMaterial({ color: 0xd6d6d6, roughness: 0.72, metalness: 0 }),
-    border: new THREE.MeshStandardMaterial({ color: 0x1e1e1e, roughness: 0.6 }),
-    wall: new THREE.MeshStandardMaterial({ color: 0xf4f4f4, roughness: 1 }),
-    ceiling: new THREE.MeshStandardMaterial({ color: 0xfbfbfb, roughness: 1 }),
-    trim: new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.95 }),
-    black: new THREE.MeshStandardMaterial({ color: 0x151515, roughness: 0.72 }),
+    floor: new THREE.MeshStandardMaterial({ color: 0xd2d2d0, map: stone, roughness: 0.58, metalness: 0, envMapIntensity: 0.85 }),
+    floorEdge: new THREE.MeshBasicMaterial({ map: edge, transparent: true, depthWrite: false, opacity: 0.85 }),
+    border: new THREE.MeshStandardMaterial({ color: 0x1e1e1e, roughness: 0.44, metalness: 0.05, envMapIntensity: 1.0 }),
+    wall: new THREE.MeshStandardMaterial({ color: 0xf6f6f5, map: wallMap, roughness: 0.96, metalness: 0, envMapIntensity: 0.9 }),
+    ceiling: new THREE.MeshStandardMaterial({ color: 0xfbfbfb, roughness: 0.94, metalness: 0, envMapIntensity: 0.9 }),
+    trim: new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.9, envMapIntensity: 0.9 }),
+    black: new THREE.MeshStandardMaterial({ color: 0x151515, roughness: 0.5, metalness: 0.06, envMapIntensity: 1.1 }),
     sky: new THREE.MeshBasicMaterial({ color: 0xffffff }),
     skyGlow: new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.55 }),
     lamp: new THREE.MeshBasicMaterial({ color: 0xffffff }),
@@ -61,11 +71,19 @@ export async function initMuseum({ scene, data, hud }) {
   const { zNear, zFar } = hallEnds(panels0.holders.length);
   const L = zFar - zNear;
   const zMid = (zNear + zFar) / 2;
+  // the stone tiles at roughly 3 m, set once the hall length is known
+  stone.repeat.set((W + 0.8) / 3, (L + 0.8) / 3);
   const xArt = xa + 0.16;         // inner face of the art wall
   const xOpp = -(W / 2);          // inner face of the opposite wall
 
   /* ---- floor: grey field, black border ---- */
   group.add(box(W + 0.8, 0.16, L + 0.8, mat.floor, 0, -0.08, zMid));
+  /* the contact line where stone meets wall: an overlay, not geometry */
+  const ao = new THREE.Mesh(new THREE.PlaneGeometry(W + 0.8, L + 0.8), mat.floorEdge);
+  ao.rotation.x = -Math.PI / 2;
+  ao.position.set(0, 0.004, zMid);
+  ao.renderOrder = 1;
+  group.add(ao);
   const bw = 0.5;
   group.add(box(bw, 0.02, L + 0.8, mat.border, xArt - bw / 2, 0.011, zMid));
   group.add(box(bw, 0.02, L + 0.8, mat.border, xOpp + bw / 2, 0.011, zMid));
@@ -117,23 +135,30 @@ export async function initMuseum({ scene, data, hud }) {
     group.add(box(well, 0.16, 0.12, mat.black, 0, H + 0.36, z));
   }
 
-  /* ---- lighting: even, colourless daylight from the lantern ---- */
-  scene.add(new THREE.HemisphereLight(0xffffff, 0xd8d8d8, 1.15));
-  scene.add(new THREE.AmbientLight(0xffffff, 0.35));
-  for (let z = zNear + 1; z < zFar; z += 4.5) {
-    const l = new THREE.PointLight(0xffffff, 11, 24, 2);
-    l.position.set(0, H + 0.2, z);
-    scene.add(l);
-  }
-  // picture lights: a white bar off the wall above each frame
+  /* ---- lighting ----------------
+     What used to be here: an ambient and a hemisphere light at 1.15/0.35,
+     plus five point lights. That is why the hall looked like flat grey
+     card — ambient and hemisphere add the same value to every fragment,
+     so the wall had no idea whether it was near the lantern or the floor.
+
+     What is here now: one shadow-casting key light under the well, and
+     the environment map from lighting.js doing the fill. Fewer lights
+     than before (12 against 20), and each one has somewhere to fall off. */
+  installLights(scene, { zNear, zFar, height: H });
+
+  /* Picture lights stay real spot lights — the pool they throw onto the
+     wall above a frame is half of what makes a museum a museum. Narrow,
+     short range, high decay: they cost a cone test and die in 6 m. */
   for (const holder of panels0.holders) {
     const size = holder.userData.size;
     const yTop = GALLERY.workHeight + size.h / 2 + 0.4;
-    const s = new THREE.SpotLight(0xffffff, 6, 7, 0.7, 0.85, 2);
-    s.position.set(holder.position.x - 0.5, yTop, holder.position.z);
-    s.target.position.set(holder.position.x, GALLERY.workHeight - 0.2, holder.position.z);
+    const s = new THREE.SpotLight(0xfffdf8, 4.6, 6.5, 0.62, 0.75, 2);
+    s.position.set(holder.position.x - 0.46, yTop - 0.02, holder.position.z);
+    s.target.position.set(holder.position.x, GALLERY.workHeight - 0.15, holder.position.z);
+    s.castShadow = false;
     group.add(s, s.target);
-    // the fixture: a black housing on a bracket, with a white lit face below
+
+    // the fixture: a black housing on a bracket, with a warm face below
     const arm = size.w * 0.36;
     const xw = holder.position.x + 0.16;                 // the wall face itself
     group.add(box(0.3, 0.05, 0.05, mat.black, xw - 0.15, yTop + 0.06, holder.position.z));   // bracket

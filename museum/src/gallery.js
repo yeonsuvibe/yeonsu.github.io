@@ -54,31 +54,59 @@ export function makePanels(data, extra, hud) {
     holder.position.set(GALLERY.wallX, GALLERY.workHeight, workZ(i));
     holder.rotation.y = -Math.PI / 2;           // face -X, into the room
 
-    const art = new THREE.Mesh(
-      new THREE.PlaneGeometry(size.w, size.h),
-      new THREE.MeshStandardMaterial({ map: t, roughness: 0.86, metalness: 0 }),
-    );
-    art.position.z = 0.035;
-    art.userData.work = work;
-    art.castShadow = true;
+    /* The moulding is four bars, not one slab: the artwork has to sit in
+       a real opening, recessed a little behind the lip. That recess is
+       the whole point — it lets the lip drop a shadow on the sheet and
+       catch a highlight on its own edge, which a flat rectangle never
+       can. Depth 0.075, 12 triangles a bar. */
+    const fw = 0.1;          // width of the moulding face
+    const fd = 0.075;        // how far the moulding stands off the wall
+    const frameMat = new THREE.MeshStandardMaterial({
+      color: 0x121212, roughness: 0.42, metalness: 0.08, envMapIntensity: 1.25,
+    });
 
-    // black frame: a flat moulding around the sheet, wide on the sides
-    const fw = 0.1;
-    const frame = new THREE.Mesh(
-      new THREE.PlaneGeometry(size.w + fw * 2, size.h + fw * 2),
-      new THREE.MeshStandardMaterial({ color: 0x141414, roughness: 0.66, metalness: 0.04 }),
-    );
-    frame.position.z = 0.02;
-    frame.castShadow = true;
+    const back = new THREE.Mesh(
+      new THREE.BoxGeometry(size.w + fw * 2, size.h + fw * 2, 0.03), frameMat);
+    back.position.z = 0.015;
+    back.receiveShadow = true;
+
+    const bar = (w, h, x, y) => {
+      const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, fd), frameMat);
+      m.position.set(x, y, fd / 2);
+      m.castShadow = true;
+      m.receiveShadow = true;
+      return m;
+    };
+    const hw = size.w / 2, hh = size.h / 2;
+    const bars = [
+      bar(size.w + fw * 2, fw, 0, hh + fw / 2),      // top
+      bar(size.w + fw * 2, fw, 0, -hh - fw / 2),     // bottom
+      bar(fw, size.h, -hw - fw / 2, 0),              // left
+      bar(fw, size.h, hw + fw / 2, 0),               // right
+    ];
 
     // a hairline white liner, so the sheet sits on light not on black
     const liner = new THREE.Mesh(
       new THREE.PlaneGeometry(size.w + 0.02, size.h + 0.02),
-      new THREE.MeshStandardMaterial({ color: 0xfbfbfb, roughness: 0.95 }),
+      new THREE.MeshStandardMaterial({ color: 0xfbfbfb, roughness: 0.92, envMapIntensity: 0.8 }),
     );
-    liner.position.z = 0.03;
+    liner.position.z = 0.040;
+    liner.receiveShadow = true;
 
-    holder.add(frame, liner, art);
+    const art = new THREE.Mesh(
+      new THREE.PlaneGeometry(size.w, size.h),
+      /* Paper under glass: stays matte, and takes only a little of the
+         environment so the work keeps its own colour. */
+      new THREE.MeshStandardMaterial({
+        map: t, roughness: 0.78, metalness: 0, envMapIntensity: 0.55,
+        polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -1,
+      }),
+    );
+    art.position.z = 0.042;      // recessed 0.033 behind the moulding lip
+    art.userData.work = work;
+    art.receiveShadow = true;
+
+    holder.add(back, ...bars, liner, art);
     holder.userData.work = work;
     holder.userData.isPanel = true;
     holder.userData.size = size;

@@ -1,6 +1,7 @@
 import * as THREE from './vendor/three.module.min.js';
 import { initMuseum, GALLERY } from './src/museum.js';
 import { makeHud } from './src/hud.js';
+import { installEnvironment } from './src/lighting.js';
 import { WallTour } from './src/guide.js';
 
 /* ---------------------------------------------------------------
@@ -17,13 +18,30 @@ const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPrefere
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 renderer.setSize(innerWidth, innerHeight);
 renderer.outputColorSpace = THREE.SRGBColorSpace;
-renderer.toneMapping = THREE.NoToneMapping;      // keep the works true to their own colour
+/* The hall is lit by a lantern and a stack of small lamps, so its tones
+   run past 1.0 near the well and into the floor's shadow. Neutral keeps
+   white white instead of bleaching it, and dithering kills the banding
+   that a smooth white gradient shows on an 8-bit display. Both are free. */
+renderer.toneMapping = THREE.NeutralToneMapping;
+renderer.toneMappingExposure = 1.0;
+renderer.dithering = true;
+
+/* One shadow map, for the lantern's key light. 2048 is generous for a
+   hall this size and costs a single extra pass, not one per lamp. */
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.shadowMap.autoUpdate = false;   // the hall never moves: bake once
+renderer.shadowMap.needsUpdate = true;
 
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0xf2f2f2);
 scene.fog = new THREE.Fog(0xf2f2f2, 34, 70);
 
 const camera = new THREE.PerspectiveCamera(56, innerWidth / innerHeight, 0.05, 200);
+
+/* The room lights itself: no forward light pulls the walls out of the
+   flat grey they would otherwise sit in. Built once, sampled forever. */
+installEnvironment(renderer, scene, 1.0);
 
 const data = await fetch('art.json').then((r) => r.json());
 
@@ -88,8 +106,7 @@ function animate() {
   tour.update(dt);
   renderer.render(scene, camera);
   requestAnimationFrame(animate);
-}
-animate();
+}animate();
 
 requestAnimationFrame(() => requestAnimationFrame(() => hud.ready()));
 
@@ -100,4 +117,4 @@ addEventListener('resize', () => {
 });
 
 // handle used by the headless verification spike
-window.__museum = { camera, scene, tour, panels, data, hud, GALLERY, THREE, raycaster: new THREE.Raycaster() };
+window.__museum = { camera, scene, tour, panels, data, hud, GALLERY, THREE, renderer, raycaster: new THREE.Raycaster() };
