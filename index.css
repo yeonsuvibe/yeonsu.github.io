@@ -1,5 +1,5 @@
 /* ============================================================
-   Ahn Yeonsu — Portfolio for Art College Admission
+   AHN YEONSU — Portfolio for Art College Admission
    Fine-art exhibition-catalogue aesthetic:
    gallery-wall paper, ink typography, museum-label captions,
    hairline rules, artwork shown true-tone (no sepia filter).
@@ -372,6 +372,16 @@ nav ul li a:hover { color: var(--ink); }
     text-transform: uppercase;
     letter-spacing: 0.34em;
     font-weight: 400;
+}
+
+/* Museum story line — was an inline cool-grey (#a1a1aa) on 17 nodes */
+.museum-story {
+    font-family: var(--font-display);
+    font-style: italic;
+    color: var(--ink-soft);
+    margin-top: 5px;
+    font-size: 0.95rem;
+    line-height: 1.5;
 }
 
 .timeline-item {

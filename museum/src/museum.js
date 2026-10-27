@@ -3,7 +3,7 @@ import { makePanels, GALLERY, workZ, hallEnds } from './gallery.js';
 import { installLights, wallFalloffTexture, floorStoneTexture, floorEdgeTexture } from './lighting.js';
 
 /* ---------------------------------------------------------------
-   Ahn Yeonsu — 3D Art Museum
+   AHN YEONSU — 3D Art Museum
 
    The building is drawn in black and white only: white walls, a white
    coffered roof with a raised glazed lantern, a grey stone floor with

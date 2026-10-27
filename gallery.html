@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%23f4f3ef'/%3E%3Crect x='3' y='3' width='10' height='10' fill='none' stroke='%2314120f'/%3E%3C/svg%3E"/>
+<link rel="icon" href="data:,"/>
+<title>AHN YEONSU — Warm Pavilion</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+:root{ --wall:#f2f1ed; --ink:#1a1815; --soft:#6b665c; --line:rgba(26,24,21,.18);
+  --crimson:#b31b1b; --serif:'Cormorant Garamond',serif; --sans:'Jost',sans-serif;
+  /* palette aligned to index.css so both pages print the same ink */
+  --gilt:#9a7b46; }
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden}
+body{background:var(--wall);color:var(--ink);font-family:var(--sans);font-weight:300;-webkit-font-smoothing:antialiased}
+canvas.webgl{position:fixed;inset:0;display:block}
+header{position:fixed;top:0;left:0;right:0;z-index:6;display:flex;justify-content:space-between;align-items:center;
+  padding:22px 38px;pointer-events:none}
+header *{pointer-events:auto}
+.brand{font-family:var(--serif);font-size:1.02rem;letter-spacing:.3em;font-weight:500}
+.dnav{display:flex;gap:22px;font-size:.56rem;letter-spacing:.22em;text-transform:uppercase;color:var(--soft)}
+.dnav a{color:inherit;text-decoration:none;opacity:.75}
+.dnav a.on,.dnav a.active{color:var(--ink);border-bottom:1px solid var(--crimson);padding-bottom:4px;opacity:1}
+
+/* caption card — transparent, text floats directly over the artwork */
+.tourcard{position:fixed;left:38px;bottom:48px;z-index:7;width:min(330px,28vw);
+  background:rgba(246,245,241,.55);backdrop-filter:blur(14px) saturate(1.15);-webkit-backdrop-filter:blur(14px) saturate(1.15);
+  border:none;border-radius:10px;box-shadow:none;padding:18px 22px 16px;text-align:left;
+  opacity:0;transform:translateY(14px);transition:opacity .6s,transform .6s;pointer-events:none}
+.tourcard.show{opacity:1;transform:translateY(0)}
+.tourcard .pl{font-size:.55rem;letter-spacing:.34em;text-transform:uppercase;color:#8f1616}
+.tourcard .date{font-family:var(--serif);font-style:italic;font-size:2.05rem;font-weight:400;letter-spacing:.01em;margin:7px 0 3px;color:#14120f}
+.tourcard .med{font-size:.54rem;letter-spacing:.24em;text-transform:uppercase;color:#4f4b43;margin-bottom:11px}
+.tourcard p{font-size:.85rem;line-height:1.88;color:#1d1a16;font-weight:400}
+.tourcard p.ko{margin-top:7px;font-size:.76rem;color:#38342c;line-height:1.78;font-weight:400}
+.tourcard .bar{display:none}
+
+.controls{position:fixed;right:38px;bottom:42px;z-index:8;display:flex;gap:12px;align-items:center}
+.ctl{all:unset;cursor:pointer;width:52px;height:52px;border-radius:50%;border:1px solid var(--ink);
+  display:flex;align-items:center;justify-content:center;font-size:1.05rem;transition:.35s;background:rgba(255,253,248,.9)}
+.ctl:hover{background:var(--ink);color:#fffdf8}
+.ctl.wide{width:auto;border-radius:26px;padding:0 22px;font-size:.6rem;letter-spacing:.28em;text-transform:uppercase}
+
+.intro{position:fixed;inset:0;z-index:9;background:rgba(242,241,237,.97);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:18px;transition:opacity 1s;text-align:center;padding:24px}
+.intro.done{opacity:0;pointer-events:none}
+.intro .kick{font-size:.6rem;letter-spacing:.5em;text-transform:uppercase;color:var(--crimson)}
+.intro h1{font-family:var(--serif);font-weight:500;font-size:clamp(2rem,5.5vw,3.6rem);letter-spacing:.06em}
+.intro p{font-size:.8rem;color:var(--soft);max-width:560px;line-height:2.1}
+.intro button{all:unset;cursor:pointer;margin-top:14px;padding:15px 46px;border:1px solid var(--ink);
+  font-size:.62rem;letter-spacing:.4em;text-transform:uppercase;transition:.4s}
+.intro button:hover{background:var(--ink);color:#fff}
+.homechip{position:fixed;top:26px;left:38px;z-index:9}
+.hint{position:fixed;bottom:46px;left:50%;transform:translateX(-50%);z-index:8;font-size:.55rem;
+  letter-spacing:.32em;text-transform:uppercase;color:var(--soft);transition:opacity 1s;opacity:0;pointer-events:none}
+.hint.show{opacity:1}
+@media (max-width:760px){ .controls{left:50%;transform:translateX(-50%);right:auto;bottom:40px} .dnav{display:none}
+  .tourcard{bottom:110px;width:92vw;left:4vw} .hint{width:92vw;text-align:center;bottom:86px;letter-spacing:.22em}
+  header{padding:16px 18px} .brand{font-size:1rem} }
+@supports not (backdrop-filter:blur(1px)){ .tourcard{background:rgba(246,245,241,.9)} }
+/* ---- top navigation: a separate page (nav.html) overlaid permanently on everything ---- */
+.navframe{position:fixed;top:0;left:0;width:100%;height:66px;border:0;z-index:20;background:transparent}
+.wallpage{position:fixed;inset:0;z-index:8;display:none;align-items:stretch;justify-content:stretch;background:none}
+.wallpage.show{display:flex}
+/* HOME: same dressing as the intro (THE WHITE CUBE) page — full paper field, centered column */
+.homepage{position:fixed;inset:0;z-index:9;display:none;flex-direction:column;align-items:center;justify-content:center;
+  gap:18px;background:rgba(242,241,237,.45);text-align:center;padding:24px;   /* translucent over the front view */
+  backdrop-filter:blur(3px) saturate(1.05);-webkit-backdrop-filter:blur(3px) saturate(1.05);
+  opacity:0;transition:opacity .55s ease;pointer-events:none;overflow:hidden}
+.homepage.show{display:flex;opacity:1;pointer-events:auto}
+.hp-kick{font-family:var(--sans);font-weight:400;font-size:clamp(0.68rem,1.1vw,0.8rem);letter-spacing:.5em;text-transform:uppercase;color:var(--gilt);text-indent:.5em;text-shadow:0 0 12px rgba(246,245,241,.95)}
+.hp-name{font-family:var(--serif);font-weight:500;font-size:clamp(4.2rem,11vw,9.5rem);letter-spacing:.04em;text-transform:uppercase;color:var(--ink);line-height:1.02;text-indent:.04em;margin:6px 0 1.6rem;text-shadow:0 0 14px rgba(246,245,241,.95)}
+.hp-lede{font-family:var(--serif);font-style:italic;font-size:clamp(1.15rem,1.8vw,1.5rem);font-weight:400;letter-spacing:.01em;color:#4a463c;max-width:620px;line-height:1.9;margin:0;text-shadow:0 0 10px rgba(246,245,241,.95),0 0 3px rgba(246,245,241,.9)}
+/* Center the lede on the exact middle of the viewport: rows 1fr / auto / 1fr make the
+   auto row (the lede) sit on the vertical center, while the kicker+name ride the
+   space above and the rule+meta the space below. */
+#wallH .hp-inner{position:absolute;inset:0;display:grid;grid-template-rows:1fr auto 1fr;
+  justify-items:center;align-items:center;gap:0;padding:24px;box-sizing:border-box}
+.hp-top{grid-row:1;align-self:end;display:flex;flex-direction:column;align-items:center;gap:18px;transform:translateY(30px)}
+.hp-bottom{grid-row:3;align-self:start;display:flex;flex-direction:column;align-items:center;gap:18px}
+.hp-rule{display:block;width:42px;height:1px;background:rgba(22,21,15,.5);margin:13px auto}
+.hp-meta{font-family:var(--sans);font-weight:400;font-size:.68rem;letter-spacing:.28em;text-transform:uppercase;color:#4a463c;text-indent:.28em;text-shadow:0 0 10px rgba(246,245,241,.95),0 0 3px rgba(246,245,241,.9)}
+body.sheet header{visibility:hidden}
+body.sheet .controls,body.sheet .hint{display:none}          /* arrows belong to the gallery only — not HOME, not the sheets */
+.wp-card{width:100vw;height:100vh;display:flex;flex-direction:column;overflow:hidden;border:0;border-radius:0;
+  background:transparent;box-shadow:none}
+.wp-bar{display:flex;justify-content:space-between;align-items:center;padding:8px 14px;border-bottom:1px solid rgba(20,19,17,.15);
+  font:400 .58rem/1 var(--sans);letter-spacing:.34em;text-transform:uppercase;color:var(--ink);
+  text-shadow:0 0 8px rgba(246,245,241,.9),0 0 2px rgba(246,245,241,.95)}
+.wp-x{background:none;border:1px solid var(--line);color:var(--ink);cursor:pointer;padding:6px 12px;
+  font:400 .58rem/1 var(--sans);letter-spacing:.24em;text-transform:uppercase}
+.wp-x:hover{border-color:var(--crimson);color:var(--crimson)}
+.wallpage iframe{flex:1;width:100%;border:0;background:transparent;color-scheme:light}
+/* fly into the wall first, only then fade the DOM in */
+.wallpage{opacity:0;transition:opacity .55s ease}
+.wallpage.show{opacity:1}
+@media (max-width:760px){ .wp-card{width:100vw;height:100vh;border:0} }
+/* ---- CSS-3D wall sheets: the page DOM is planted ON the wall plane ---- */
+#css3d{position:fixed;inset:0;z-index:6;pointer-events:none;opacity:0;transition:opacity .5s ease}
+#css3d.live{opacity:1;pointer-events:auto}
+.sheet-pane{position:absolute;left:0;top:0;overflow:hidden;background:transparent;
+  font:400 15px/1.5 Georgia,serif;color:#1a1815}
+.sheet-pane iframe{width:100%;height:100%;border:0;background:transparent;color-scheme:light}
+.sheet-cap{position:absolute;left:0;right:0;top:0;display:flex;justify-content:space-between;align-items:center;
+  padding:.6% 1%;pointer-events:none;font:500 .5em/1 var(--sans);letter-spacing:.3em;text-transform:uppercase;color:#fff;
+  text-shadow:0 1px 3px rgba(0,0,0,.55)}
+.sheet-cap button{pointer-events:auto;background:rgba(20,18,15,.55);border:1px solid rgba(255,255,255,.5);color:#fff;
+  cursor:pointer;padding:.5em .9em;font:inherit;letter-spacing:.22em;text-transform:uppercase;border-radius:2px}
+
+/* ===== SET 4 — WARM PAVILION (persona: quiet-luxury, limewash + oak + terracotta) ===== */
+:root{ --wall:#efe7da; --ink:#2a231c; --soft:#7a6a55; --line:rgba(42,35,28,.18);
+  --crimson:#b5643c; --gilt:#a8894f; }
+body{background:var(--wall);color:var(--ink)}
+.dnav{color:var(--soft)}
+.dnav a.on,.dnav a.active{color:var(--ink);border-bottom:1px solid var(--crimson)}
+.tourcard{background:rgba(247,241,231,.7)}
+.tourcard .pl{color:var(--crimson)}
+.tourcard .date{color:#241e18}
+.tourcard .med{color:#6b5b47}
+.tourcard p{color:#332b22}
+.tourcard p.ko{color:#4a3f33}
+.ctl{border-color:rgba(42,35,28,.5);background:rgba(252,247,239,.9)}
+.ctl:hover{background:var(--ink);color:#f7f1e7}
+.homepage{background:rgba(240,232,220,.52)}
+.hp-kick{color:var(--gilt);text-shadow:0 0 14px rgba(247,241,231,.95)}
+.hp-name{color:#241e18;text-shadow:0 0 18px rgba(247,241,231,.95)}
+.hp-lede{color:#4a3f33;text-shadow:0 0 12px rgba(247,241,231,.95),0 0 3px rgba(247,241,231,.9)}
+.hp-rule{background:rgba(42,35,28,.4)}
+.hp-meta{color:#5c4e3d;text-shadow:0 0 12px rgba(247,241,231,.95),0 0 3px rgba(247,241,231,.9)}
+.hint{color:#7a6a55}
+
+</style>
+<script type="importmap">{"imports":{"three":"./museum/vendor/three.module.min.js"}}</script>
+</head>
+<body>
+
+<iframe class="navframe" id="navFrame" src="nav.html" title="site navigation"></iframe>
+
+<canvas class="webgl"></canvas>
+
+<div class="tourcard" id="card">
+  <span class="pl" id="tPl">Pl. 01 · original work</span>
+  <div class="date" id="tDate">2018-10-06</div>
+  <div class="med" id="tMed">charcoal on paper</div>
+  <p id="tNote"></p>
+  <p class="ko" id="tKo"></p>
+</div>
+
+<div class="controls">
+  <button class="ctl" id="prevB" aria-label="previous">←</button>
+  <button class="ctl" id="nextB" aria-label="next">→</button>
+</div>
+<div class="hint" id="hint">press → · wheel · tap a frame to visit · Esc for the room</div>
+
+<div class="wallpage" id="wallJ">
+  <div class="wp-card">
+    <iframe title="Cultural Journeys" loading="lazy"></iframe>
+  </div>
+</div>
+<div class="wallpage" id="wallP">
+  <div class="wp-card">
+    <iframe title="Press" loading="lazy"></iframe>
+  </div>
+</div>
+<div class="homepage" id="wallH">
+  <div class="hp-inner">
+    <div class="hp-top">
+      <p class="hp-kick">Artist &amp; Scholar · 2018 &mdash; 2026</p>
+      <h1 class="hp-name">AHN YEONSU</h1>
+    </div>
+    <p class="hp-lede">An eight-year record of drawing, looking, and wandering &mdash; assembled as a working archive for art-college admission. Every plate is an original; every journey is first-hand.</p>
+    <div class="hp-bottom">
+      <span class="hp-rule"></span>
+      <p class="hp-meta">Works · Exhibitions · Records &nbsp;—&nbsp; Student at Cheongshim International Academy, Class of 2026</p>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import * as THREE from './museum/vendor/three.module.min.js';
+
+const WORKS=[
+ ['2018-10-06','museum/art/04344F03-ED69-4122-B452-149E29714822.jpg','charcoal on paper',
+  'First study of weight, drawn the morning after my first museum solo visit.',
+   ''],
+ ['2018-12-08','museum/art/20181208_164140.jpg','mixed media',
+  'Winter light through the academy studio; layered paper and ink became my first argument with darkness.',
+   ''],
+ ['2019-12-11','museum/art/1565617423567.jpg','ink study',
+  'A single line, repeated forty times until it stopped describing and started breathing.',
+   ''],
+ ['2020-10-07','museum/art/IMG_0649.jpg','graphite',
+  'Drawn during a term of distance learning — a portrait of attention itself, blurred at the edges.',
+   ''],
+ ['2021-08-30','museum/art/IMG_0101.jpg','acrylic',
+  'The summer I filled my first three sketchbooks; colour arrived like a language I finally spoke.',
+   ''],
+ ['2021-09-18','museum/art/IMG_1206.jpg','oil pastel',
+  'Pastel dragged over toothy paper — the friction of starting school abroad, in ink.',
+   ''],
+ ['2023-07-02','museum/art/IMG_4371.jpg','ink on hanji',
+  'Hanji, black ink, one breath: a return to Korean brush discipline between two semesters.',
+   ''],
+ ['2024-08-25','museum/art/IMG_5319.jpg','watercolour',
+  'Painted at 5 a.m. before a Model UN opening ceremony — delegation calm before the storm.',
+   ''],
+ ['2025-04-26','museum/art/IMG_5885.jpg','mural study',
+  'Study for the school wall I painted with thirty students — the year drawing became public.',
+   ''],
+ ['2026-01-19','museum/art/IMG_8140.jpg','charcoal',
+  'Senior winter: a self-portrait erased until only the gaze remained.',
+   ''],
+ ['2026-02-04','museum/art/IMG_7061.jpg','the Black Wall',
+  'The newest plate — the dark wall of the archive, hung last in this bright room on purpose.',
+   ''],
+];
+// hangs: [index, wall('back'|'left'), along-wall coord, y, size]  — back wall runs on x, left wall on z.
+// The two walls meet at a 90° corner (x=-W/2, z=-D/2); works straddle both faces.
+const HANGS=[
+ [0,'back',-13.0,2.52,'l'],[1,'back',-8.4,1.46,'x'],[2,'back',-4.0,2.58,'s'],
+ [3,'back',-0.4,1.62,'l'],[4,'back',3.8,2.3,'s'],[5,'back',8.2,1.42,'x'],
+ [6,'back',13.2,2.05,'l'],[7,'left',-7.0,1.72,'x'],[8,'left',-2.2,2.22,'s'],
+ [9,'left',2.6,1.58,'l'],[10,'left',7.4,1.92,'x'],
+];
+
+const SIZE={s:0.58,l:0.78,x:1.00};
+
+const cv=document.querySelector('canvas.webgl');
+const renderer=new THREE.WebGLRenderer({canvas:cv,antialias:true});
+renderer.setSize(innerWidth,innerHeight);              // three owns canvas style+buffer incl. DPR (true)
+renderer.setPixelRatio(Math.min(2,devicePixelRatio));
+renderer.outputColorSpace=THREE.SRGBColorSpace;
+THREE.ColorManagement.enabled=true;                    // deterministic colour on every display scale factor
+renderer.toneMapping=THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure=1.16;
+renderer.shadowMap.enabled=true;
+renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+
+const scene=new THREE.Scene();
+scene.background=new THREE.Color(0xe9e8e3);
+const FOCUS_FOV=32;                                    // tight museum framing for a single plate
+const ROOM_FOV_CAP=60;                                 // establishing shot never wider than this
+const MOBILE=matchMedia('(max-width:760px)').matches||/iPhone|iPad|Android/i.test(navigator.userAgent);
+const camera=new THREE.PerspectiveCamera(44,innerWidth/innerHeight,0.1,120);
+const _probe=new THREE.PerspectiveCamera(FOCUS_FOV,innerWidth/innerHeight,0.1,120); // math-only camera
+
+/* ---- IBL: procedural softbox environment baked through PMREM — every material gains real specular
+   response and bounce light, which is what makes CG interiors read as photographic ---- */
+(function makeEnv(){
+  const pm=new THREE.PMREMGenerator(renderer); pm.compileEquirectangularShader();
+  const es=new THREE.Scene();
+  es.add(new THREE.Mesh(new THREE.BoxGeometry(12,7,12),
+    new THREE.MeshBasicMaterial({color:0xf0efe9,side:THREE.BackSide})));
+  const soft=(w,h,x,y,z,c)=>{ const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),
+    new THREE.MeshBasicMaterial({color:c})); m.position.set(x,y,z); m.lookAt(0,1.5,0); es.add(m); };
+  soft(7,4,0,6.4,0,0xffffff); soft(4,2,-6,4.2,3,0xfdf4e2); soft(4,2,6,4.2,-3,0xeef2f6); // key + warm/cool fills
+  scene.environment=pm.fromScene(es,0.04).texture;
+  try{ scene.environmentIntensity=0.55; }catch(e){}       // older bundles ignore this harmlessly
+  pm.dispose();
+})();
+
+/* ---- SSAO composite: HBAO-flavoured screen-space contact darkening (no addons — self-contained pass) ---- */
+const rt=new THREE.WebGLRenderTarget(2,2,{minFilter:THREE.LinearFilter,magFilter:THREE.LinearFilter});
+rt.depthTexture=new THREE.DepthTexture(2,2); rt.depthTexture.type=THREE.UnsignedIntType;
+const aoMat=new THREE.ShaderMaterial({depthTest:false,depthWrite:false,uniforms:{
+  tColor:{value:rt.texture}, tDepth:{value:rt.depthTexture},
+  uRes:{value:new THREE.Vector2(2,2)}, uTan:{value:new THREE.Vector2(0.4,0.4)},
+  uNearFar:{value:new THREE.Vector3(0.1,120,0)}, uProj:{value:camera.projectionMatrix},
+  uRadius:{value:0.5}, uPower:{value:1.5}, uBias:{value:0.03}},
+  vertexShader:'varying vec2 vUv;void main(){vUv=uv;gl_Position=vec4(position.xy,0.,1.);}',
+  fragmentShader:`precision highp float;
+varying vec2 vUv;
+uniform sampler2D tColor,tDepth; uniform vec2 uRes,uTan; uniform vec3 uNearFar;
+uniform mat4 uProj; uniform float uRadius,uPower,uBias;
+float linz(float d){ return (2.0*uNearFar.x*uNearFar.y)/(uNearFar.y+uNearFar.x-(d*2.0-1.0)*(uNearFar.y-uNearFar.x)); }
+float hash(vec2 p){ return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453); }
+vec3 viewAt(vec2 uv,float dist){ vec2 p=uv*2.0-1.0; return vec3(p.x*uTan.x,p.y*uTan.y,-1.0)*dist; }
+void main(){
+  float d=texture2D(tDepth,vUv).x;
+  if(d>=1.0){ gl_FragColor=vec4(pow(texture2D(tColor,vUv).rgb,vec3(1.0/2.2)),1.0); return; }
+  float dist=linz(d);
+  vec3 vp=viewAt(vUv,dist);
+  vec3 n=normalize(cross(dFdx(vp),dFdy(vp))); if(n.z<0.0) n=-n;
+  float ang=hash(vUv*uRes)*6.2831853;
+  mat2 rot=mat2(cos(ang),-sin(ang),sin(ang),cos(ang));
+  float ao=0.0;
+  for(int i=0;i<12;i++){
+    float fi=float(i);
+    float a=fi*2.3999632, r=sqrt((fi+0.5)/12.0);
+    vec3 k=normalize(vec3(cos(a)*r,sin(a)*r,mix(0.15,1.0,(fi+1.0)/12.0)));
+    k.xy=rot*k.xy;
+    if(dot(k,n)<=0.0) continue;
+    vec3 sp=vp+k*uRadius;
+    vec4 clip=uProj*vec4(sp,1.0);
+    vec2 su=(clip.xy/clip.w)*0.5+0.5;
+    if(su.x<0.0||su.x>1.0||su.y<0.0||su.y>1.0) continue;
+    float sd=texture2D(tDepth,su).x;
+    if(sd>=1.0) continue;
+    float dz=(-sp.z)-linz(sd);
+    if(dz>uBias && dz<uRadius) ao+=pow(1.0-dz/uRadius,1.5)*dot(k,n);
+  }
+  ao=clamp(1.0-(ao/6.0)*uPower,0.0,1.0);
+  vec3 col=texture2D(tColor,vUv).rgb*mix(1.0,ao,0.75);
+  gl_FragColor=vec4(pow(col,vec3(1.0/2.2)),1.0);
+}`});
+const postScene=new THREE.Scene(); postScene.add(new THREE.Mesh(new THREE.PlaneGeometry(2,2),aoMat));
+const postCam=new THREE.OrthographicCamera(-1,1,1,-1,0,1);
+
+
+/* ---- room: warm minimalism — limewash walls, oak and terracotta, pendant light, one arched niche ---- */
+const W=36,D=26,H=4.4;
+// limewash: a slightly warm, imperfect matte — reads as hand-applied mineral paint
+const wallMat=new THREE.MeshStandardMaterial({color:0xdccfb9,roughness:0.99});
+const floorMat=new THREE.MeshPhysicalMaterial({color:0xc4b096,roughness:0.62,clearcoat:0.12,clearcoatRoughness:0.6}); // warm honed stone
+const floor=new THREE.Mesh(new THREE.PlaneGeometry(W,D),floorMat);
+floor.rotation.x=-Math.PI/2; floor.receiveShadow=true; scene.add(floor);
+const back=new THREE.Mesh(new THREE.PlaneGeometry(W,H),wallMat);
+back.position.set(0,H/2,-D/2); back.receiveShadow=true; scene.add(back);
+const front=back.clone(); front.position.z=D/2; front.rotation.y=Math.PI; scene.add(front);
+const left=new THREE.Mesh(new THREE.PlaneGeometry(D,H),wallMat);
+left.rotation.y=Math.PI/2; left.position.set(-W/2,H/2,0); left.receiveShadow=true; scene.add(left);
+const right=left.clone(); right.rotation.y=-Math.PI/2; right.position.x=W/2; scene.add(right);
+// oak reveal at the corner — a warm line instead of a white pilaster
+const corner=new THREE.Mesh(new THREE.BoxGeometry(0.08,H,0.08),
+  new THREE.MeshStandardMaterial({color:0xa9875e,roughness:0.55}));
+corner.position.set(-W/2+0.04,H/2,-D/2+0.04); scene.add(corner);
+// a low oak datum line running the walls at 0.9m — the trend detail that ties the room together
+// It must sit *behind* the picture plane. At +0.012 its front face (-12.978) stood 0.002m proud of
+// the artwork (-12.980), so the band was painted straight across the canvases. Flush to the wall now.
+const oakLine=new THREE.MeshStandardMaterial({color:0xbf9c70,roughness:0.6});
+const dl1=new THREE.Mesh(new THREE.BoxGeometry(W,0.035,0.02),oakLine); dl1.position.set(0,0.9,-D/2+0.001); scene.add(dl1);
+const dl2=new THREE.Mesh(new THREE.BoxGeometry(0.02,0.035,D),oakLine); dl2.position.set(-W/2+0.001,0.9,0); scene.add(dl2);
+
+/* ---- ceiling: warm slab, two plaster pendant domes, a discreet track behind them ---- */
+const fixtureMat=new THREE.MeshStandardMaterial({color:0x6b5947,roughness:0.55,metalness:0.35});
+const headMat=new THREE.MeshStandardMaterial({color:0x4a3d30,roughness:0.5,metalness:0.4});
+const lensMat=new THREE.MeshStandardMaterial({color:0xfff0d6,emissive:0xffd9a4,emissiveIntensity:1.6});
+const trimMat=new THREE.MeshStandardMaterial({color:0xe0d4c2,roughness:0.92});
+(function makeCeil(){
+  const ceil=new THREE.Mesh(new THREE.PlaneGeometry(W,D),new THREE.MeshStandardMaterial({color:0xefe6d8,roughness:0.97}));
+  ceil.rotation.x=Math.PI/2; ceil.position.y=H; ceil.receiveShadow=true; scene.add(ceil);
+  // plaster pendant dome: cord + hemispherical shade + a warm bulb inside
+  const shadeMat=new THREE.MeshStandardMaterial({color:0xf2e8d8,roughness:0.88,side:THREE.DoubleSide});
+  const cordMat=new THREE.MeshStandardMaterial({color:0x5a4a3a,roughness:0.8});
+  function pendant(x,z,drop){
+    const g=new THREE.Group(); g.position.set(x,H,z);
+    const cord=new THREE.Mesh(new THREE.CylinderGeometry(0.014,0.014,drop,8),cordMat); cord.position.y=-drop/2; g.add(cord);
+    const dome=new THREE.Mesh(new THREE.SphereGeometry(0.52,32,18,0,Math.PI*2,0,Math.PI/2),shadeMat);
+    dome.rotation.x=Math.PI; dome.position.y=-drop; dome.castShadow=true; g.add(dome);
+    const bulb=new THREE.Mesh(new THREE.SphereGeometry(0.075,16,12),lensMat);
+    bulb.position.y=-drop+0.08; g.add(bulb);
+    const pl=new THREE.PointLight(0xffd9a4,5.2,10,1.7); pl.position.y=-drop+0.1; pl.castShadow=false; g.add(pl);
+    scene.add(g);
+  }
+  pendant(-6.5,-4.5,1.5); pendant(4.5,2.0,1.75);
+  // a single slim track, mostly hidden behind the pendants
+  function rail(x1,z1,x2,z2,tilt){
+    const len=Math.hypot(x2-x1,z2-z1);
+    const r=new THREE.Mesh(new THREE.BoxGeometry(len,0.05,0.05),fixtureMat);
+    r.position.set((x1+x2)/2,H-0.4,(z1+z2)/2); r.rotation.y=-Math.atan2(z2-z1,x2-x1); scene.add(r);
+    const n=Math.max(5,Math.round(len/2.4));
+    for(let i=0;i<n;i++){
+      const t=(i+0.5)/n, x=x1+(x2-x1)*t, z=z1+(z2-z1)*t;
+      const g=new THREE.Group(); g.position.set(x,H-0.4,z);
+      const stem=new THREE.Mesh(new THREE.CylinderGeometry(0.025,0.025,0.18,8),fixtureMat); stem.position.y=-0.09; g.add(stem);
+      const head=new THREE.Group(); head.position.y=-0.2; head.rotation.copy(tilt);
+      const body=new THREE.Mesh(new THREE.CylinderGeometry(0.07,0.05,0.22,14),headMat);
+      const yoke=new THREE.Mesh(new THREE.TorusGeometry(0.085,0.012,8,14),headMat); yoke.rotation.y=Math.PI/2;
+      const lens=new THREE.Mesh(new THREE.CircleGeometry(0.044,14),lensMat); lens.position.y=-0.112; lens.rotation.x=-Math.PI/2;
+      head.add(body,yoke,lens); g.add(head); scene.add(g);
+    }
+  }
+  rail(-15,-D/2+3.0,15,-D/2+3.0,new THREE.Euler(0.7,0,0));
+  rail(-W/2+3.0,-9,-W/2+3.0,11,new THREE.Euler(0,0,-0.7));
+  // baseboards in pale oak
+  const bb1=new THREE.Mesh(new THREE.BoxGeometry(W,0.11,0.04),trimMat); bb1.position.set(0,0.055,-D/2+0.02); scene.add(bb1);
+  const bb2=new THREE.Mesh(new THREE.BoxGeometry(0.04,0.11,D),trimMat); bb2.position.set(-W/2+0.02,0.055,0); scene.add(bb2);
+  // bouclé bench — the soft object the trend always has
+  const bench=new THREE.Mesh(new THREE.BoxGeometry(2.5,0.44,0.85),
+    new THREE.MeshStandardMaterial({color:0xf0e7d8,roughness:0.98}));
+  bench.position.set(6.0,0.22,-3.5); bench.rotation.y=-Math.PI/6; bench.castShadow=bench.receiveShadow=true; scene.add(bench);
+})();
+
+/* ---- decoration: arched niche, ceramic vessels on plinths, terracotta disc ---- */
+(function makeNiches(){
+  // a shallow arched niche cut into the rear wall — the single architectural gesture of the room
+  const nicheDepth=new THREE.MeshStandardMaterial({color:0xb9a68d,roughness:0.98});
+  const x=14.6, w=2.6, h=2.0, sill=0.78;
+  const body=new THREE.Mesh(new THREE.PlaneGeometry(w,h),nicheDepth);
+  body.position.set(x,sill+h/2,-D/2+0.014); scene.add(body);
+  const archTop=new THREE.Mesh(new THREE.CircleGeometry(w/2,40,0,Math.PI),nicheDepth);
+  archTop.position.set(x,sill+h,-D/2+0.015); scene.add(archTop);
+  // reveal edge so the recess reads as depth, not a pasted shape
+  const reveal=new THREE.MeshStandardMaterial({color:0xd6c7b0,roughness:0.95});
+  const rL=new THREE.Mesh(new THREE.BoxGeometry(0.06,h,0.09),reveal); rL.position.set(x-w/2,sill+h/2,-D/2+0.05); scene.add(rL);
+  const rR=new THREE.Mesh(new THREE.BoxGeometry(0.06,h,0.09),reveal); rR.position.set(x+w/2,sill+h/2,-D/2+0.05); scene.add(rR);
+  const sillM=new THREE.Mesh(new THREE.BoxGeometry(w+0.12,0.07,0.12),reveal); sillM.position.set(x,sill,-D/2+0.06); scene.add(sillM);
+})();
+(function makeSculptures(){
+  const clay =new THREE.MeshPhysicalMaterial({color:0xc07a52,roughness:0.78,clearcoat:0.1,clearcoatRoughness:0.6});
+  const cream=new THREE.MeshPhysicalMaterial({color:0xefe3d1,roughness:0.82});
+  const oak  =new THREE.MeshStandardMaterial({color:0xb8945f,roughness:0.68});
+  function plinth(x,z,h){ const p=new THREE.Mesh(new THREE.BoxGeometry(0.95,h,0.95),oak);
+    p.position.set(x,h/2,z); p.castShadow=p.receiveShadow=true; scene.add(p); return h; }
+  // three hand-thrown vessels of different heights — the ceramic still-life
+  const v1=new THREE.Mesh(new THREE.CylinderGeometry(0.3,0.18,0.72,28),clay);
+  v1.position.set(-9.5,plinth(-9.5,-5.0,0.8)+0.36,-5.0); v1.castShadow=true; scene.add(v1);
+  const v2=new THREE.Mesh(new THREE.CylinderGeometry(0.16,0.28,0.5,28),cream);
+  v2.position.set(-9.5,plinth(-9.5,-5.0,0.8)+0.25,-8.2); v2.castShadow=true; scene.add(v2);
+  const v3=new THREE.Mesh(new THREE.SphereGeometry(0.34,28,18),clay);
+  v3.position.set(-12.5,plinth(-12.5,3.5,0.62)+0.34,3.5); v3.scale.y=1.25; v3.castShadow=true; scene.add(v3);
+  // a terracotta disc on a low oak block: the one strong colour in the room
+  const disc=new THREE.Mesh(new THREE.CylinderGeometry(0.62,0.62,0.09,48),clay);
+  disc.position.set(2.0,plinth(2.0,-4.2,0.5)+0.66,-4.2); disc.rotation.set(Math.PI/2,0,0.4); disc.castShadow=true; scene.add(disc);
+})();
+
+/* lighting: warm minimalism — soft ambient wash, pendants carry the mood, spots only seat the frames */
+const amb=new THREE.AmbientLight(0xffe9cc,0.16); scene.add(amb);
+const hemi=new THREE.HemisphereLight(0xfff1dc,0x6b5a47,0.30); scene.add(hemi);
+const sun=new THREE.DirectionalLight(0xffe4c0,0.42);
+sun.position.set(-6,11,7); sun.castShadow=true;
+sun.shadow.mapSize.set(MOBILE?1024:2048,MOBILE?1024:2048);
+sun.shadow.camera.left=-22; sun.shadow.camera.right=22;
+sun.shadow.camera.top=18; sun.shadow.camera.bottom=-18;
+sun.shadow.bias=-0.0004; sun.shadow.radius=8;
+scene.add(sun,sun.target);
+function trackSpot(x,z,tx,tz,i){ const s=new THREE.SpotLight(0xffd9a4,i||2.6,11,0.5,0.95,1.4);
+  s.position.set(x,H-0.6,z); s.target.position.set(tx,1.6,tz); scene.add(s,s.target); return s; }
+const spots=[];
+
+/* ---- framed works: warm minimalism — limewash walls, oak and terracotta, pendant light, one arched niche ---- */
+const loader=new THREE.TextureLoader();
+const items=[];
+for(const [i,wall,u,y,size] of HANGS){
+  const [date,file,med,en,ko]=WORKS[i];
+  const grp=new THREE.Group();
+  if(wall==='back'){ grp.position.set(u,y,-D/2+0.02); }
+  else { grp.position.set(-W/2+0.02,y,u); grp.rotation.y=Math.PI/2; }
+  const h=SIZE[size];
+  const art=new THREE.Mesh(new THREE.PlaneGeometry(1,1));
+  const paperW=h*0.80, paperH=h*1.12;
+  // three-layer moulding: outer shadow moulding, inner gilt/wood fillet, mat board
+  const mould=new THREE.Mesh(new THREE.PlaneGeometry(paperW+0.20,paperH+0.20),
+    new THREE.MeshStandardMaterial({color:0x8a6b45,roughness:0.62,metalness:0.05}));
+  const fillet=new THREE.Mesh(new THREE.PlaneGeometry(paperW+0.085,paperH+0.085),
+    new THREE.MeshPhysicalMaterial({color:0xc9a878,roughness:0.5,metalness:0.12,clearcoat:0.25,clearcoatRoughness:0.3}));
+  const paper=new THREE.Mesh(new THREE.PlaneGeometry(paperW,paperH),
+    new THREE.MeshStandardMaterial({color:0xf3ece0,roughness:0.94}));
+  mould.position.z=-0.026; fillet.position.z=-0.014; paper.position.z=-0.006;
+  art.castShadow=paper.castShadow=true;
+  grp.add(mould,fillet,paper,art); scene.add(grp);
+  const rec={i,wall,u,y,size,h,date,file,med,en,ko,grp,art,paper,frame:fillet,mould,
+    w:h, hh:h, ring:null,_pose:null};
+  loader.load(file,t=>{ t.colorSpace=THREE.SRGBColorSpace;
+    const a=t.image.width/t.image.height;
+    let ah,aw;
+    if(a>=1){ aw=Math.min(1.75,Math.max(0.95,h*1.5)); ah=aw/a; if(ah<h*0.52){ah=h*0.52;aw=ah*a;} }
+    else { ah=Math.min(1.75,Math.max(0.62,h*1.15)); aw=ah*a; }
+    art.scale.set(aw,ah,1); art.material=new THREE.MeshStandardMaterial({map:t,roughness:0.86});
+    const pw=Math.max(aw,0.4)+0.16, ph=ah+0.18;
+    paper.geometry.dispose(); paper.geometry=new THREE.PlaneGeometry(pw,ph);
+    fillet.geometry.dispose(); fillet.geometry=new THREE.PlaneGeometry(pw+0.14500000000000002,ph+0.14500000000000002);
+    mould.geometry.dispose();  mould.geometry=new THREE.PlaneGeometry(pw+0.31,ph+0.31);
+    // A frame whose outer moulding dips through the 0.9m oak datum gets the band drawn across the
+    // artwork. Lift such a frame just clear of the line. Deterministic per aspect (runs after load).
+    const datum=0.9, clear=0.06;
+    const bottom=grp.position.y-(ph+0.31)/2;
+    if(bottom<datum+clear){ grp.position.y+=datum+clear-bottom; rec.y=grp.position.y; }
+    rec._pose=null;
+    wallIdle=0;
+    if(mode==='room'||(mode==='wall'&&wallOpen==='H')){
+      ovPose=overviewPose();
+      camera.fov=ovPose.fov; camera.updateProjectionMatrix();
+      if(mode==='wall'){ camera.position.copy(ovPose.pos); camera.lookAt(ovPose.look); }
+    }
+  });
+  spots.push(trackSpot(wall==='back'?u:-W/2+2.2, wall==='back'?-D/2+2.2:u,
+                       wall==='back'?u:-W/2,      wall==='back'?-D/2:u));
+  items.push(rec);
+}
+
+/* ---- HOME plate removed on request: the vinyl-label sign stood at the empty far end of the left wall, left of the hung works ---- */
+
+/* ---- wall sheets: fly into the wall, then lift the plain DOM page over the screen ---- */
+let wallOpen=null;                      // 'J' | 'P' | null
+const wallJ=document.getElementById('wallJ'), wallP=document.getElementById('wallP'), homeEl=document.getElementById('wallH');
+const WALLS={ J:{el:wallJ,file:'journeys.html',
+    pose:new THREE.Vector3(W/2-0.04,1.72,-1), eye:new THREE.Vector3(W/2-3.4,1.72,-1)},        // east wall (bare)
+              P:{el:wallP,file:'articles.html',
+    pose:new THREE.Vector3(-2.5,1.62,D/2),    eye:new THREE.Vector3(-2.5,1.62,D/2-3.4)} };     // rear wall
+function setNav(k){ const nf=document.getElementById('navFrame');   // tell the overlaid nav which section is live
+  if(nf && nf.contentWindow) nf.contentWindow.postMessage('nav:'+k,'*'); }
+function navSync(){ setNav(wallOpen==='H'?'home':wallOpen==='J'?'travel':wallOpen==='P'?'press':'gallery'); }  // the frame may load after we boot — replay the state
+addEventListener('load',navSync);
+function openWall(k){
+  wallOpen=k; card.classList.remove('show'); hint.classList.remove('show');
+  document.body.classList.add('sheet');
+  items.forEach(r=>{ if(r.ring) r.ring.material.opacity=0; });
+  const w=WALLS[k];
+  const f=w.el.querySelector('iframe'); if(!f.src) f.src=w.file+'?wall=1';   // load only when first visited
+  const m=new THREE.Matrix4().lookAt(w.eye,w.pose,new THREE.Vector3(0,1,0));
+  fly({p:w.eye.clone(),q:new THREE.Quaternion().setFromRotationMatrix(m),fov:50},()=>{
+    mode='wall'; w.el.classList.add('show');                                  // DOM rises after the flight lands
+    setNav(k==='J'?'travel':'press');
+  });
+}
+function closeWall(){
+  if(!wallOpen) return;
+  document.body.classList.remove('sheet');
+  wallJ.classList.remove('show'); wallP.classList.remove('show'); homeEl.classList.remove('show');
+  wallOpen=null; room(); setNav('gallery');
+}
+function gotoRoom(done){ ovPose=overviewPose();
+  const m=new THREE.Matrix4().lookAt(ovPose.pos,ovPose.look,new THREE.Vector3(0,1,0));
+  fly({p:ovPose.pos.clone(),q:new THREE.Quaternion().setFromRotationMatrix(m),fov:ovPose.fov},done);
+}
+function openHome(){
+  if(wallOpen==='H') return;
+  wallOpen='H'; card.classList.remove('show'); hint.classList.remove('show');
+  document.body.classList.add('sheet');
+  items.forEach(r=>{ if(r.ring) r.ring.material.opacity=0; });
+  wallJ.classList.remove('show'); wallP.classList.remove('show');   // whatever sheet was up, the wall empties first
+  const reveal=()=>{ mode='wall'; homeEl.classList.add('show'); setNav('home'); };
+  // HOME always arrives over the front view: unless we already stand in the room, move to the establishing shot first
+  if(mode==='room'){ reveal(); } else { gotoRoom(reveal); }
+}
+addEventListener('message',e=>{
+  if(e.data==='closeWall'){ closeWall(); return; }             // Esc pressed while a sheet has focus
+  if(typeof e.data==='string' && e.data.startsWith('nav:')){   // commands from the overlaid nav.html
+    const k=e.data.slice(4);
+    if(k==='home') openHome();
+    else if(k==='travel'){ closeWall(); openWall('J'); }
+    else if(k==='press'){ closeWall(); openWall('P'); }
+    else if(k==='gallery'){ if(wallOpen) closeWall(); else room(); }
+  }
+});
+
+/* gold focus ring (added per item lazily) */
+function ringFor(rec){
+  if(rec.ring) return rec.ring;
+  const g=new THREE.PlaneGeometry(rec.art.scale.x+0.14,rec.art.scale.y+0.14);
+  const edges=new THREE.LineSegments(new THREE.EdgesGeometry(g),
+    new THREE.LineBasicMaterial({color:0xb98f3e,transparent:true,opacity:0}));
+  edges.position.z=0.01; rec.grp.add(edges); rec.ring=edges; return edges;
+}
+
+/* ---- tour state machine (manual only, no auto walk) ---- */
+let mode='idle';           // idle | fly | focus | room
+let cur=-1;
+function overviewPose(){ // stands in the open front-right corner, aims at the angular mid-bearing of the plates,
+  // and bisects for the deepest offset where the whole L-shaped collection fits the safe box
+  const box=new THREE.Box3(); const tmp=new THREE.Vector3(); const corners=[]; const plateCenters=[];
+  for(const r of items){ const w=r.art.scale.x,h=r.art.scale.y;
+    const c0=new THREE.Vector3(); r.art.getWorldPosition(c0); plateCenters.push(c0);
+    for(const q of [[-w/2,-h/2],[w/2,-h/2],[w/2,h/2],[-w/2,h/2]]){
+      tmp.set(q[0],q[1],0); r.art.localToWorld(tmp); box.expandByPoint(tmp); corners.push(tmp.clone()); } }
+  const EYE=2.1;
+  // the camera stands at the open front-right corner; aim at the ANGULAR mid-bearing of the plates (not the
+  // geometric OBB centre) — for an L-shaped collection the geometric centre pulls the view toward the corner
+  // and leaves dead space on one side; the bearing split balances both walls across the frame.
+  const camX=W/2-1.4, camZ=D/2-1.4;                          // open front-right corner: the only spot far enough for both walls
+  const bearing=(p)=>Math.atan2(p.z-camZ,p.x-camX);          // camera -> plate direction (in-room)
+  const bLo=Math.min(...plateCenters.map(bearing)), bHi=Math.max(...plateCenters.map(bearing));
+  const bMid=(bLo+bHi)/2;
+  const ux=Math.cos(bMid), uz=Math.sin(bMid);
+  const look=new THREE.Vector3(camX+ux*30,1.72,camZ+uz*30);   // aim far along the mid ray
+  // adaptive lens: the L spans ~66° of bearing from the corner, but hFOV = 2·atan(tan(vFOV/2)·aspect).
+  // Wide desktops need only ~55° vertical; a portrait phone needs up to ~88° before the far wings crop off.
+  const FOV=Math.min(100,Math.max(52,2*THREE.MathUtils.radToDeg(Math.atan(Math.tan(THREE.MathUtils.degToRad(39))/(innerWidth/innerHeight)))));
+  _probe.fov=FOV; _probe.aspect=camera.aspect; _probe.updateProjectionMatrix();
+  const spanAt=(e)=>{ const p=new THREE.Vector3(camX+ux*e,EYE,camZ+uz*e);   // e metres INTO the room from the corner
+    _probe.position.copy(p); _probe.lookAt(look); _probe.updateMatrixWorld(true);
+    let x0=1e9,x1=-1e9,y0=1e9,y1=-1e9;
+    for(const c of corners){ const v=c.clone().project(_probe);
+      const sx=(v.x*0.5+0.5)*innerWidth, sy=(-v.y*0.5+0.5)*innerHeight;
+      if(sx<x0)x0=sx; if(sx>x1)x1=sx; if(sy<y0)y0=sy; if(sy>y1)y1=sy; }
+    return {x0,x1,y0,y1}; };
+  // span grows monotonically with e: bisect for the deepest offset at which EVERY plate stays inside the safe box
+  const inside=(s)=>s.x0>-2 && s.x1<innerWidth+2 && s.y0>108 && s.y1<innerHeight-150;
+  let lo=0, hi=16, e;
+  if(inside(spanAt(hi))) e=hi;                                 // bold case: stand deepest, fill the frame
+  else { for(let k=0;k<7;k++){ e=(lo+hi)/2; if(inside(spanAt(e))) lo=e; else hi=e; } e=lo; }
+  const pos=new THREE.Vector3(camX+ux*e,EYE,camZ+uz*e);
+  return {pos,look,fov:FOV}; }
+let ovPose=null;                                          // computed lazily once items + textures exist
+const camPos=new THREE.Vector3(); const camQuat=new THREE.Quaternion();
+function enterRoomPose(){ ovPose=overviewPose(); return ovPose; }
+(function initCam(){ const o=enterRoomPose(); camera.fov=o.fov; camera.updateProjectionMatrix();
+  const m=new THREE.Matrix4().lookAt(o.pos,o.look,new THREE.Vector3(0,1,0));
+  camera.position.copy(o.pos); camera.quaternion.copy(m); })();
+let from={p:new THREE.Vector3(),q:new THREE.Quaternion(),fov:44},to={p:new THREE.Vector3(),q:new THREE.Quaternion(),fov:44},ft=0,FDUR=1.7;
+
+/* ---------- framing solver ---------- */
+const cardEl=document.getElementById('card');
+function basePose(rec,dist){
+  const pos=rec.wall==='back'
+    ? new THREE.Vector3(rec.u, Math.max(1.25,rec.y-0.02), -D/2+dist)
+    : new THREE.Vector3(-W/2+dist, Math.max(1.25,rec.y-0.02), rec.u);
+  const look=rec.wall==='back'
+    ? new THREE.Vector3(rec.u,rec.y,-D/2)
+    : new THREE.Vector3(-W/2,rec.y,rec.u);
+  return {pos,look};
+}
+function applyPose(p,q){ _probe.position.copy(p); _probe.quaternion.copy(q); _probe.updateMatrixWorld(true); }
+function quatAt(p,l){ const m=new THREE.Matrix4().lookAt(p,l,new THREE.Vector3(0,1,0)); return new THREE.Quaternion().setFromRotationMatrix(m); }
+function artScreen(rec){
+  const c=new THREE.Vector3(); rec.art.getWorldPosition(c);
+  const v=c.clone().project(_probe);
+  // measure the FRAME, not just the picture: the outer moulding adds 0.245m above and below the
+  // image, so fitting the artwork alone let the frame run off the top and bottom of the screen.
+  const gp=rec.mould&&rec.mould.geometry&&rec.mould.geometry.parameters;
+  const h=gp?gp.height:(rec.art.scale.y+0.49);
+  const dist=_probe.position.distanceTo(c);
+  const vh=2*Math.tan(THREE.MathUtils.degToRad(_probe.fov/2))*dist;   // FOCUS fov, never the live fov
+  const hpx=h/vh*innerHeight;
+  return {x:(v.x*0.5+0.5)*innerWidth, y:(-v.y*0.5+0.5)*innerHeight, hpx, dist};
+}
+function poseFor(rec){
+  _probe.aspect=camera.aspect; _probe.fov=FOCUS_FOV; _probe.updateProjectionMatrix();
+  // plate centres on the SCREEN CENTRE; the caption (narrow, bottom-left) must stay clear of the frame
+  const cardR=38+Math.min(330,innerWidth*0.28)+10;
+  const zx0=innerWidth*0.04, zx1=innerWidth*0.96, zy0=112, zy1=innerHeight-90;
+  let dist=0.62;
+  let pose=basePose(rec,dist);
+  applyPose(pose.pos,quatAt(pose.pos,pose.look));
+  let s=artScreen(rec);
+  for(let k=0;k<40;k++){
+    const wpx=s.hpx*(rec.art.scale.x/rec.art.scale.y);
+    if((wpx<=(zx1-zx0) && s.hpx<=(zy1-zy0)) || (s.hpx<=innerHeight*0.84 && wpx<=innerWidth*0.92 && k>1)) break;
+    dist*=1.07; pose=basePose(rec,dist);
+    applyPose(pose.pos,quatAt(pose.pos,pose.look)); s=artScreen(rec);
+  }
+  const nx=rec.wall==='back'?new THREE.Vector3(1,0,0):new THREE.Vector3(0,0,-1);
+  const up=new THREE.Vector3(0,1,0);
+  const artC=new THREE.Vector3(); rec.art.getWorldPosition(artC);
+  const nl=artC.clone();
+  const box=(aim)=>{ applyPose(pose.pos,quatAt(pose.pos,aim));
+    let x0=1e9,x1=-1e9,y0=1e9,y1=-1e9;
+    // Corners of the OUTER MOULDING in group space. Two bugs fed the clipping here: the solver
+    // measured only the artwork (frame adds 0.245m top/bottom, 0.235m per side), and mapping
+    // art-local coords double-applied art.scale, under-reporting the box again.
+    const gp=rec.mould&&rec.mould.geometry&&rec.mould.geometry.parameters;
+    const w=gp?gp.width:rec.art.scale.x+0.47, h=gp?gp.height:rec.art.scale.y+0.49;
+    for(const [ax,ay] of [[-w/2,-h/2],[w/2,-h/2],[w/2,h/2],[-w/2,h/2]]){
+      const v=new THREE.Vector3(ax,ay,-0.026); rec.grp.localToWorld(v); v.project(_probe);
+      const sx=(v.x*0.5+0.5)*innerWidth, sy=(-v.y*0.5+0.5)*innerHeight;
+      if(sx<x0)x0=sx; if(sx>x1)x1=sx; if(sy<y0)y0=sy; if(sy>y1)y1=sy;}
+    return {cx:(x0+x1)/2, cy:(y0+y1)/2, h:y1-y0, w:x1-x0, x0, x1, y0, y1}; };
+  let b=box(nl);
+  for(let g=0; g<14 && (b.h>(zy1-zy0) || b.w>(zx1-zx0) || b.y0<zy0-8 || b.x1>zx1+8 || b.x0<zx0-8); g++){
+    dist*=1.08; pose=basePose(rec,dist); b=box(nl); }
+  const targetCx=(zx0+zx1)/2, targetCy=(zy0+zy1)/2;     // dead centre of the safe box
+  const P=0.25, SMAX=0.30;
+  const errOf=(aim)=>{ const c=box(aim); return {e:Math.hypot(c.cx-targetCx,(c.cy-targetCy)*1.2),c}; };
+  let best=errOf(nl);
+  for(let it=0; it<14; it++){
+    if(best.e<4) break;
+    const c0=best.c;
+    const a1=nl.clone().addScaledVector(nx,P), a2=nl.clone().addScaledVector(up,P);
+    const b1=box(a1), b2=box(a2);
+    const jcxX=(b1.cx-c0.cx)/P, jcyX=(b1.cy-c0.cy)/P, jcxY=(b2.cx-c0.cx)/P, jcyY=(b2.cy-c0.cy)/P;
+    const det=jcxX*jcyY-jcxY*jcyX;
+    if(!isFinite(det)||Math.abs(det)<1e-6) break;
+    let sx=(-jcyY*(c0.cx-targetCx)+jcxY*(c0.cy-targetCy))/det;
+    let sy=( jcxX*(c0.cy-targetCy)-jcyX*(c0.cx-targetCx))/det;
+    const m=Math.hypot(sx,sy); if(m>SMAX){ sx*=SMAX/m; sy*=SMAX/m; }
+    let t=1, step=null;
+    for(let ls=0; ls<4; ls++){
+      const trial=nl.clone().addScaledVector(nx,sx*t).addScaledVector(up,sy*t);
+      const r=errOf(trial);
+      if(r.e<best.e-0.4){ step={trial,r}; break; }
+      t*=0.5;
+    }
+    if(!step) break;
+    nl.copy(step.trial); best=step.r;
+  }
+  // post-aim guard: the Newton nudge can push a tall plate over the nav line again — final retreat pass
+  for(let g=0; g<10; g++){
+    const c=box(nl);
+    if(c.y0>=zy0-4 && c.y1<=zy1+4 && c.x0>=Math.max(zx0-4,cardR) && c.x1<=zx1+4) break;
+    dist*=1.07; pose=basePose(rec,dist); }
+  const q=quatAt(pose.pos,nl);
+  applyPose(pose.pos,q);
+  return {p:pose.pos.clone(),q,look:nl.clone()};
+}
+const ease=p=>p<0.5?4*p*p*p:1-Math.pow(-2*p+2,3)/2;
+function fly(pose,done){ if(!pose||!pose.p||!pose.q){console.error('bad pose',pose);return;}
+  from={p:camera.position.clone(),q:camera.quaternion.clone(),fov:camera.fov};
+  to=pose; ft=0; mode='fly'; flyDone=done||null; }
+let flyDone=null;
+
+const card=document.getElementById('card'),tPl=document.getElementById('tPl'),
+      tDate=document.getElementById('tDate'),tMed=document.getElementById('tMed'),
+      tNote=document.getElementById('tNote'),tKo=document.getElementById('tKo'),
+      hint=document.getElementById('hint');
+function showCard(i){ const [date, , med,en,ko]=WORKS[i];
+  tPl.textContent='Pl. '+String(i+1).padStart(2,'0')+' · original work';
+  tDate.textContent=date; tMed.textContent=med; tNote.textContent=en; tKo.textContent=ko; tKo.style.display=ko?'':'none';
+  card.classList.add('show'); }
+
+function focus(i,walk){
+  const rec=items.find(r=>r.i===i); if(!rec) return;
+  cur=i; hint.classList.remove('show');
+  items.forEach(r=>{ if(r.ring) r.ring.material.opacity=0; });
+  showCard(i);
+  rec._pose=null;
+  const fp=poseFor(rec); fp.fov=FOCUS_FOV;
+  if(walk) fp.arc=new THREE.Vector3(W/2-10,1.9,D/2-5);   // control point: the walk-around past the entrance
+  fly(fp,()=>{ ringFor(rec).material.opacity=1; mode='focus'; });
+}
+function room(){ cur=-1; card.classList.remove('show');
+  items.forEach(r=>{ if(r.ring) r.ring.material.opacity=0; });
+  ovPose=overviewPose();
+  const m=new THREE.Matrix4().lookAt(ovPose.pos,ovPose.look,new THREE.Vector3(0,1,0));
+  fly({p:ovPose.pos.clone(),q:new THREE.Quaternion().setFromRotationMatrix(m),fov:ovPose.fov},()=>{mode='room'; setNav('gallery');});
+  hint.classList.add('show'); }
+
+const order=[0,1,2,3,4,5,6,7,8,9,10];
+// a tour always starts from one of the two ENTS — never the middle:
+//   → / wheel-down / tap  -> Pl.01 (far end of the back wall)
+//   ← / wheel-up          -> Pl.11 (far end of the left wall)
+// and at the far end the route does NOT teleport: it glides around the entrance corridor to the other
+// extreme, so the flow keeps matching the arrow — a natural walking circuit.
+function next(){ const w=cur>=0 && order.indexOf(cur)===order.length-1;
+  let k=cur<0?0:order.indexOf(cur)+1; if(k>=order.length)k=0; focus(order[k],w); }
+function prev(){ const w=cur>=0 && order.indexOf(cur)===0;
+  let k=cur<0?order.length-1:order.indexOf(cur)-1; if(k<0)k=order.length-1; focus(order[k],w); }
+
+/* The museum opens on the front view. The HOME sheet lifted over it is the
+   default landing; ?auto=0 lands straight in the room with no sheet (used by
+   index.html), while nav clicks still raise HOME normally. */
+(function boot(){
+  ovPose=overviewPose(); mode='room';
+  camera.fov=ovPose.fov; camera.position.copy(ovPose.pos);
+  const m=new THREE.Matrix4().lookAt(ovPose.pos,ovPose.look,new THREE.Vector3(0,1,0));
+  camera.quaternion.copy(m); camera.updateProjectionMatrix();
+  const auto=(new URLSearchParams(location.search)).get('auto');
+  if(auto==='0'){ wallOpen='G'; setNav('gallery'); }  // gallery-direct landing
+  else { openHome(); }
+  // deep link straight into a single plate: ?work=N — used for deterministic framing checks.
+  // Applies the pose immediately: fly() is a rAF animation and never settles under a
+  // virtual-time screenshot budget, which made deep links capture the room instead.
+  const wk=(new URLSearchParams(location.search)).get('work');
+  if(wk!==null && wk!=='' && !Number.isNaN(+wk)) setTimeout(()=>{
+    const rec=items.find(r=>r.i===+wk);
+    if(!rec) return;
+    cur=+wk; rec._pose=null; showCard(+wk);
+    const fp=poseFor(rec); fp.fov=FOCUS_FOV;
+    from={p:camera.position.clone(),q:camera.quaternion.clone(),fov:camera.fov};
+    to=fp; ft=1; flyDone=null; mode='focus';
+    camera.position.copy(fp.p); camera.quaternion.copy(fp.q);
+    camera.fov=FOCUS_FOV; camera.updateProjectionMatrix();
+    if(rec.ring) rec.ring.material.opacity=1;
+  },80);
+})();
+document.getElementById('nextB').onclick=next;
+document.getElementById('prevB').onclick=prev;
+
+addEventListener('keydown',e=>{
+  if(e.key==='Escape' && wallOpen){ closeWall(); return; }
+  if(wallOpen) return;                              // sheets own the keyboard while open
+  if(e.key==='ArrowRight'||e.key==='ArrowDown') next();
+  if(e.key==='ArrowLeft'||e.key==='ArrowUp') prev();
+  if(e.key==='Escape') room();
+});
+let wAcc=0,wT=0,busy=false;
+addEventListener('wheel',e=>{ if(wallOpen) return;                       // plain DOM sheet scrolls natively — no relay, no 3D transform cost
+  if(mode==='fly')return; const n=performance.now();
+  if(n-wT>700) wAcc=0; wAcc+=e.deltaY; wT=n;
+  if(Math.abs(wAcc)>120){ wAcc>0?next():prev(); wAcc=0; wT=performance.now(); } }, {passive:false});
+let tx=null;
+addEventListener('touchstart',e=>tx=e.touches[0].clientX,{passive:true});
+addEventListener('touchend',e=>{if(tx==null)return;const d=e.changedTouches[0].clientX-tx;
+  if(Math.abs(d)>46)(d<0?next:prev)(); tx=null;},{passive:true});
+
+/* click a work in the room to jump to it */
+  const ray=new THREE.Raycaster(); const mouse=new THREE.Vector2();
+addEventListener('pointerdown',e=>{ if(wallOpen||e.target.closest('.controls,.intro,.tourcard'))return;
+  mouse.set(e.clientX/innerWidth*2-1,-(e.clientY/innerHeight)*2+1);
+  ray.setFromCamera(mouse,camera);
+  const hits=ray.intersectObjects(items.map(r=>r.art));
+  if(hits.length){ const rec=items.find(r=>r.art===hits[0].object); focus(rec.i); } });
+
+function resize(){ renderer.setSize(innerWidth,innerHeight);
+  renderer.setPixelRatio(Math.min(MOBILE?1.5:2,devicePixelRatio)); // phones: fewer shaded pixels, steadier fps
+  const pr=Math.min(2,devicePixelRatio);
+  rt.setSize(Math.floor(innerWidth*pr),Math.floor(innerHeight*pr));
+  aoMat.uniforms.uRes.value.set(innerWidth*pr,innerHeight*pr);
+  camera.aspect=innerWidth/innerHeight;
+  if(mode==='idle'||mode==='room'){ ovPose=overviewPose(); camera.fov=ovPose.fov; }
+  camera.updateProjectionMatrix();
+  items.forEach(r=>{ r._pose=null; }); }
+addEventListener('resize',resize); resize();
+(function watchDPR(){ // moving the window to another display changes devicePixelRatio without a resize event
+  const mq=matchMedia(`(resolution: ${devicePixelRatio}dppx)`);
+  mq.addEventListener('change',()=>{ resize(); watchDPR(); },{once:true});
+})();
+
+const clock=new THREE.Clock();
+window.__dbg={get mode(){return mode;},get cur(){return cur;},get wall(){return wallOpen;},
+  overview(){ const o=overviewPose(); return {center:o.look.toArray().map(v=>+v.toFixed(2)),
+    pos:o.pos.toArray().map(v=>+v.toFixed(2)), fov:+o.fov.toFixed(1)}; },
+  camAt(){ const r=cur>=0?items.find(x=>x.i===cur):null; if(!r) return null;
+    const c=new THREE.Vector3(); r.art.getWorldPosition(c);
+    return {cam:camera.position.toArray().map(v=>+v.toFixed(2)), art:c.toArray().map(v=>+v.toFixed(2)),
+            d:+camera.position.distanceTo(c).toFixed(2)}; },
+  expose(v){ renderer.toneMappingExposure=v; return v; },
+  dim(k){ amb.intensity*=k; hemi.intensity*=k; sun.intensity*=k; return [amb.intensity,hemi.intensity,sun.intensity]; },
+  band(){ const py=(x,y,z)=>{ const v=new THREE.Vector3(x,y,z).project(camera); return +((-v.y*0.5+0.5)).toFixed(3); };
+    return { ceilLine: py(0,H,-D/2), floorLine: py(0,0,-D/2), midWall: py(0,1.6,-D/2) }; },
+  sceneInfo(){ return {W,D,H}; },
+  tryOv(d,fov,ly){ const box=new THREE.Box3(); const tmp=new THREE.Vector3();
+    for(const r of items){ const w=r.art.scale.x,h=r.art.scale.y;
+      for(const q of [[-w/2,-h/2],[w/2,-h/2],[w/2,h/2],[-w/2,h/2]]){ tmp.set(q[0],q[1],0); r.art.localToWorld(tmp); box.expandByPoint(tmp); } }
+    const center=box.getCenter(new THREE.Vector3());
+    const dir=new THREE.Vector3((W/2-1.5-center.x)*0,-1.4,-1.4).normalize(); // (legacy sampler; not used in live framing)
+    const look=center.clone(); look.y=ly;
+    const pos=center.clone().addScaledVector(dir,d); pos.y=ly;
+    camera.fov=fov; camera.position.copy(pos); camera.lookAt(look); camera.updateProjectionMatrix();
+    mode='room'; ovPose={pos:pos.clone(),look:look.clone(),fov};
+    const bb=()=>{ let x0=1e9,x1=-1e9,y0=1e9,y1=-1e9; const pts=[];
+      for(const r of items){ const w=r.art.scale.x,h=r.art.scale.y;
+        for(const q of [[-w/2,-h/2],[w/2,h/2]]){ tmp.set(q[0],q[1],0); r.art.localToWorld(tmp); pts.push(tmp.clone().project(camera)); } } }
+    return {ok:true}; },
+  visible(){ let n=0; const list=[];
+    for(const r of items){ const wp=new THREE.Vector3(); r.grp.getWorldPosition(wp);
+      const v=wp.clone().project(camera);
+      const on=v.x>-1.05&&v.x<1.05&&v.y>-1.05&&v.y<1.05&&v.z<1;
+      if(on){n++;list.push(r.i);} }
+    return {visible:n,ids:list}; },
+  fixtures(){ let rails=0,heads=0,panels=0; scene.traverse(o=>{ if(o.geometry){
+    if(o.geometry.type==='BoxGeometry'&&Math.abs(o.position.y-(H-0.44))<0.02) rails++;
+    if(o.geometry.type==='CylinderGeometry'&&o.parent&&o.parent.parent&&o.geometry.parameters&&o.geometry.parameters.radiusTop===0.085) heads++;
+    if(o.geometry.type==='PlaneGeometry'&&o.material&&o.material.color&&o.material.color.getHex()===0xffffff&&Math.abs(o.position.y-(H-0.185))<0.01) panels++; }});
+    return {rails,heads,panels,spotlights:spots.length,ssao:true}; },
+  focusBox(){ if(cur<0) return null; const r=items.find(x=>x.i===cur); if(!r) return null;
+    const w=r.art.scale.x, h=r.art.scale.y; const pts=[[-w/2,-h/2],[w/2,-h/2],[w/2,h/2],[-w/2,h/2]]; const cs=[];
+    for(const [px,py] of pts){ const v=new THREE.Vector3(px,py,0); r.art.localToWorld(v); v.project(camera);
+      cs.push([(v.x*0.5+0.5)*innerWidth,(-v.y*0.5+0.5)*innerHeight]); }
+    const xs=cs.map(c=>c[0]), ys=cs.map(c=>c[1]);
+    const x0=Math.min(...xs),x1=Math.max(...xs),y0=Math.min(...ys),y1=Math.max(...ys);
+    return {x0:Math.round(x0),x1:Math.round(x1),y0:Math.round(y0),y1:Math.round(y1),
+      cxOff:+(((x0+x1)/2)/innerWidth-0.5).toFixed(3), cyOff:+(((y0+y1)/2)/innerHeight-0.5).toFixed(3),
+      vw:innerWidth,vh:innerHeight}; }};
+let wallIdle=0;                        // the wall is static once we land — repaint the 3D only then, DOM scroll runs free
+renderer.setAnimationLoop(()=>{
+  const dt=Math.min(clock.getDelta(),0.05);
+  if(mode==='fly'){ ft+=dt/(to.arc?2.6:FDUR);          // the wrap-around walk gets its own, slower timing
+    const p=ease(Math.min(1,ft));
+    if(to.arc){ const inv=1-p; camera.position.set(0,0,0)   // quadratic bezier: right end → entrance → left end
+        .addScaledVector(from.p,inv*inv).addScaledVector(to.arc,2*inv*p).addScaledVector(to.p,p*p); }
+    else camera.position.lerpVectors(from.p,to.p,p);
+    camera.quaternion.slerpQuaternions(from.q,to.q,p);
+    if(to.fov!==undefined){ camera.fov=from.fov+(to.fov-from.fov)*p; camera.updateProjectionMatrix(); }
+    if(ft>=1){ mode=flyDone?'focus':'room'; const f=flyDone; flyDone=null; f&&f(); }
+  } else if(mode==='focus'&&cur>=0){
+    const rec=items.find(r=>r.i===cur);
+    const t=rec._pose||(rec._pose=poseFor(rec));
+    camera.position.lerp(t.p,0.08);
+    camera.lookAt(t.look);                              // direct aim every frame — frame held at centre
+    if(rec.ring) rec.ring.material.opacity=0.75+0.25*Math.sin(clock.elapsedTime*2.2);
+  } else if(mode==='room'&&ovPose){
+    camera.position.copy(ovPose.pos);
+    camera.lookAt(ovPose.look);                         // level 0° establishing shot — no drift
+  }
+  if(mode!=='wall') wallIdle=0; else wallIdle++;
+  if(wallIdle<=1){                     // one settled frame, then WebGL rests and the compositor gets the machine back
+  aoMat.uniforms.uProj.value=camera.projectionMatrix;      // fov changes per mode — keep the ray cone exact
+  const th=Math.tan(THREE.MathUtils.degToRad(camera.fov/2));
+  aoMat.uniforms.uTan.value.set(th*camera.aspect,th);
+  renderer.setRenderTarget(rt); renderer.render(scene,camera); renderer.setRenderTarget(null);
+  renderer.render(postScene,postCam);
+  }
+});
+addEventListener('resize',()=>{ wallIdle=0; });
+</script>
+</body>
+</html>

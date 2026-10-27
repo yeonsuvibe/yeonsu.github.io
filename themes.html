@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Themes — AHN YEONSU / Gallery Systems</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23f4f1ea'/%3E%3Ctext x='50' y='68' font-size='52' text-anchor='middle' fill='%2316150f' font-family='Georgia'%3EA%3C/text%3E%3C/svg%3E">
+<style>
+:root{
+  --paper:#f4f1ea; --ink:#16150f; --ink-soft:#4a463c; --ink-faint:#8d887c;
+  --gilt:#9a7b46; --rule:rgba(22,21,15,.18);
+  --font-display:"Cormorant Garamond",Georgia,serif;
+  --font-body:"Jost","Helvetica Neue",Arial,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--paper);color:var(--ink);font-family:var(--font-body);-webkit-font-smoothing:antialiased}
+header{padding:64px 40px 26px;max-width:1400px;margin:0 auto;border-bottom:1px solid var(--rule)}
+.eyebrow{font-size:.66rem;letter-spacing:.38em;text-transform:uppercase;color:var(--gilt);margin-bottom:14px}
+h1{font-family:var(--font-display);font-weight:400;font-size:clamp(2rem,4.4vw,3.1rem);letter-spacing:.01em;line-height:1.06}
+h1 em{font-style:italic;color:var(--gilt)}
+.lede{margin-top:14px;max-width:62ch;color:var(--ink-soft);font-size:.94rem;line-height:1.75}
+main{max-width:1400px;margin:0 auto;padding:40px 40px 90px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(430px,1fr));gap:34px}
+.card{border:1px solid var(--rule);background:rgba(255,255,255,.32);display:flex;flex-direction:column}
+.shot{position:relative;aspect-ratio:14/9;overflow:hidden;background:#ded9cf;border-bottom:1px solid var(--rule)}
+.shot img{width:100%;height:100%;object-fit:cover;display:block}
+.chip{position:absolute;top:12px;left:12px;background:rgba(244,241,234,.94);border:1px solid var(--rule);
+  font-size:.58rem;letter-spacing:.24em;text-transform:uppercase;padding:6px 10px;color:var(--ink-soft)}
+.meta{padding:22px 22px 24px;display:flex;flex-direction:column;gap:11px;flex:1}
+.meta h2{font-family:var(--font-display);font-weight:400;font-size:1.5rem;line-height:1.15}
+.meta h2 span{color:var(--gilt);font-style:italic}
+.desc{color:var(--ink-soft);font-size:.83rem;line-height:1.7}
+.specs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:2px;border-top:1px solid var(--rule);padding-top:13px}
+.specs div{display:flex;flex-direction:column;gap:3px}
+.specs dt{font-size:.55rem;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-faint)}
+.specs dd{font-size:.79rem;color:var(--ink);font-variant-numeric:tabular-nums}
+.swatches{display:flex;gap:5px;margin-top:2px}
+.sw{width:26px;height:26px;border:1px solid var(--rule)}
+.open{margin-top:auto;padding-top:14px}
+.open a{display:inline-block;font-size:.63rem;letter-spacing:.22em;text-transform:uppercase;color:var(--ink);
+  text-decoration:none;border-bottom:1px solid var(--gilt);padding-bottom:3px}
+.open a:hover{color:var(--gilt)}
+footer{max-width:1400px;margin:0 auto;padding:26px 40px 70px;border-top:1px solid var(--rule);
+  font-size:.7rem;letter-spacing:.1em;color:var(--ink-faint);display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+footer a{color:var(--ink-soft);text-decoration:none;border-bottom:1px solid var(--rule)}
+@media(max-width:560px){header,main,footer{padding-left:22px;padding-right:22px}.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+  <div class="eyebrow">AHN YEONSU — Gallery Systems</div>
+  <h1>Six Themes, <em>One Hand</em></h1>
+  <p class="lede">네 개의 3D 갤러리 세트와 두 개의 문서 페이지. 각 카드는 실제 headless 렌더 캡처(1400×900)이며,
+  아래 명도 수치는 그 캡처의 픽셀에서 직접 측정한 값입니다. 카드를 누르면 살아있는 페이지로 이동합니다.</p>
+</header>
+
+<main>
+<div class="grid">
+
+  <article class="card">
+    <div class="shot"><img src="spike/shots/a.png" alt="Warm paper default theme render">
+      <div class="chip">Default · Warm Paper</div></div>
+    <div class="meta">
+      <h2>Warm Paper <span>— Baseline</span></h2>
+      <p class="desc">현행 기본 테마. 웜 페이퍼 바탕에 길트 라인, 대형 세리프 디스플레이. 사이트 전체가 이 팔레트를 기준으로 정렬됩니다.</p>
+      <div class="swatches">
+        <div class="sw" style="background:#f4f1ea"></div><div class="sw" style="background:#16150f"></div>
+        <div class="sw" style="background:#9a7b46"></div><div class="sw" style="background:#8d887c"></div>
+      </div>
+      <dl class="specs"><div><dt>Mean lum</dt><dd>241</dd></div><div><dt>p5–p95</dt><dd>228–255</dd></div><div><dt>Warm</dt><dd>81%</dd></div></dl>
+      <div class="open"><a href="variant-b.html">Open theme →</a></div>
+    </div>
+  </article>
+
+  <article class="card">
+    <div class="shot"><img src="spike/shots/dark.png" alt="Dark black-box gallery render">
+      <div class="chip">Gallery · Black Box</div></div>
+    <div class="meta">
+      <h2>Black Box <span>— Dark</span></h2>
+      <p class="desc">30×22×4.0m. 흑색 콘크리트 바닥(clearcoat 0.72), 코브 발광선, 황동 필렛 액자, 청동·거울구·현무암 3점. 작품만 빛나는 전형적 블랙박스.</p>
+      <div class="swatches">
+        <div class="sw" style="background:#0c0c0e"></div><div class="sw" style="background:#1a1a20"></div>
+        <div class="sw" style="background:#8a7145"></div><div class="sw" style="background:#4a4a54"></div>
+      </div>
+      <dl class="specs"><div><dt>Mean lum</dt><dd>64</dd></div><div><dt>p5–p95</dt><dd>34–135</dd></div><div><dt>Warm</dt><dd>5%</dd></div></dl>
+      <div class="open"><a href="variant-dark.html">Open theme →</a></div>
+    </div>
+  </article>
+
+  <article class="card">
+    <div class="shot"><img src="spike/shots/white.png" alt="White cube gallery render">
+      <div class="chip">Gallery · White Cube</div></div>
+    <div class="meta">
+      <h2>White Cube <span>— Daylit</span></h2>
+      <p class="desc">38×28×4.2m. 4×2 천창 패널로 자연광을 끌어들이는 화이트 큐브. 얇은 무광 몰딩 액자에 석고·대리석 3점.</p>
+      <div class="swatches">
+        <div class="sw" style="background:#f0efe9"></div><div class="sw" style="background:#d5d2c9"></div>
+        <div class="sw" style="background:#8d887c"></div><div class="sw" style="background:#9a7b46"></div>
+      </div>
+      <dl class="specs"><div><dt>Mean lum</dt><dd>208</dd></div><div><dt>p5–p95</dt><dd>197–236</dd></div><div><dt>Warm</dt><dd>99%</dd></div></dl>
+      <div class="open"><a href="variant-white.html">Open theme →</a></div>
+    </div>
+  </article>
+
+  <article class="card">
+    <div class="shot"><img src="spike/shots/trend.png" alt="Warm pavilion gallery render">
+      <div class="chip">Gallery · Warm Pavilion</div></div>
+    <div class="meta">
+      <h2>Warm Pavilion <span>— Trend</span></h2>
+      <p class="desc">36×26×4.4m. 라임워시 벽, 석고 펜던트 돔 2기, 아치 니치, 오크 데이터 라인, 테라코타 도자기와 원반. 2026년 전시 동향의 웜 미니멀.</p>
+      <div class="swatches">
+        <div class="sw" style="background:#dccfb9"></div><div class="sw" style="background:#c4b096"></div>
+        <div class="sw" style="background:#b0603a"></div><div class="sw" style="background:#9a7b46"></div>
+      </div>
+      <dl class="specs"><div><dt>Mean lum</dt><dd>162</dd></div><div><dt>p5–p95</dt><dd>151–176</dd></div><div><dt>Warm</dt><dd>99%</dd></div></dl>
+      <div class="open"><a href="variant-trend.html">Open theme →</a></div>
+    </div>
+  </article>
+
+  <article class="card">
+    <div class="shot"><img src="spike/shots/journeys.png" alt="Journeys page render">
+      <div class="chip">Journal · Journeys</div></div>
+    <div class="meta">
+      <h2>Journeys <span>— Travelogue</span></h2>
+      <p class="desc">여행기 페이지. 인라인 쿨그레이 17곳을 걷어내고 <code>--ink-soft</code> 토큰으로 통일했습니다. 본문 대비 1.9:1 → 8.3:1.</p>
+      <div class="swatches">
+        <div class="sw" style="background:#f4f1ea"></div><div class="sw" style="background:#16150f"></div>
+        <div class="sw" style="background:#4a463c"></div><div class="sw" style="background:#9a7b46"></div>
+      </div>
+      <dl class="specs"><div><dt>Mean lum</dt><dd>238</dd></div><div><dt>p5–p95</dt><dd>239–241</dd></div><div><dt>Cool</dt><dd>0%</dd></div></dl>
+      <div class="open"><a href="journeys.html">Open page →</a></div>
+    </div>
+  </article>
+
+  <article class="card">
+    <div class="shot"><img src="spike/shots/articles.png" alt="Articles journalism page render">
+      <div class="chip">Journal · Journalism</div></div>
+    <div class="meta">
+      <h2>Articles <span>— Journalism</span></h2>
+      <p class="desc">저널리즘 페이지. 순적 <code>#8f1616</code>을 길트 <code>#7d6236</code>으로, 쿨화이트 벽을 웜 페이퍼로 정렬했습니다.</p>
+      <div class="swatches">
+        <div class="sw" style="background:#f4f1ea"></div><div class="sw" style="background:#16150f"></div>
+        <div class="sw" style="background:#7d6236"></div><div class="sw" style="background:#4a463c"></div>
+      </div>
+      <dl class="specs"><div><dt>Mean lum</dt><dd>231</dd></div><div><dt>p5–p95</dt><dd>150–241</dd></div><div><dt>Cool</dt><dd>0%</dd></div></dl>
+      <div class="open"><a href="articles.html">Open page →</a></div>
+    </div>
+  </article>
+
+</div>
+</main>
+
+<footer>
+  <span>All captures measured from the rendered PNGs, not from the description.</span>
+  <span><a href="index.html">← Index</a></span>
+</footer>
+</body>
+</html>
