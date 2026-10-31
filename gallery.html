@@ -215,15 +215,15 @@ header.light.stuck{background:rgba(236,238,241,.78);border-bottom-color:var(--li
 
 /* ---------- 2. one plate at a time ---------- */
 .plates{background:var(--espresso-2);color:var(--sand)}
-.plate{min-height:100svh;display:grid;grid-template-columns:1.12fr .88fr;align-items:center;
-  align-content:center;gap:clamp(26px,4.5vw,74px);padding:11vh 6vw;position:relative;
+.plate{min-height:100svh;display:grid;grid-template-columns:minmax(0,1.12fr) minmax(0,.75fr);align-items:center;
+  align-content:center;gap:clamp(26px,4.5vw,74px);padding:clamp(44px,9.6vh,96px) 6vw;position:relative;
   scroll-snap-align:start;scroll-snap-stop:always}
 .plate+.plate{border-top:1px solid rgba(236,238,241,.06)}
-.pl-media{position:relative;overflow:visible;border-radius:0;background:transparent;
+.pl-media{position:relative;overflow:visible;border-radius:0;background:transparent;min-width:0;
   display:flex;align-items:center;justify-content:center}
 .pl-media img{width:100%;height:min(72svh,720px);object-fit:contain;will-change:transform,opacity;
   filter:drop-shadow(0 24px 50px rgba(0,0,0,.78))}
-.pl-text{max-width:46ch}
+.pl-text{max-width:46ch;min-width:0}
 .pl-kick{margin:0 0 14px;font-size:.62rem;letter-spacing:.34em;text-transform:uppercase;color:#a9aebb}
 .pl-kick span{color:var(--mute)}
 .pl-title{margin:0 0 12px;font-family:var(--serif);font-weight:300;font-size:clamp(2rem,4.6vw,3.6rem);
@@ -1756,6 +1756,16 @@ footer{background:var(--espresso-2);color:var(--mute);padding:56px 6vw 44px;bord
       var par = box.parentNode || pl;
       var pcs = getComputedStyle(par);
       var col = par.clientWidth - (parseFloat(pcs.paddingLeft) || 0) - (parseFloat(pcs.paddingRight) || 0);
+      /* The plate is a grid and the picture lives in its own track. Measured against the whole
+         row instead, a wide landscape print grew past its track and sat on top of the words
+         beside it — the track, not the row, is what bounds the frame. */
+      if(pcs.display === 'grid'){
+        var tracks = (pcs.gridTemplateColumns || '').split(' ');
+        if(tracks.length > 1){
+          var t0 = parseFloat(tracks[0]);
+          if(t0 > 0) col = Math.min(col, t0);
+        }
+      }
       /* the track's own content width, not its border box — max-width:100% on the frame
          resolves against this, so measuring anything wider left the print letterboxed */
       var stage = box.querySelector('.perf-stage');
