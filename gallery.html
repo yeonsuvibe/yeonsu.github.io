@@ -12,10 +12,10 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet"/>
 <style>
-:root{ --wall:#f2f1ed; --ink:#1a1815; --soft:#6b665c; --line:rgba(26,24,21,.18);
+:root{ --wall:#f2f1ed; --ink:#191a1c; --soft:#6b665c; --line:rgba(26,24,21,.18);
   --crimson:#b31b1b; --serif:'Cormorant Garamond',serif; --sans:'Jost',sans-serif;
   /* palette aligned to index.css so both pages print the same ink */
-  --gilt:#9a7b46; }
+  --gilt:#8e939c; }
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{height:100%;overflow:hidden}
 body{background:var(--wall);color:var(--ink);font-family:var(--sans);font-weight:300;-webkit-font-smoothing:antialiased}
@@ -35,7 +35,7 @@ header *{pointer-events:auto}
   opacity:0;transform:translateY(14px);transition:opacity .6s,transform .6s;pointer-events:none}
 .tourcard.show{opacity:1;transform:translateY(0)}
 .tourcard .pl{font-size:.55rem;letter-spacing:.34em;text-transform:uppercase;color:#8f1616}
-.tourcard .date{font-family:var(--serif);font-style:italic;font-size:2.05rem;font-weight:400;letter-spacing:.01em;margin:7px 0 3px;color:#14120f}
+.tourcard .date{font-family:var(--serif);font-style:italic;font-size:2.05rem;font-weight:400;letter-spacing:.01em;margin:7px 0 3px;color:#131416}
 .tourcard .med{font-size:.54rem;letter-spacing:.24em;text-transform:uppercase;color:#4f4b43;margin-bottom:11px}
 .tourcard p{font-size:.85rem;line-height:1.88;color:#1d1a16;font-weight:400}
 .tourcard p.ko{margin-top:7px;font-size:.76rem;color:#38342c;line-height:1.78;font-weight:400}
@@ -70,7 +70,7 @@ header *{pointer-events:auto}
   /* Chair note 10-29: a full-bleed sheet hid the wall it hung on, so two sections on
      different walls still looked like the same page in the same place. The sheet now
      sits inset with its own shadow, leaving the wall and the corner visible around it. */
-  box-shadow:0 26px 64px rgba(44,33,20,.30),0 2px 0 rgba(255,255,255,.55) inset;
+  box-shadow:0 26px 64px rgba(38,39,42,.30),0 2px 0 rgba(255,255,255,.55) inset;
   transform-origin:50% 50%;overflow:hidden}
 .wallpage.show{display:flex}
 /* Each section owns ONE wall sheet. The EC record sits on the press wall's own plane,
@@ -115,12 +115,12 @@ body.sheet .controls,body.sheet .hint{display:none}          /* arrows belong to
 .wallpage.recede{transform:scale(.78) translateY(1.4%);opacity:.18}
 @media (max-width:760px){ .wp-card{width:100%;height:100%;border:0}
   /* the desktop inset would leave a 183px-wide sheet on a 375px screen */
-  .wallpage{inset:68px 10px 14px 10px;box-shadow:0 10px 26px rgba(44,33,20,.22),0 1px 0 rgba(255,255,255,.5) inset} }
+  .wallpage{inset:68px 10px 14px 10px;box-shadow:0 10px 26px rgba(38,39,42,.22),0 1px 0 rgba(255,255,255,.5) inset} }
 /* ---- CSS-3D wall sheets: the page DOM is planted ON the wall plane ---- */
 #css3d{position:fixed;inset:0;z-index:6;pointer-events:none;opacity:0;transition:opacity .5s ease}
 #css3d.live{opacity:1;pointer-events:auto}
 .sheet-pane{position:absolute;left:0;top:0;overflow:hidden;background:transparent;
-  font:400 15px/1.5 Georgia,serif;color:#1a1815}
+  font:400 15px/1.5 Georgia,serif;color:#191a1c}
 .sheet-pane iframe{width:100%;height:100%;border:0;background:transparent;color-scheme:light}
 .sheet-cap{position:absolute;left:0;right:0;top:0;display:flex;justify-content:space-between;align-items:center;
   padding:.6% 1%;pointer-events:none;font:500 .5em/1 var(--sans);letter-spacing:.3em;text-transform:uppercase;color:#fff;
@@ -129,30 +129,30 @@ body.sheet .controls,body.sheet .hint{display:none}          /* arrows belong to
   cursor:pointer;padding:.5em .9em;font:inherit;letter-spacing:.22em;text-transform:uppercase;border-radius:2px}
 
 /* ===== SET 4 — WARM PAVILION (persona: quiet-luxury, limewash + oak + terracotta) ===== */
-:root{ --wall:#efe7da; --ink:#2a231c; --soft:#7a6a55; --line:rgba(42,35,28,.18);
-  --crimson:#b5643c; --gilt:#a8894f; }
+:root{ --wall:#efe7da; --ink:#2a231c; --soft:#74777c; --line:rgba(36,37,40,.18);
+  --crimson:#b5643c; --gilt:#9a9fa8; }
 body{background:var(--wall);color:var(--ink)}
 .dnav{color:var(--soft)}
 .dnav a.on,.dnav a.active{color:var(--ink);border-bottom:1px solid var(--crimson)}
 .tourcard{background:rgba(247,241,231,.7)}
 .tourcard .pl{color:var(--crimson)}
-.tourcard .date{color:#241e18}
+.tourcard .date{color:#1f2124}
 .tourcard .med{color:#6b5b47}
 .tourcard p{color:#332b22}
 .tourcard p.ko{color:#4a3f33}
-.ctl{border-color:rgba(42,35,28,.5);background:rgba(252,247,239,.9)}
+.ctl{border-color:rgba(36,37,40,.5);background:rgba(252,247,239,.9)}
 .ctl:hover{background:var(--ink);color:#f7f1e7}
 .homepage{background:rgba(240,232,220,.52)}
 /* Halo pass — shared by every HOME text layer. Three stacked shadows do the work:
    a 1-2px near-white rim cuts the letter off the busy 3D wall behind it, a wide
    soft glow lifts the black type off the paper, and a faint warm drop keeps the
    thin gold kicker from dissolving into the beige. */
-.hp-kick{color:#7d5820;text-shadow:0 0 2px rgba(255,253,248,.98),0 0 10px rgba(255,253,248,.95),0 0 22px rgba(255,253,248,.85),0 1px 2px rgba(44,32,18,.55)}   /* 5.18:1 on the HOME paper — the global --gilt (3.22:1) failed AA for 0.68rem */
-.hp-name{color:#241e18;text-shadow:0 0 2px rgba(255,253,248,.98),0 0 18px rgba(255,253,248,.98),0 0 46px rgba(255,253,248,.92),0 2px 5px rgba(30,24,18,.18)}
-.hp-lede{color:#3c3830;text-shadow:0 0 2px rgba(255,253,248,.98),0 0 14px rgba(255,253,248,.98),0 0 34px rgba(255,253,248,.9),0 1px 3px rgba(38,30,20,.4)}
-.hp-rule{background:rgba(42,35,28,.4)}
-.hp-meta{color:#3c3830;text-shadow:0 0 2px rgba(255,253,248,.98),0 0 10px rgba(255,253,248,.95),0 1px 2px rgba(44,32,18,.5)}
-.hint{color:#7a6a55}
+.hp-kick{color:#6f737b;text-shadow:0 0 2px rgba(255,253,248,.98),0 0 10px rgba(255,253,248,.95),0 0 22px rgba(255,253,248,.85),0 1px 2px rgba(38,39,42,.55)}   /* 5.18:1 on the HOME paper — the global --gilt (3.22:1) failed AA for 0.68rem */
+.hp-name{color:#1f2124;text-shadow:0 0 2px rgba(255,253,248,.98),0 0 18px rgba(255,253,248,.98),0 0 46px rgba(255,253,248,.92),0 2px 5px rgba(26,27,29,.18)}
+.hp-lede{color:#383a3e;text-shadow:0 0 2px rgba(255,253,248,.98),0 0 14px rgba(255,253,248,.98),0 0 34px rgba(255,253,248,.9),0 1px 3px rgba(38,30,20,.4)}
+.hp-rule{background:rgba(36,37,40,.4)}
+.hp-meta{color:#383a3e;text-shadow:0 0 2px rgba(255,253,248,.98),0 0 10px rgba(255,253,248,.95),0 1px 2px rgba(38,39,42,.5)}
+.hint{color:#74777c}
 
 </style>
 <script type="importmap">{"imports":{"three":"./museum/vendor/three.module.min.js"}}</script>
