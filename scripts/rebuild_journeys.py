@@ -45,6 +45,33 @@ VENUE = {  # folder -> (English title, one-line story)
     "프랑스_펫띠팔레": ("Petit Palais, Paris", "The Belle Époque glass atrium of the city's fine-arts palace."),
 }
 
+PLACE = {  # folder -> (country, city) sort keys for place-based grouping
+    "프랑스_오르세미술관": ("France", "Paris", 1),
+    "프랑스_루브르박물관": ("France", "Paris", 2),
+    "프랑스_오랑주리미술관": ("France", "Paris", 3),
+    "프랑스_파리부르스드코메르스": ("France", "Paris", 4),
+    "프랑스_팔레드도쿄": ("France", "Paris", 5),
+    "프랑스_파리시립현대미술관": ("France", "Paris", 6),
+    "프랑스_자크뮈르미술관": ("France", "Paris", 7),
+    "프랑스_펫띠팔레": ("France", "Paris", 8),
+    "프랑스_파리오페라가르니에": ("France", "Paris", 9),
+    "프랑스_베르사유궁": ("France", "Versailles", 1),
+    "이탈리아_판테온": ("Italy", "Rome", 1),
+    "이탈리아_산루이지데이프란체시": ("Italy", "Rome", 2),
+    "바티칸_바티칸박물관": ("Italy", "Rome", 3),
+    "이탈리아_보르게세미술관": ("Italy", "Rome", 4),
+    "이탈리아_MAXXI현대미술관": ("Italy", "Rome", 5),
+    "이탈리아_로마국립현대미술관": ("Italy", "Rome", 6),
+    "이탈리아_우피치미술관": ("Italy", "Florence", 1),
+    "이탈리아_피렌체첸트로스토리카": ("Italy", "Florence", 2),
+    "이탈리아_베네치아": ("Italy", "Venice", 1),
+    "이탈리아_베네치아비엔날레": ("Italy", "Venice", 2),
+    "이탈리아_밀라노오페라하우스": ("Italy", "Milan", 1),
+    "스위스_취리히미술관": ("Switzerland", "Zurich", 1),
+    "독일_슈타델미술관": ("Germany", "Frankfurt", 1),
+    "일본_오사카엑스포": ("Japan", "Osaka", 1),
+}
+
 
 def load_items():
     items = []
@@ -85,24 +112,15 @@ def make_thumb(folder, name, dt_hint):
 
 
 def chapters(items):
-    """One chapter per (venue, visit-cluster). Cluster splits on >2-day gap."""
+    """One chapter per venue, grouped by place (country, city). No dates."""
     by_venue = defaultdict(list)
     for it in items:
         by_venue[it["folder"]].append(it)
     chs = []
     for folder, its in by_venue.items():
         its.sort(key=lambda x: (x["dt"] or datetime(1900, 1, 1)))
-        cur, last = [], None
-        for it in its:
-            if last and it["dt"] and (it["dt"] - last).days > 2:
-                chs.append((folder, cur))
-                cur = []
-            cur.append(it)
-            if it["dt"]:
-                last = it["dt"]
-        if cur:
-            chs.append((folder, cur))
-    chs.sort(key=lambda c: min((i["dt"] or datetime(1900, 1, 1)) for i in c[1]))
+        chs.append((folder, its))
+    chs.sort(key=lambda c: (PLACE[c[0]], VENUE[c[0]][0].lower()))
     return chs
 
 
@@ -132,14 +150,14 @@ HTML_HEAD = """<!DOCTYPE html>
 <section class="section light" id="museums">
 <div class="container">
 <h2 class="section-title">Cultural Journeys</h2>
-<p class="section-subtitle">Museums and cultural sites around the world, in the order they were visited.</p>
+<p class="section-subtitle">Museums and cultural sites, grouped by city.</p>
 <div class="timeline">
 """
 
 FOOT_TMPL = """</div>
 </div></section>
 <footer>
-<p>&copy; 2026 YEONSU AHN &mdash; Cultural Journeys.</p>
+<p>YEONSU AHN &mdash; Cultural Journeys.</p>
 </footer>
 <script src="script.js"></script>
 %(wall)s
@@ -165,28 +183,31 @@ def main():
     wall = old[a:b + len("</script>")]
 
     items = load_items()
-    no_dt = [i for i in items if not i["dt"]]
-    if no_dt:
-        raise SystemExit(f"ABORT: {len(no_dt)} images without EXIF date: {no_dt[:3]}")
     chs = chapters(items)
 
+    CITY_CSS = ('style="text-align:center;margin:64px 0 28px;padding-bottom:14px;'
+                'border-bottom:1px solid var(--paper-deep);font-family:\'Cormorant Garamond\',serif;'
+                'font-size:2.1rem;letter-spacing:.3em;text-transform:uppercase;color:var(--ink)"')
     out = [HTML_HEAD]
+    seen_city = None
     for folder, its in chs:
         title, story = VENUE[folder]
-        d0 = min(i["dt"] for i in its).strftime("%Y-%m-%d")
+        country, city, _ = PLACE[folder]
+        if (country, city) != seen_city:
+            seen_city = (country, city)
+            label = f"{city}, {country}"
+            n_city = sum(len(v) for f, v in chs if PLACE[f][0] == country and PLACE[f][1] == city)
+            out.append(f'<div class="city-header" {CITY_CSS}>{label} <span style="font-size:1.1rem;letter-spacing:.15em;color:var(--ink-faint)">&middot; {n_city} photos</span></div>\n')
         out.append('<div class="timeline-chapter">\n')
-        out.append(f"<h3>{title} ({d0})</h3>\n")
+        out.append(f"<h3>{title}</h3>\n")
         out.append(f'<p class="chapter-desc">Photos: {len(its)}</p><p class="museum-story">{story}</p>\n')
         out.append("</div>\n")
         for it in its:
             thumb_rel = make_thumb(it["folder"], it["name"], it["dt"])
             src = "photos/" + thumb_rel
-            date = it["dt"].strftime("%Y-%m-%d")
             out.append('<div class="timeline-item" data-animate="">\n<div class="timeline-content">\n')
             out.append(f'<img alt="{title}" loading="lazy" src="{src}"/>\n')
-            out.append('<div class="timeline-overlay">\n')
-            out.append(f'<span class="date">{date}</span>\n\n')
-            out.append("</div>\n</div>\n</div>\n")
+            out.append("</div>\n</div>\n")
     out.append(FOOT_TMPL % {"wall": wall})
     html = "".join(out)
 
@@ -201,7 +222,7 @@ def main():
         fh.write(html)
     print(f"chapters={len(chs)} photos={len(items)} -> {OUT}")
     for folder, its in chs:
-        print(f"  {VENUE[folder][0]}: {len(its)} @ {min(i['dt'] for i in its):%Y-%m-%d}")
+        print(f"  {PLACE[folder][1]:<12} {VENUE[folder][0]}: {len(its)}")
 
 
 if __name__ == "__main__":
