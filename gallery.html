@@ -228,8 +228,19 @@ header.light.stuck{background:rgba(236,238,241,.78);border-bottom-color:var(--li
 .pl-kick span{color:var(--mute)}
 .pl-title{margin:0 0 12px;font-family:var(--serif);font-weight:300;font-size:clamp(2rem,4.6vw,3.6rem);
   line-height:1.03;letter-spacing:-.015em}
-.pl-med{margin:0 0 22px;font-size:.7rem;letter-spacing:.22em;text-transform:uppercase;color:var(--mute)}
+.pl-med{margin:0 0 10px;font-size:.7rem;letter-spacing:.22em;text-transform:uppercase;color:var(--mute)}
+.pl-size{margin:0 0 22px;font-size:.62rem;letter-spacing:.24em;text-transform:uppercase;color:#8b909c;font-variant-numeric:tabular-nums}
+.pl-size .pl-dot{margin:0 .55em;color:#5c626e}
 .pl-blurb{margin:0;font-family:var(--serif);font-size:clamp(1.05rem,1.7vw,1.35rem);line-height:1.62;color:#d5d7da;font-weight:300}
+/* full artist statement stays folded: the plate keeps its quiet, one-click opens the long text */
+.pl-more{margin:20px 0 0;border-top:1px solid rgba(255,255,255,.14);padding-top:14px;max-width:46ch}
+.pl-more summary{cursor:pointer;list-style:none;font-size:.62rem;letter-spacing:.28em;text-transform:uppercase;
+  color:#a9aebb;transition:color .25s ease}
+.pl-more summary::-webkit-details-marker{display:none}
+.pl-more summary:hover{color:#e6e7ea}
+.pl-more summary::after{content:"+";float:right;transition:transform .25s ease}
+.pl-more[open] summary::after{transform:rotate(45deg)}
+.pl-more p{margin:14px 0 0;font-size:.92rem;line-height:1.78;color:#a9aebb;font-weight:300}
 /* the elements come in from outside the page and settle into place: picture from the left,
    words from the right, and the words stagger line by line so the block assembles */
 .plate{overflow:hidden}
@@ -325,6 +336,9 @@ header.light.stuck{background:rgba(236,238,241,.78);border-bottom-color:var(--li
 #counter b{font-family:var(--serif);font-size:1.5rem;font-weight:400;letter-spacing:0}
 #counter s{text-decoration:none;color:var(--mute)}
 @media (max-width:860px){#counter{left:18px;bottom:18px}}
+/* on one column the words run the full width, so a fixed number would sit on top of them;
+   the plate already prints "Plate 05 / 15" in its own text */
+@media (max-width:860px){#counter{display:none}}
 
 /* ---------- 3. journalism ---------- */
 .journal{background:var(--sand);color:var(--ink);padding:0 6vw}
@@ -437,31 +451,28 @@ footer{background:var(--espresso-2);color:var(--mute);padding:56px 6vw 44px;bord
     <a href="#gallery" data-sec="gallery">Art Gallery</a>
     <a href="#journeys" data-sec="journeys">Cultural Journeys</a>
     <a href="#journalism" data-sec="journalism">Journalism</a>
-  </nav>
-</header>
+   </div>
+  </header>
 
-<!-- 0. the name, then the room -->
-<section class="home" id="home" data-theme="light">
-  <div class="mosaic wall home-wall" id="home-mosaic" aria-hidden="true">
-    <figure class="tile" style="--i:1" data-reveal data-ar="1.4801"><img src="museum/art/_DSF7519.jpg" alt="Kept Warm" loading="eager" decoding="async"></figure>
-    <figure class="tile" style="--i:2" data-reveal data-ar="0.7256"><img src="museum/art/_DSF7521.jpg" alt="Leaves by the Bed" decoding="async"></figure>
-    <figure class="tile" style="--i:3" data-reveal data-ar="1.1687"><img src="museum/art/_DSF7523.jpg" alt="City from Above" decoding="async"></figure>
-    <figure class="tile" style="--i:4" data-reveal data-ar="0.8638"><img src="museum/art/_DSF7525.jpg" alt="Turned Over" decoding="async"></figure>
-    <figure class="tile" style="--i:5" data-reveal data-ar="1.1722"><img src="museum/art/_DSF7527.jpg" alt="What the Day Left" decoding="async"></figure>
-    <figure class="tile" style="--i:6" data-reveal data-ar="1.0044"><img src="museum/art/_DSF7535.jpg" alt="Who Is Listening" decoding="async"></figure>
-    <figure class="tile" style="--i:7" data-reveal data-ar="1.3333"><img src="museum/art/_DSF7543.jpg" alt="Covered Valley" decoding="async"></figure>
-    <figure class="tile" style="--i:8" data-reveal data-ar="0.6631"><img src="museum/art/_DSF7545.jpg" alt="Held Together" decoding="async"></figure>
-    <figure class="tile" style="--i:9" data-reveal data-ar="0.8237"><img src="museum/art/_DSF7549.jpg" alt="Under the Ice" decoding="async"></figure>
-    <figure class="tile" style="--i:10" data-reveal data-ar="1.3267"><img src="museum/art/_DSF7551.jpg" alt="The Shell" decoding="async"></figure>
-    <figure class="tile" style="--i:11" data-reveal data-ar="0.7144"><img src="museum/art/_DSF7555.jpg" alt="Another Sky" decoding="async"></figure>
-    <figure class="tile" style="--i:12" data-reveal data-ar="0.7512"><img src="museum/art/_DSF7559.jpg" alt="Black Panels, Fish" decoding="async"></figure>
-    <figure class="tile" style="--i:13" data-reveal data-ar="0.75"><img src="museum/art/_DSF7566.jpg" alt="Roots for a Head" decoding="async"></figure>
-    <figure class="tile" style="--i:14" data-reveal data-ar="1.3333"><img src="museum/art/_DSF7572.jpg" alt="Sea Inside a Shell" decoding="async"></figure>
-    <figure class="tile" style="--i:15" data-reveal data-ar="1.4995"><img src="museum/art/_DSF7580.jpg" alt="Standing, Lying" decoding="async"></figure>
-    <figure class="tile" style="--i:16" data-reveal data-ar="1.3333"><img src="museum/art/_DSF7589.jpg" alt="One Line, Many Bodies" decoding="async"></figure>
-    <figure class="tile" style="--i:17" data-reveal data-ar="0.7643"><img src="photos/art/performance/again_01.jpg" alt="Again, frame 1" decoding="async"></figure>
-    <figure class="tile" style="--i:18" data-reveal data-ar="0.5621"><img src="photos/art/performance/release_01.jpg" alt="Release, frame 1" decoding="async"></figure>
-  </div>
+  <!-- 0. the name, then the room -->
+  <section class="home" id="home" data-theme="light">
+    <div class="mosaic wall home-wall" id="home-mosaic" aria-hidden="true">
+      <figure class="tile" style="--i:1" data-reveal data-ar="1.4801"><img src="museum/art/_DSF7519.jpg" alt="" loading="eager" decoding="async"></figure>
+      <figure class="tile" style="--i:2" data-reveal data-ar="0.8638"><img src="museum/art/_DSF7525.jpg" alt="" decoding="async"></figure>
+      <figure class="tile" style="--i:3" data-reveal data-ar="1.3267"><img src="museum/art/_DSF7551.jpg" alt="" decoding="async"></figure>
+      <figure class="tile" style="--i:4" data-reveal data-ar="0.6631"><img src="museum/art/_DSF7545.jpg" alt="" decoding="async"></figure>
+      <figure class="tile" style="--i:5" data-reveal data-ar="0.7512"><img src="museum/art/_DSF7559.jpg" alt="" decoding="async"></figure>
+      <figure class="tile" style="--i:6" data-reveal data-ar="1.4995"><img src="museum/art/_DSF7580.jpg" alt="" decoding="async"></figure>
+      <figure class="tile" style="--i:7" data-reveal data-ar="0.7256"><img src="museum/art/_DSF7521.jpg" alt="" decoding="async"></figure>
+      <figure class="tile" style="--i:8" data-reveal data-ar="1.1722"><img src="museum/art/_DSF7527.jpg" alt="" decoding="async"></figure>
+      <figure class="tile" style="--i:9" data-reveal data-ar="0.75"><img src="museum/art/_DSF7566.jpg" alt="" decoding="async"></figure>
+      <figure class="tile" style="--i:10" data-reveal data-ar="1.3333"><img src="museum/art/_DSF7572.jpg" alt="" decoding="async"></figure>
+      <figure class="tile" style="--i:11" data-reveal data-ar="1.3333"><img src="museum/art/_DSF7589.jpg" alt="" decoding="async"></figure>
+      <figure class="tile" style="--i:12" data-reveal data-ar="0.7144"><img src="museum/art/_DSF7555.jpg" alt="" decoding="async"></figure>
+      <figure class="tile" style="--i:13" data-reveal data-ar="1.0044"><img src="museum/art/_DSF7535.jpg" alt="" decoding="async"></figure>
+      <figure class="tile" style="--i:14" data-reveal data-ar="0.7643"><img src="photos/art/performance/again_01.jpg" alt="" decoding="async"></figure>
+      <figure class="tile" style="--i:15" data-reveal data-ar="0.5621"><img src="photos/art/performance/release_03.jpg" alt="" decoding="async"></figure>
+    </div>
   <div class="home-inner">
     <p class="hp-kick">Artist &amp; Scholar · 2018 — 2026</p>
     <h1 class="hp-name">YEONSU AHN</h1>
@@ -480,288 +491,314 @@ footer{background:var(--espresso-2);color:var(--mute);padding:56px 6vw 44px;bord
     <div class="hero-meta">Drawing · Painting · Installation<br>2026</div>
   </div>
   <div class="mosaic" id="mosaic">
+
 <figure class="tile" style="--i:1" data-reveal data-ar="1.4801">
-  <img src="museum/art/_DSF7519.jpg" alt="Kept Warm" loading="lazy" decoding="async">
-  <figcaption><span class="tn">01</span><span class="tt">Kept Warm</span></figcaption>
+  <img src="museum/art/_DSF7519.jpg" alt="twinniwt" loading="lazy" decoding="async">
+  <figcaption><span class="tn">01</span><span class="tt">twinniwt</span></figcaption>
 </figure>
-<figure class="tile" style="--i:2" data-reveal data-ar="0.7256">
-  <img src="museum/art/_DSF7521.jpg" alt="Leaves by the Bed" loading="lazy" decoding="async">
-  <figcaption><span class="tn">02</span><span class="tt">Leaves by the Bed</span></figcaption>
+
+<figure class="tile" style="--i:2" data-reveal data-ar="0.8638">
+  <img src="museum/art/_DSF7525.jpg" alt="learning gravity again" loading="lazy" decoding="async">
+  <figcaption><span class="tn">02</span><span class="tt">learning gravity again</span></figcaption>
 </figure>
-<figure class="tile" style="--i:3" data-reveal data-ar="1.1687">
-  <img src="museum/art/_DSF7523.jpg" alt="City from Above" loading="lazy" decoding="async">
-  <figcaption><span class="tn">03</span><span class="tt">City from Above</span></figcaption>
+
+<figure class="tile" style="--i:3" data-reveal data-ar="1.3267">
+  <img src="museum/art/_DSF7551.jpg" alt="seaward" loading="lazy" decoding="async">
+  <figcaption><span class="tn">03</span><span class="tt">seaward</span></figcaption>
 </figure>
-<figure class="tile" style="--i:4" data-reveal data-ar="0.8638">
-  <img src="museum/art/_DSF7525.jpg" alt="Turned Over" loading="lazy" decoding="async">
-  <figcaption><span class="tn">04</span><span class="tt">Turned Over</span></figcaption>
+
+<figure class="tile" style="--i:4" data-reveal data-ar="0.6631">
+  <img src="museum/art/_DSF7545.jpg" alt="was healing necessary?" loading="lazy" decoding="async">
+  <figcaption><span class="tn">04</span><span class="tt">was healing necessary?</span></figcaption>
 </figure>
-<figure class="tile" style="--i:5" data-reveal data-ar="1.1722">
-  <img src="museum/art/_DSF7527.jpg" alt="What the Day Left" loading="lazy" decoding="async">
-  <figcaption><span class="tn">05</span><span class="tt">What the Day Left</span></figcaption>
+
+<figure class="tile" style="--i:5" data-reveal data-ar="0.7512">
+  <img src="museum/art/_DSF7559.jpg" alt="Clearer in the dark" loading="lazy" decoding="async">
+  <figcaption><span class="tn">05</span><span class="tt">Clearer in the dark</span></figcaption>
 </figure>
-<figure class="tile" style="--i:6" data-reveal data-ar="1.0044">
-  <img src="museum/art/_DSF7535.jpg" alt="Who Is Listening" loading="lazy" decoding="async">
-  <figcaption><span class="tn">06</span><span class="tt">Who Is Listening</span></figcaption>
+
+<figure class="tile" style="--i:6" data-reveal data-ar="1.4995">
+  <img src="museum/art/_DSF7580.jpg" alt="What the Body Imagines" loading="lazy" decoding="async">
+  <figcaption><span class="tn">06</span><span class="tt">What the Body Imagines</span></figcaption>
 </figure>
-<figure class="tile" style="--i:7" data-reveal data-ar="1.3333">
-  <img src="museum/art/_DSF7543.jpg" alt="Covered Valley" loading="lazy" decoding="async">
-  <figcaption><span class="tn">07</span><span class="tt">Covered Valley</span></figcaption>
+
+<figure class="tile" style="--i:7" data-reveal data-ar="0.7256">
+  <img src="museum/art/_DSF7521.jpg" alt="Still, life" loading="lazy" decoding="async">
+  <figcaption><span class="tn">07</span><span class="tt">Still, life</span></figcaption>
 </figure>
-<figure class="tile" style="--i:8" data-reveal data-ar="0.6631">
-  <img src="museum/art/_DSF7545.jpg" alt="Held Together" loading="lazy" decoding="async">
-  <figcaption><span class="tn">08</span><span class="tt">Held Together</span></figcaption>
+
+<figure class="tile" style="--i:8" data-reveal data-ar="1.1722">
+  <img src="museum/art/_DSF7527.jpg" alt="2kg (4.41lb)" loading="lazy" decoding="async">
+  <figcaption><span class="tn">08</span><span class="tt">2kg (4.41lb)</span></figcaption>
 </figure>
-<figure class="tile" style="--i:9" data-reveal data-ar="0.8237">
-  <img src="museum/art/_DSF7549.jpg" alt="Under the Ice" loading="lazy" decoding="async">
-  <figcaption><span class="tn">09</span><span class="tt">Under the Ice</span></figcaption>
+
+<figure class="tile" style="--i:9" data-reveal data-ar="0.75">
+  <img src="museum/art/_DSF7566.jpg" alt="Resilience" loading="lazy" decoding="async">
+  <figcaption><span class="tn">09</span><span class="tt">Resilience</span></figcaption>
 </figure>
-<figure class="tile" style="--i:10" data-reveal data-ar="1.3267">
-  <img src="museum/art/_DSF7551.jpg" alt="The Shell" loading="lazy" decoding="async">
-  <figcaption><span class="tn">10</span><span class="tt">The Shell</span></figcaption>
+
+<figure class="tile" style="--i:10" data-reveal data-ar="1.3333">
+  <img src="museum/art/_DSF7572.jpg" alt="a home to leave" loading="lazy" decoding="async">
+  <figcaption><span class="tn">10</span><span class="tt">a home to leave</span></figcaption>
 </figure>
-<figure class="tile" style="--i:11" data-reveal data-ar="0.7144">
-  <img src="museum/art/_DSF7555.jpg" alt="Another Sky" loading="lazy" decoding="async">
-  <figcaption><span class="tn">11</span><span class="tt">Another Sky</span></figcaption>
+
+<figure class="tile" style="--i:11" data-reveal data-ar="1.3333">
+  <img src="museum/art/_DSF7589.jpg" alt="line of contact" loading="lazy" decoding="async">
+  <figcaption><span class="tn">11</span><span class="tt">line of contact</span></figcaption>
 </figure>
-<figure class="tile" style="--i:12" data-reveal data-ar="0.7512">
-  <img src="museum/art/_DSF7559.jpg" alt="Black Panels, Fish" loading="lazy" decoding="async">
-  <figcaption><span class="tn">12</span><span class="tt">Black Panels, Fish</span></figcaption>
+
+<figure class="tile" style="--i:12" data-reveal data-ar="0.7144">
+  <img src="museum/art/_DSF7555.jpg" alt="room dissolved" loading="lazy" decoding="async">
+  <figcaption><span class="tn">12</span><span class="tt">room dissolved</span></figcaption>
 </figure>
-<figure class="tile" style="--i:13" data-reveal data-ar="0.75">
-  <img src="museum/art/_DSF7566.jpg" alt="Roots for a Head" loading="lazy" decoding="async">
-  <figcaption><span class="tn">13</span><span class="tt">Roots for a Head</span></figcaption>
+
+<figure class="tile" style="--i:13" data-reveal data-ar="1.0044">
+  <img src="museum/art/_DSF7535.jpg" alt="Englishman in New York" loading="lazy" decoding="async">
+  <figcaption><span class="tn">13</span><span class="tt">Englishman in New York</span></figcaption>
 </figure>
-<figure class="tile" style="--i:14" data-reveal data-ar="1.3333">
-  <img src="museum/art/_DSF7572.jpg" alt="Sea Inside a Shell" loading="lazy" decoding="async">
-  <figcaption><span class="tn">14</span><span class="tt">Sea Inside a Shell</span></figcaption>
+
+<figure class="tile" style="--i:14" data-reveal data-ar="0.7643">
+  <img src="photos/art/performance/again_01.jpg" alt="ready, action" loading="lazy" decoding="async">
+  <figcaption><span class="tn">14</span><span class="tt">ready, action</span></figcaption>
 </figure>
-<figure class="tile" style="--i:15" data-reveal data-ar="1.4995">
-  <img src="museum/art/_DSF7580.jpg" alt="Standing, Lying" loading="lazy" decoding="async">
-  <figcaption><span class="tn">15</span><span class="tt">Standing, Lying</span></figcaption>
+
+<figure class="tile" style="--i:15" data-reveal data-ar="0.5621">
+  <img src="photos/art/performance/release_03.jpg" alt="independence day" loading="lazy" decoding="async">
+  <figcaption><span class="tn">15</span><span class="tt">independence day</span></figcaption>
 </figure>
-<figure class="tile" style="--i:16" data-reveal data-ar="1.3333">
-  <img src="museum/art/_DSF7589.jpg" alt="One Line, Many Bodies" loading="lazy" decoding="async">
-  <figcaption><span class="tn">16</span><span class="tt">One Line, Many Bodies</span></figcaption>
-</figure>
-<figure class="tile perf" style="--i:17" data-reveal data-perf data-frames="photos/art/performance/again_01.jpg|photos/art/performance/again_02.jpg|photos/art/performance/again_03.jpg" data-dur="1500" data-ar="0.7643">
-  <img src="photos/art/performance/again_01.jpg" alt="Again, frame 1" class="on" decoding="async">
-  <img src="photos/art/performance/again_02.jpg" alt="Again, frame 2" loading="lazy" decoding="async">
-  <img src="photos/art/performance/again_03.jpg" alt="Again, frame 3" loading="lazy" decoding="async">
-  <figcaption><span class="tn">17</span><span class="tt">Again</span></figcaption>
-</figure>
-<figure class="tile perf" style="--i:18" data-reveal data-perf data-frames="photos/art/performance/release_01.jpg|photos/art/performance/release_02.jpg|photos/art/performance/release_03.jpg|photos/art/performance/release_04.jpg|photos/art/performance/release_05.jpg" data-dur="1500" data-ar="0.5621">
-  <img src="photos/art/performance/release_01.jpg" alt="Release, frame 1" class="on" decoding="async">
-  <img src="photos/art/performance/release_02.jpg" alt="Release, frame 2" loading="lazy" decoding="async">
-  <img src="photos/art/performance/release_03.jpg" alt="Release, frame 3" loading="lazy" decoding="async">
-  <img src="photos/art/performance/release_04.jpg" alt="Release, frame 4" loading="lazy" decoding="async">
-  <img src="photos/art/performance/release_05.jpg" alt="Release, frame 5" loading="lazy" decoding="async">
-  <figcaption><span class="tn">18</span><span class="tt">Release</span></figcaption>
-</figure>
-  </div>
+  
   <div class="hero-cue">Scroll <i></i></div>
 </section>
 
 <!-- 2. plate by plate -->
 <div class="plates" id="plates">
 <section class="plate" id="pl01" data-plate data-idx="1">
-  <div class="pl-media"><img src="museum/art/_DSF7519.jpg" alt="Kept Warm" loading="lazy" decoding="async"></div>
+  <div class="pl-media"><img src="museum/art/_DSF7519.jpg" alt="twinniwt" loading="lazy" decoding="async"></div>
   <div class="pl-text">
     <a class="pl-back" href="#gallery">Back to the wall</a>
-    <p class="pl-kick">Plate 01 <span>/ 18</span></p>
-    <h3 class="pl-title">Kept Warm</h3>
-    <p class="pl-med">graphite on paper</p>
-    <p class="pl-blurb">A snow leopard and a hooded child keep the same silence; a cupped hand guards the last warm thing.</p>
+    <p class="pl-kick">Plate 01 <span>/ 15</span></p>
+    <h3 class="pl-title">twinniwt</h3>
+    <p class="pl-med">Charcoal on paper</p>
+    <p class="pl-size">20 × 29 in (H × W)<span class="pl-dot">·</span>2025</p>
+    <p class="pl-blurb">This self-portrait depicts my childhood with my older twin sister, with me on the right. Our resemblance once made my spinal difference a source of inferiority. Through the portrait, I reconsider that difference as part of an identity shaped by my body and experiences distinct from hers.</p>
+    <details class="pl-more">
+      <summary>Artist's statement</summary>
+      <p>This self-portrait explores how I find my identity through differences from the person who resembles me most: my older twin sister. Depicting our childhood, I appear on the right. My sister was both my likeness and a mirror through which I understood myself. Although we were born on the same day and grew up in similar environments, only I developed a spinal deformity. I wondered why my body was different and compared it with hers, seeing the difference as a deficiency. Gilles Deleuze&#x27;s Difference and Repetition offered another way to understand my body. Rather than treating difference as a failure to meet a common standard, I began to recognize it as an expression of individuality. Through this portrait, I revisit the resemblance that once intensified my insecurity and reconsider what separates us. My body is no longer measured solely against my sister&#x27;s. Its particular form and the experiences it carries become a part of how I understand myself as a person with an identity of my own.</p>
+    </details>
   </div>
 </section>
 <section class="plate" id="pl02" data-plate data-idx="2">
-  <div class="pl-media"><img src="museum/art/_DSF7521.jpg" alt="Leaves by the Bed" loading="lazy" decoding="async"></div>
+  <div class="pl-media"><img src="museum/art/_DSF7525.jpg" alt="learning gravity again" loading="lazy" decoding="async"></div>
   <div class="pl-text">
     <a class="pl-back" href="#gallery">Back to the wall</a>
-    <p class="pl-kick">Plate 02 <span>/ 18</span></p>
-    <h3 class="pl-title">Leaves by the Bed</h3>
-    <p class="pl-med">graphite on paper</p>
-    <p class="pl-blurb">A drip stand waits by a bed while the leaves outside burn green, asking nothing of the body.</p>
+    <p class="pl-kick">Plate 02 <span>/ 15</span></p>
+    <h3 class="pl-title">learning gravity again</h3>
+    <p class="pl-med">Oil on canvas</p>
+    <p class="pl-size">21 × 18 in (H × W)<span class="pl-dot">·</span>2026</p>
+    <p class="pl-blurb">This self-portrait depicts my body upside down over water, imagining movement beyond the physical limitations following spinal surgery. Flowing water suggests bodily change and inner instability, while the flower represents beauty and the will to live.</p>
+    <details class="pl-more">
+      <summary>Artist's statement</summary>
+      <p>This self-portrait explores confronting my changed body after spinal surgery. Movements that once felt natural became impossible, making my familiar body feel unfamiliar. My upside-down figure on water depicts a posture I cannot freely assume in reality and an imagined self beyond physical limitations. Flowing water symbolizes changing bodily sensations and inner instability, while the flower represents beauty and the will to live. Together, water, flowers, and nature express my desire to move freely. Merleau-Ponty&#x27;s understanding of the body as the subject that experiences the world helped me recognize how bodily changes transform perception and identity. Recovery means accepting my changed body and discovering new possibilities within it. By painting a posture impossible in reality, I extend my body&#x27;s limits through imagination and create a new self alongside my changed body.</p>
+    </details>
   </div>
 </section>
 <section class="plate" id="pl03" data-plate data-idx="3">
-  <div class="pl-media"><img src="museum/art/_DSF7523.jpg" alt="City from Above" loading="lazy" decoding="async"></div>
+  <div class="pl-media"><img src="museum/art/_DSF7551.jpg" alt="seaward" loading="lazy" decoding="async"></div>
   <div class="pl-text">
     <a class="pl-back" href="#gallery">Back to the wall</a>
-    <p class="pl-kick">Plate 03 <span>/ 18</span></p>
-    <h3 class="pl-title">City from Above</h3>
-    <p class="pl-med">acrylic on canvas</p>
-    <p class="pl-blurb">A city laid out the way a child arranges sweets — trees kept in the seams, no one in sight.</p>
+    <p class="pl-kick">Plate 03 <span>/ 15</span></p>
+    <h3 class="pl-title">seaward</h3>
+    <p class="pl-med">Colored pencils</p>
+    <p class="pl-size">15 × 20 in (H × W)<span class="pl-dot">·</span>2024</p>
+    <p class="pl-blurb">Recalling my first steps after spinal surgery, I drew myself crawling toward the sea like a hatchling. The oversized shell represents my brace: heavy and restrictive, but also supportive and protective. The crawling figure reflects my need to move at my own pace.</p>
+    <details class="pl-more">
+      <summary>Artist's statement</summary>
+      <p>Recalling my first steps after spinal surgery, I drew myself crawling toward the sea beneath an oversized turtle shell. My brace supported and protected my body while restricting movement. The shell embodies this contradiction: its weight slows me down, but its protection gives me courage to enter an unfamiliar world. Like a hatchling instinctively crawling seaward, I moved forward despite fear and anxiety, driven by the desire to walk again. The sunset reflected on the sea and the incoming waves symbolize the unknown world ahead and a new life after recovery. Through this work, I explore how the wish to be protected coexists with the desire to move freely. Recovery is not simply a return to my former body, but a process of accepting my changed body and moving toward the world at my own pace.</p>
+    </details>
   </div>
 </section>
 <section class="plate" id="pl04" data-plate data-idx="4">
-  <div class="pl-media"><img src="museum/art/_DSF7525.jpg" alt="Turned Over" loading="lazy" decoding="async"></div>
+  <div class="pl-media"><img src="museum/art/_DSF7545.jpg" alt="was healing necessary?" loading="lazy" decoding="async"></div>
   <div class="pl-text">
     <a class="pl-back" href="#gallery">Back to the wall</a>
-    <p class="pl-kick">Plate 04 <span>/ 18</span></p>
-    <h3 class="pl-title">Turned Over</h3>
-    <p class="pl-med">oil on canvas</p>
-    <p class="pl-blurb">Head-down under the fall, lilies in her arms: water is the one place a body need not hold itself.</p>
+    <p class="pl-kick">Plate 04 <span>/ 15</span></p>
+    <h3 class="pl-title">was healing necessary?</h3>
+    <p class="pl-med">Acrylic, resin, and varnish on canvas</p>
+    <p class="pl-size">24 × 35 in (H × W)<span class="pl-dot">·</span>2023</p>
+    <p class="pl-blurb">My memories of surgery faded, but pain remained in movement and sensation. I blurred the figure&#x27;s outline and layered soft pink and grayish white, allowing flowers and body to merge. Memories disappear and resurface within the painting, while their traces remain in my body.</p>
+    <details class="pl-more">
+      <summary>Artist's statement</summary>
+      <p>This work explores memories that fade after surgery and traces of the past that remain in my present body. Just as Bergson understood memory as duration continually transformed within the present rather than as a fixed image, the figure does not retain a clear form but dissolves into layers of flowers and color. At the same time, drawing on Merleau-Ponty&#x27;s perspective, memory appears not as scenes stored in the mind, but as experiences inscribed in the body through pain and movement. By blurring the figure&#x27;s outline and layering colors, I sought to express a state in which disappearing memories coexist with sensations that remain in the body.</p>
+    </details>
   </div>
 </section>
 <section class="plate" id="pl05" data-plate data-idx="5">
-  <div class="pl-media"><img src="museum/art/_DSF7527.jpg" alt="What the Day Left" loading="lazy" decoding="async"></div>
+  <div class="pl-media"><img src="museum/art/_DSF7559.jpg" alt="Clearer in the dark" loading="lazy" decoding="async"></div>
   <div class="pl-text">
     <a class="pl-back" href="#gallery">Back to the wall</a>
-    <p class="pl-kick">Plate 05 <span>/ 18</span></p>
-    <h3 class="pl-title">What the Day Left</h3>
-    <p class="pl-med">oil on canvas</p>
-    <p class="pl-blurb">A school day emptied onto a bed; every object still holding the shape of the hand.</p>
+    <p class="pl-kick">Plate 05 <span>/ 15</span></p>
+    <h3 class="pl-title">Clearer in the dark</h3>
+    <p class="pl-med">Mixed media (oil pastel, oil paint, watercolor, acrylic paint, clear plastic hemispheres, and repurposed reflective plastic film)</p>
+    <p class="pl-size">38 × 26 × 1.5 in (H × W × D)<span class="pl-dot">·</span>2025</p>
+    <p class="pl-blurb">I used fish as a metaphor for my body and its differences. Against black backgrounds, their vivid colors suggest beauty that does not depend on external recognition. Through this series, I saw difference as something that allows me to exist as myself rather than a deficiency to overcome.</p>
+    <details class="pl-more">
+      <summary>Artist's statement</summary>
+      <p>This series uses fish as a metaphor for myself to express the process of discovering my own beauty and unique worth amid differences from others. For a long time, I compared my body with those of others and sometimes regarded physical differences as shortcomings or deficiencies. However, just as each fish has different colors, forms, and movements, I came to think that my beauty is not diminished simply because I am not the same as others. For Gilles Deleuze, difference is not a deficiency that deviates from a single standard, but a fundamental concept for understanding the uniqueness of each being. From this perspective, rather than viewing my body, which differs from those of others, as imperfect, I sought to understand it in terms of the distinctive beauty and possibilities that belong only to me. The fish in the paintings reveal their brilliant colors and freely spread fins against a black background. The black space is not darkness that conceals or isolates me, but a space where I can fully discover my own beauty, free from the gaze of others and social standards. In particular, the vivid colors of the fish, contrasting with the darkness, symbolize the uniqueness of a being that can shine on its own without external recognition. I believe that even if other fish do not recognize my beauty, this does not determine my worth. This is because beauty does not arise from resembling someone else or coming closer to the standards set by society, but begins with acknowledging one&#x27;s own differences and discovering the meaning of one&#x27;s unique existence within them. In this work, the fish is not a being that must change to meet the standards of others, but a being that is beautiful through its differences themselves. Through this series, I sought to express an attitude of moving beyond the feelings of inferiority I had experienced because of my physical differences and confidently believing in my own beauty without anyone&#x27;s approval or judgment. Ultimately, for me, difference is not a deficiency to overcome, but my own beauty that cannot be the same as anyone else&#x27;s, and the most important condition that allows me to exist as myself.</p>
+    </details>
   </div>
 </section>
 <section class="plate" id="pl06" data-plate data-idx="6">
-  <div class="pl-media"><img src="museum/art/_DSF7535.jpg" alt="Who Is Listening" loading="lazy" decoding="async"></div>
+  <div class="pl-media"><img src="museum/art/_DSF7580.jpg" alt="What the Body Imagines" loading="lazy" decoding="async"></div>
   <div class="pl-text">
     <a class="pl-back" href="#gallery">Back to the wall</a>
-    <p class="pl-kick">Plate 06 <span>/ 18</span></p>
-    <h3 class="pl-title">Who Is Listening</h3>
-    <p class="pl-med">acrylic on panel</p>
-    <p class="pl-blurb">Headphones over a face drawn twice — one looking out, one hearing from further away.</p>
+    <p class="pl-kick">Plate 06 <span>/ 15</span></p>
+    <h3 class="pl-title">What the Body Imagines</h3>
+    <p class="pl-med">Mixed media sculpture (clay, acrylic paint, modeling paste, screws, and XPS foam)</p>
+    <p class="pl-size">17 × 35 × 12 in (H × W × D)<span class="pl-dot">·</span>2025</p>
+    <p class="pl-blurb">I sculpted twisted torsos and exaggerated limbs in postures I cannot hold after spinal surgery. Screws and rods restrict my bending and twisting; sculpture lets me create those movements. The distorted proportions explore the gap between my actual body and the body I imagine.</p>
+    <details class="pl-more">
+      <summary>Artist's statement</summary>
+      <p>The human body is the most fundamental starting point from which we experience and perceive the world. We understand space through the body, experience freedom through movement, and confirm our existence through various bodily sensations. However, not everyone can have the same bodily experiences. A movement that is entirely natural and ordinary for one person can become an impossible act that another person can never perform. Starting from these differences in bodily experience, I sought to explore the boundary between reality and unreality, and the inner conflicts created by physical limitations. After spinal surgery, screws and rods were inserted into my body, and various postures I could previously take naturally became impossible. Even ordinary movements, such as freely bending or twisting my body, became a world I could not reach. This experience made me realize that bodily limitations do not merely restrict movement but also change the range of the world I can experience. In this work, I realized through sculpture postures that I can never take with my actual body. The unrealistically twisted and exaggerated bodies, and the arms and legs moving in impossible directions, are other versions of myself that cannot actually exist. Paradoxically, however, these unreal forms are also the reality I most desperately want to experience. What is ordinary reality for others becomes unreality for me, while movements impossible for me exist as a possible reality within the work. Through this contradiction, I sought to express that reality and unreality are not worlds that are absolutely separate, but can vary according to an individual&#x27;s bodily experiences and conditions. This work also connects with the phenomenology of the body of the French philosopher Maurice Merleau-Ponty. For him, the body is not simply a physical object observed from the outside, but a subject that perceives and experiences the world. From this perspective, bodily limitations can be understood as a change in how one relates to the world, beyond a mere loss of function. The postures that have become impossible for me are not simply movements I cannot perform, but parts of the world I can no longer experience. I also did not try to depict the bodies in the work beautifully according to traditional aesthetic standards. The twisted and exaggerated human forms depart from conventional bodily proportions and harmony. However, I do not think that these imbalances and unfamiliar forms are necessarily unbeautiful. Rather, imperfect and irregular bodies contain other sculptural possibilities that existing ideas of beauty cannot explain. Beauty exists not only in a perfect body, but can also be found in the body&#x27;s differences and limitations, and in the experiences contained within it. For me, art is another world that makes possible what is impossible in reality. The actual body cannot escape its physical conditions, but the body in art can go beyond these limitations and create new movements and forms. The unreal postures in the work are not simply the result of imagination, but a desire for movements I have not experienced because of bodily restrictions, and an inner expression directed toward freedom. Rather than denying or hiding my bodily limitations, I sought to make them the starting point of artistic imagination. The process of creating impossible postures is a process of confronting the conflict between who I am in reality and who I dream of being, and at the same time, an act of transforming that conflict into new possibilities for creation. Ultimately, this work is not a story about overcoming bodily limitations and recovering a perfect body. Rather, it is a process of acknowledging the body considered imperfect as it is, while newly creating through art a freedom that cannot be experienced in reality. I see the gap between reality and unreality as a space of creation rather than a space of lack. Within that gap, I seek to discover another beauty created by my own body and experiences, desires and imagination.</p>
+    </details>
   </div>
 </section>
 <section class="plate" id="pl07" data-plate data-idx="7">
-  <div class="pl-media"><img src="museum/art/_DSF7543.jpg" alt="Covered Valley" loading="lazy" decoding="async"></div>
+  <div class="pl-media"><img src="museum/art/_DSF7521.jpg" alt="Still, life" loading="lazy" decoding="async"></div>
   <div class="pl-text">
     <a class="pl-back" href="#gallery">Back to the wall</a>
-    <p class="pl-kick">Plate 07 <span>/ 18</span></p>
-    <h3 class="pl-title">Covered Valley</h3>
-    <p class="pl-med">acrylic on canvas</p>
-    <p class="pl-blurb">Four black panels laid over the valley, as if the view had agreed to keep part of itself hidden.</p>
+    <p class="pl-kick">Plate 07 <span>/ 15</span></p>
+    <h3 class="pl-title">Still, life</h3>
+    <p class="pl-med">Pencil and watercolor</p>
+    <p class="pl-size">21 × 15 in (H × W)<span class="pl-dot">·</span>2025</p>
+    <p class="pl-blurb">I depicted my hospital room after surgery in monochrome, contrasting its stillness with vivid green leaves where sunlight falls. The green connects the confined room to the continuing life outside the window and my desire to return to everyday life.</p>
+    <details class="pl-more">
+      <summary>Artist's statement</summary>
+      <p>This drawing depicts the hospital room where I recovered after spinal surgery. The rumpled bed, IV drip, and painkiller pump reflect my pain and restricted movement, while the room itself offered protection. Against the monochrome pencil drawing, I added vivid green where sunlight fell, transforming shadows into signs of vitality and hope. The leaves express my desire to return to everyday life and connect the stillness of the room with the living world beyond the window. Although my body remained confined, my senses and imagination continued to move outward. Through this contrast, I explore how pain and hope, restriction and freedom, suspended time and continuing life coexist, making the room a place of both suffering and new possibilities.</p>
+    </details>
   </div>
 </section>
 <section class="plate" id="pl08" data-plate data-idx="8">
-  <div class="pl-media"><img src="museum/art/_DSF7545.jpg" alt="Held Together" loading="lazy" decoding="async"></div>
+  <div class="pl-media"><img src="museum/art/_DSF7527.jpg" alt="2kg (4.41lb)" loading="lazy" decoding="async"></div>
   <div class="pl-text">
     <a class="pl-back" href="#gallery">Back to the wall</a>
-    <p class="pl-kick">Plate 08 <span>/ 18</span></p>
-    <h3 class="pl-title">Held Together</h3>
-    <p class="pl-med">acrylic and collage</p>
-    <p class="pl-blurb">Curled under water, flowers drifting through a body drawn thin enough to show the frame behind it.</p>
+    <p class="pl-kick">Plate 08 <span>/ 15</span></p>
+    <h3 class="pl-title">2kg (4.41lb)</h3>
+    <p class="pl-med">Oil on canvas</p>
+    <p class="pl-size">18 × 21 in (H × W)<span class="pl-dot">·</span>2025</p>
+    <p class="pl-blurb">This still life depicts belongings chosen within a two-kilogram carrying limit after spinal surgery: my brace, iPad, pencil case, figurine, and bag. Painting these everyday objects allowed me to examine how a physical restriction reshaped my choices and what I carried with me.</p>
+    <details class="pl-more">
+      <summary>Artist's statement</summary>
+      <p>This work is a still life depicting how my daily life changed after spinal surgery, when the weight of the objects I could carry each day was limited to 2 kg. Objects I had put into my bag without any thought before surgery now had to be chosen one by one. My brace, iPad, pencil case, figurine, and bag are not simply belongings, but important things that make up my daily life, express who I am, and connect me to the world. The French philosopher Merleau-Ponty viewed the body not simply as a physical object, but as a subject that experiences and forms relationships with the world. From this perspective, my physical limitations did not merely restrict my movements, but also changed how I chose and used objects and how I experienced the world. The objects I chose compensate for my body&#x27;s limited capabilities, but at the same time create further restrictions of weight and space. In this work, I focused on how the choice of what to take with me ultimately becomes a question of what to give up and what to accept as part of myself. The objects placed on the bed have different functions and meanings, but they are all elements that make up my life and identity. In particular, the objects I chose within the weight limit were determined not simply by practical needs, but also reflect the things I like, the daily life I want to preserve, and my desire to continue living as myself. Through this work, I wanted to convey that physical limitations do not necessarily mean only a loss of possibilities. Rather, new choices and relationships emerge within restricted conditions, and through that process, I discover aspects of myself that I had not previously recognized. I sought to express that my body and objects are not separate entities, but a single whole that together constitutes my daily life and identity—“Unity as a Whole.”</p>
+    </details>
   </div>
 </section>
 <section class="plate" id="pl09" data-plate data-idx="9">
-  <div class="pl-media"><img src="museum/art/_DSF7549.jpg" alt="Under the Ice" loading="lazy" decoding="async"></div>
+  <div class="pl-media"><img src="museum/art/_DSF7566.jpg" alt="Resilience" loading="lazy" decoding="async"></div>
   <div class="pl-text">
     <a class="pl-back" href="#gallery">Back to the wall</a>
-    <p class="pl-kick">Plate 09 <span>/ 18</span></p>
-    <h3 class="pl-title">Under the Ice</h3>
-    <p class="pl-med">oil on canvas</p>
-    <p class="pl-blurb">A column crosses the frozen ground; below it the reflections hang down like dripping roots.</p>
+    <p class="pl-kick">Plate 09 <span>/ 15</span></p>
+    <h3 class="pl-title">Resilience</h3>
+    <p class="pl-med">Mixed media assemblage (charcoal on paper, 3D pen filament, glass vessel, moss, and pebbles)</p>
+    <p class="pl-size">24 × 24 × 12 in (H × W × D)<span class="pl-dot">·</span>2026</p>
+    <p class="pl-blurb">Inspired by Abraxas in Hermann Hesse&#x27;s Demian, I imagined a tree whose single root holds good, evil, and all experiences. This tree is larger than the tree within the world of the egg, encompassing experiences beyond that enclosed world.</p>
+    <details class="pl-more">
+      <summary>Artist's statement</summary>
+      <p>Inspired by Abraxas in Hermann Hesse&#x27;s Demian, this work imagines a tree seen through Abraxas&#x27;s worldview: a single root that holds good and evil and every experience together. It is larger than the tree inside the world of the egg, meaning it holds experiences beyond that enclosed world. The work is about resilience.</p>
+    </details>
   </div>
 </section>
 <section class="plate" id="pl10" data-plate data-idx="10">
-  <div class="pl-media"><img src="museum/art/_DSF7551.jpg" alt="The Shell" loading="lazy" decoding="async"></div>
+  <div class="pl-media"><img src="museum/art/_DSF7572.jpg" alt="a home to leave" loading="lazy" decoding="async"></div>
   <div class="pl-text">
     <a class="pl-back" href="#gallery">Back to the wall</a>
-    <p class="pl-kick">Plate 10 <span>/ 18</span></p>
-    <h3 class="pl-title">The Shell</h3>
-    <p class="pl-med">oil on canvas</p>
-    <p class="pl-blurb">At dusk a girl lies in the sand, a turtle\u2019s shell strapped to her back, waiting to come back different.</p>
+    <p class="pl-kick">Plate 10 <span>/ 15</span></p>
+    <h3 class="pl-title">a home to leave</h3>
+    <p class="pl-med">Mixed media installation (clay, acrylic paint, fabric, sand, and board)</p>
+    <p class="pl-size">13 × 24 × 18.5 in (H × W × D)<span class="pl-dot">·</span>2025</p>
+    <p class="pl-blurb">I placed a bed, desk, and everyday objects inside a turtle&#x27;s shell. After surgery, my restrictive brace became a supportive, protective home. The furnished shell expresses that familiarity and dependence. Unlike the turtle, I must eventually leave this protective home.</p>
+    <details class="pl-more">
+      <summary>Artist's statement</summary>
+      <p>After surgery, my back brace gradually became more than a restriction: it was a small home that supported and protected me. I placed a bed, desk, and everyday objects inside a turtle&#x27;s shell to express the security and familiarity I found in depending on it. Unlike a turtle, however, I must eventually leave my shell and support my body on my own. This mirrors growing up and leaving the home that once protected me. The shell holds both physical limitations and the possibility of recovery. Through this work, I explore protection as a process of developing the strength for independence, preparing to leave a familiar world and enter a wider one.</p>
+    </details>
   </div>
 </section>
 <section class="plate" id="pl11" data-plate data-idx="11">
-  <div class="pl-media"><img src="museum/art/_DSF7555.jpg" alt="Another Sky" loading="lazy" decoding="async"></div>
+  <div class="pl-media"><img src="museum/art/_DSF7589.jpg" alt="line of contact" loading="lazy" decoding="async"></div>
   <div class="pl-text">
     <a class="pl-back" href="#gallery">Back to the wall</a>
-    <p class="pl-kick">Plate 11 <span>/ 18</span></p>
-    <h3 class="pl-title">Another Sky</h3>
-    <p class="pl-med">acrylic and gouache</p>
-    <p class="pl-blurb">Pink air, a blue stair climbing to a green door, fish swimming where the sky should be.</p>
+    <p class="pl-kick">Plate 11 <span>/ 15</span></p>
+    <h3 class="pl-title">line of contact</h3>
+    <p class="pl-med">Acrylic, threads, charcoal</p>
+    <p class="pl-size">36 × 67 in (H × W)<span class="pl-dot">·</span>2026</p>
+    <p class="pl-blurb">Through spontaneous gestural lines, I depict eyes, mouths, and bodies as channels of perception, expression, and response. Rather than staying fixed, these bodies continually interact with their surroundings. Looking, speaking, and moving become ways to connect with others and experience the world.</p>
+    <details class="pl-more">
+      <summary>Artist's statement</summary>
+      <p>This work explores the process of relating to and communicating with the world through bodily sensations. Elements of the body, such as the mouth, eyes, and body itself, function beyond mere organs as channels through which we perceive and experience the world. Using the free and spontaneous lines of gesture drawing, I sought to visually reveal traces of sensation and bodily movement. Through seeing with our eyes, expressing ourselves with our mouths, and responding with our bodies, we form our experiences of others and the world. These sensory experiences do not remain within the individual but generate new meanings through engagement with the external world. The body in this work appears not as a fixed form but as an open being that continually senses, responds, and communicates. Ultimately, I aim to show that human sensation is more than a means of understanding the world: it is a source of connection and the creation of experience.</p>
+    </details>
   </div>
 </section>
 <section class="plate" id="pl12" data-plate data-idx="12">
-  <div class="pl-media"><img src="museum/art/_DSF7559.jpg" alt="Black Panels, Fish" loading="lazy" decoding="async"></div>
+  <div class="pl-media"><img src="museum/art/_DSF7555.jpg" alt="room dissolved" loading="lazy" decoding="async"></div>
   <div class="pl-text">
     <a class="pl-back" href="#gallery">Back to the wall</a>
-    <p class="pl-kick">Plate 12 <span>/ 18</span></p>
-    <h3 class="pl-title">Black Panels, Fish</h3>
-    <p class="pl-med">mixed media on panel</p>
-    <p class="pl-blurb">Two fighting fish, a spiral worked almost to a shell, and stones — each in its own square of dark.</p>
+    <p class="pl-kick">Plate 12 <span>/ 15</span></p>
+    <h3 class="pl-title">room dissolved</h3>
+    <p class="pl-med">Acrylic on canvas</p>
+    <p class="pl-size">35 × 26 in (H × W)<span class="pl-dot">·</span>2026</p>
+    <p class="pl-blurb">I transformed my familiar hospital room into a surreal landscape, drawing on perceptions altered by pain and medication after surgery. Objects lost their forms. Through unexpected associations and illogical imagery, I explored the uncertain boundary between reality and fantasy.</p>
+    <details class="pl-more">
+      <summary>Artist's statement</summary>
+      <p>After surgery, pain medication transformed my familiar hospital room into an unfamiliar, surreal space where consciousness and the unconscious intersected. Objects lost their original forms and order, reflecting how pain and medication altered my perception and reconstructed reality. Rather than dismissing these hallucinations as illusions, I present them as another reality shaped by subjective experience. Drawing on Surrealism&#x27;s unconscious associations and illogical imagery, I express the anxiety of encountering uncontrollable changes in my body and consciousness. Yet this confusion also became an opportunity to explore my inner sensations. By translating these experiences into visual language, I question the fluid boundary between reality and fantasy.</p>
+    </details>
   </div>
 </section>
 <section class="plate" id="pl13" data-plate data-idx="13">
-  <div class="pl-media"><img src="museum/art/_DSF7566.jpg" alt="Roots for a Head" loading="lazy" decoding="async"></div>
+  <div class="pl-media"><img src="museum/art/_DSF7535.jpg" alt="Englishman in New York" loading="lazy" decoding="async"></div>
   <div class="pl-text">
     <a class="pl-back" href="#gallery">Back to the wall</a>
-    <p class="pl-kick">Plate 13 <span>/ 18</span></p>
-    <h3 class="pl-title">Roots for a Head</h3>
-    <p class="pl-med">installation — drawing, glass, red twigs</p>
-    <p class="pl-blurb">A head become a cave of hanging roots; beside it, under water, red twigs still drinking.</p>
+    <p class="pl-kick">Plate 13 <span>/ 15</span></p>
+    <h3 class="pl-title">Englishman in New York</h3>
+    <p class="pl-med">Digital drawing on canvas</p>
+    <p class="pl-size">20 × 20 in (H × W)<span class="pl-dot">·</span>2025</p>
+    <p class="pl-blurb">I overlapped translucent faces to explore conflicting selves and the desire for recognition. Their merging forms suggest identities continually reshaped through relationships, memories, and experiences. The work also expresses the solitude of never feeling fully understood.</p>
+    <details class="pl-more">
+      <summary>Artist's statement</summary>
+      <p>Can identity exist in a single, fixed form? By overlapping two translucent faces, I explore a self continually shaped by relationships, memories, emotions, and desires. Drawing on Lacan&#x27;s mirror stage, I approach the face as a space where self and other, reality and desire intersect. The figures seem to face each other, yet their gazes diverge, expressing both the desire for recognition and the solitude of never being fully understood. As one face conceals or merges with the other, their shifting boundaries reveal identity as something reconstructed through relationships. Their transparency allows conflicting emotions and selves to coexist without resolving them into a single image. Through these overlapping forms, I explore how inner conflict and encounters with others can generate new understandings of who we are.</p>
+    </details>
   </div>
 </section>
 <section class="plate" id="pl14" data-plate data-idx="14">
-  <div class="pl-media"><img src="museum/art/_DSF7572.jpg" alt="Sea Inside a Shell" loading="lazy" decoding="async"></div>
+  <div class="pl-media perf"><img src="photos/art/performance/again_01.jpg" alt="ready, action" loading="lazy" decoding="async"></div>
   <div class="pl-text">
     <a class="pl-back" href="#gallery">Back to the wall</a>
-    <p class="pl-kick">Plate 14 <span>/ 18</span></p>
-    <h3 class="pl-title">Sea Inside a Shell</h3>
-    <p class="pl-med">installation — diorama with painted sea</p>
-    <p class="pl-blurb">A painted sunset standing out of real sand; inside a turtle\u2019s shell, one lamp, one desk, one figure.</p>
+    <p class="pl-kick">Plate 14 <span>/ 15</span></p>
+    <h3 class="pl-title">ready, action</h3>
+    <p class="pl-med">Photography and wearable mixed media (gauze, beads, IV bags and tubing, paint-tinted water, oxygen mask, surgical drapes, spinal brace, bandages, and syringes)</p>
+    <p class="pl-size">21 × 17 in (H × W)<span class="pl-dot">·</span>2026</p>
+    <p class="pl-blurb">I turned the IV tubes and bandages that restricted my body after surgery into clothing and accessories for a fashion editorial. The photographs bring together my desire for beauty and my physical reality, turning medical materials into expressions of individuality.</p>
+    <details class="pl-more">
+      <summary>Artist's statement</summary>
+      <p>Created as a fashion editorial, this work explores the conflict between my desire for beauty and the physical restrictions I experienced after surgery. In the hospital, I had to remove my accessories and rely on medical devices that both protected my body and limited my freedom. I transformed IV tubing and bandages into clothing and accessories: bandages wrap the body as garments, while tubing adorns the neck and shoulders. Materials associated with treatment become a sculptural language for individuality and self-expression. Rather than measuring beauty against an ideal body, I seek it within my own physical conditions and medical experiences. By turning what restrained me into something I choose to wear, I explore how an unchosen reality can become a source of creative freedom and personal beauty.</p>
+    </details>
   </div>
 </section>
 <section class="plate" id="pl15" data-plate data-idx="15">
-  <div class="pl-media"><img src="museum/art/_DSF7580.jpg" alt="Standing, Lying" loading="lazy" decoding="async"></div>
+  <div class="pl-media perf"><img src="photos/art/performance/release_03.jpg" alt="independence day" loading="lazy" decoding="async"></div>
   <div class="pl-text">
     <a class="pl-back" href="#gallery">Back to the wall</a>
-    <p class="pl-kick">Plate 15 <span>/ 18</span></p>
-    <h3 class="pl-title">Standing, Lying</h3>
-    <p class="pl-med">installation — mural and figures</p>
-    <p class="pl-blurb">One girl stands straight while two bodies lie below her — as if standing had to be paid for.</p>
-  </div>
-</section>
-<section class="plate" id="pl16" data-plate data-idx="16">
-  <div class="pl-media"><img src="museum/art/_DSF7589.jpg" alt="One Line, Many Bodies" loading="lazy" decoding="async"></div>
-  <div class="pl-text">
-    <a class="pl-back" href="#gallery">Back to the wall</a>
-    <p class="pl-kick">Plate 16 <span>/ 18</span></p>
-    <h3 class="pl-title">One Line, Many Bodies</h3>
-    <p class="pl-med">drawing — ink and watercolour</p>
-    <p class="pl-blurb">One red line that never lifts: profiles, shoulders, hands — and a torso drawn from behind, no head.</p>
-  </div>
-</section>
-<section class="plate" id="pl17" data-plate data-idx="17">
-  <div class="pl-media perf" data-perf data-frames="photos/art/performance/again_01.jpg|photos/art/performance/again_02.jpg|photos/art/performance/again_03.jpg" data-dur="1500" style="--ar:.7643">
-    <div class="perf-stage">
-      <img src="photos/art/performance/again_01.jpg" alt="Again, frame 1" class="on" decoding="async">
-      <img src="photos/art/performance/again_02.jpg" alt="Again, frame 2" loading="lazy" decoding="async">
-      <img src="photos/art/performance/again_03.jpg" alt="Again, frame 3" loading="lazy" decoding="async">
-      <span class="perf-bar" aria-hidden="true"><i></i></span>
-    </div>
-  </div>
-  <div class="pl-text">
-    <a class="pl-back" href="#gallery">Back to the wall</a>
-    <p class="pl-kick">Plate 17 <span>/ 18</span></p>
-    <h3 class="pl-title">Again</h3>
-    <p class="pl-med">performance — three frames, replayed</p>
-    <p class="pl-blurb">Three takes of one held moment: the invitation has to be made again, each time from the start.</p>
-  </div>
-</section>
-<section class="plate" id="pl18" data-plate data-idx="18">
-  <div class="pl-media perf" data-perf data-frames="photos/art/performance/release_01.jpg|photos/art/performance/release_02.jpg|photos/art/performance/release_03.jpg|photos/art/performance/release_04.jpg|photos/art/performance/release_05.jpg" data-dur="1500" style="--ar:.5621">
-    <div class="perf-stage">
-      <img src="photos/art/performance/release_01.jpg" alt="Release, frame 1" class="on" decoding="async">
-      <img src="photos/art/performance/release_02.jpg" alt="Release, frame 2" loading="lazy" decoding="async">
-      <img src="photos/art/performance/release_03.jpg" alt="Release, frame 3" loading="lazy" decoding="async">
-      <img src="photos/art/performance/release_04.jpg" alt="Release, frame 4" loading="lazy" decoding="async">
-      <img src="photos/art/performance/release_05.jpg" alt="Release, frame 5" loading="lazy" decoding="async">
-      <span class="perf-bar" aria-hidden="true"><i></i></span>
-    </div>
-  </div>
-  <div class="pl-text">
-    <a class="pl-back" href="#gallery">Back to the wall</a>
-    <p class="pl-kick">Plate 18 <span>/ 18</span></p>
-    <h3 class="pl-title">Release</h3>
-    <p class="pl-med">performance — five frames, replayed</p>
-    <p class="pl-blurb">The brace that held her spine is unlaced until only a laugh is left — then broken into a heart, beside the hammer.</p>
+    <p class="pl-kick">Plate 15 <span>/ 15</span></p>
+    <h3 class="pl-title">independence day</h3>
+    <p class="pl-med">Video still, isomalt sugar</p>
+    <p class="pl-size">21 × 18 in (H × W)<span class="pl-dot">·</span>2026</p>
+    <p class="pl-blurb">I recreated my postoperative spinal brace in sugar, then broke and ate it. Sugar is solid but dissolvable, energizing but harmful in excess. These contradictions echo the brace&#x27;s support and restriction. Eating it turns an external support into bodily substance, making my relationship with it part of the work.</p>
+    <details class="pl-more">
+      <summary>Artist's statement</summary>
+      <p>This work recreates in sugar the spinal brace that supported my body while restricting movement after surgery. I expressed the duality of the brace, a hard shell essential for recovery but limiting freedom and creating dependence, through sugar, which is hard yet easily breaks, melts, and disappears. Sugar, which supplies energy but harms health in excess, resembles the brace, necessary for recovery but something to leave behind afterward. Breaking and eating it to absorb an external support into my body is a process beyond destruction, moving from dependence to independence, from restriction to freedom, and accepting even the experience that restricted me as part of my life and body. Beyond a sculptural material, sugar reveals the body&#x27;s fragility, dependence, and possibility of recovery, while the brace&#x27;s disappearance shows that protection is not needed forever and that leaving what supported oneself begins growth and liberation.</p>
+    </details>
   </div>
 </section>
 </div>
-<div id="counter"><b id="cnum">01</b><s>/ 18</s></div>
+<div id="counter"><b id="cnum">01</b><s>/ 15</s></div>
 
 <!-- 3. cultural journeys -->
 <section class="journeys" id="journeys" data-theme="light">
