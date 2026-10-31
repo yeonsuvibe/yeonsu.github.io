@@ -1,2 +1,23 @@
+# Working scratch and agent output — never part of the published site.
+.vai-checkpoints/
+.vibeagi/
+spike/
+
+# Full-resolution originals. The site serves the resized copies under museum/art and
+# photos/journeys, so keeping the masters in git only makes every status noisy.
+# photos/art/performance/*.jpg IS referenced by the gallery and must stay tracked.
+photos/_sheets/
+photos/museum/
+photos/art/_DSF*.jpg
+
+# 3D experiments for the root sculpture studies.
+*.stl
+*.scad
+
+# Archival material kept locally, not served.
+essays/
+serve.py
+*.zip
+30기_Yeonsu_Ahn_활동증명서_20260818.pdf
+
 .DS_Store
-**/.DS_Store
