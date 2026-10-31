@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet"/>
 <style>
-:root{ --wall:#f2f1ed; --ink:#191a1c; --soft:#6b665c; --line:rgba(26,24,21,.18);
+:root{ --wall:#f2f1ed; --ink:#191a1c; --soft:#666768; --line:rgba(26,24,21,.18);
   --crimson:#b31b1b; --serif:'Cormorant Garamond',serif; --sans:'Jost',sans-serif;
   /* palette aligned to index.css so both pages print the same ink */
   --gilt:#8e939c; }
@@ -36,15 +36,15 @@ header *{pointer-events:auto}
 .tourcard.show{opacity:1;transform:translateY(0)}
 .tourcard .pl{font-size:.55rem;letter-spacing:.34em;text-transform:uppercase;color:#8f1616}
 .tourcard .date{font-family:var(--serif);font-style:italic;font-size:2.05rem;font-weight:400;letter-spacing:.01em;margin:7px 0 3px;color:#131416}
-.tourcard .med{font-size:.54rem;letter-spacing:.24em;text-transform:uppercase;color:#4f4b43;margin-bottom:11px}
-.tourcard p{font-size:.85rem;line-height:1.88;color:#1d1a16;font-weight:400}
-.tourcard p.ko{margin-top:7px;font-size:.76rem;color:#38342c;line-height:1.78;font-weight:400}
+.tourcard .med{font-size:.54rem;letter-spacing:.24em;text-transform:uppercase;color:#4b4b4c;margin-bottom:11px}
+.tourcard p{font-size:.85rem;line-height:1.88;color:#1a1a1b;font-weight:400}
+.tourcard p.ko{margin-top:7px;font-size:.76rem;color:#343435;line-height:1.78;font-weight:400}
 .tourcard .bar{display:none}
 
 .controls{position:fixed;right:38px;bottom:42px;z-index:8;display:flex;gap:12px;align-items:center}
 .ctl{all:unset;cursor:pointer;width:52px;height:52px;border-radius:50%;border:1px solid var(--ink);
-  display:flex;align-items:center;justify-content:center;font-size:1.05rem;transition:.35s;background:rgba(255,253,248,.9)}
-.ctl:hover{background:var(--ink);color:#fffdf8}
+  display:flex;align-items:center;justify-content:center;font-size:1.05rem;transition:.35s;background:rgba(251,253,255,.9)}
+.ctl:hover{background:var(--ink);color:#fbfdff}
 .ctl.wide{width:auto;border-radius:26px;padding:0 22px;font-size:.6rem;letter-spacing:.28em;text-transform:uppercase}
 
 .intro{position:fixed;inset:0;z-index:9;background:rgba(242,241,237,.97);display:flex;flex-direction:column;
@@ -92,7 +92,7 @@ header *{pointer-events:auto}
   justify-items:center;align-items:center;gap:0;padding:24px;box-sizing:border-box}
 .hp-top{grid-row:1;align-self:end;display:flex;flex-direction:column;align-items:center;gap:18px;transform:translateY(30px)}
 .hp-bottom{grid-row:3;align-self:start;display:flex;flex-direction:column;align-items:center;gap:18px}
-.hp-rule{display:block;width:42px;height:1px;background:rgba(22,21,15,.5);margin:13px auto}
+.hp-rule{display:block;width:42px;height:1px;background:rgba(21,21,21,.5);margin:13px auto}
 .hp-meta{font-family:var(--sans);font-weight:500;font-size:.7rem;letter-spacing:.28em;text-transform:uppercase;text-indent:.28em}
 body.sheet header{visibility:hidden}
 body.sheet .controls,body.sheet .hint{display:none}          /* arrows belong to the gallery only — not HOME, not the sheets */
@@ -129,29 +129,29 @@ body.sheet .controls,body.sheet .hint{display:none}          /* arrows belong to
   cursor:pointer;padding:.5em .9em;font:inherit;letter-spacing:.22em;text-transform:uppercase;border-radius:2px}
 
 /* ===== SET 4 — WARM PAVILION (persona: quiet-luxury, limewash + oak + terracotta) ===== */
-:root{ --wall:#efe7da; --ink:#2a231c; --soft:#74777c; --line:rgba(36,37,40,.18);
+:root{ --wall:#e6e8eb; --ink:#242425; --soft:#74777c; --line:rgba(36,37,40,.18);
   --crimson:#b5643c; --gilt:#9a9fa8; }
 body{background:var(--wall);color:var(--ink)}
 .dnav{color:var(--soft)}
 .dnav a.on,.dnav a.active{color:var(--ink);border-bottom:1px solid var(--crimson)}
-.tourcard{background:rgba(247,241,231,.7)}
+.tourcard{background:rgba(240,242,245,.7)}
 .tourcard .pl{color:var(--crimson)}
 .tourcard .date{color:#1f2124}
-.tourcard .med{color:#6b5b47}
-.tourcard p{color:#332b22}
-.tourcard p.ko{color:#4a3f33}
-.ctl{border-color:rgba(36,37,40,.5);background:rgba(252,247,239,.9)}
-.ctl:hover{background:var(--ink);color:#f7f1e7}
-.homepage{background:rgba(240,232,220,.52)}
+.tourcard .med{color:#5d5e5f}
+.tourcard p{color:#2c2c2d}
+.tourcard p.ko{color:#404142}
+.ctl{border-color:rgba(36,37,40,.5);background:rgba(246,248,251,.9)}
+.ctl:hover{background:var(--ink);color:#f0f2f5}
+.homepage{background:rgba(231,233,236,.52)}
 /* Halo pass — shared by every HOME text layer. Three stacked shadows do the work:
    a 1-2px near-white rim cuts the letter off the busy 3D wall behind it, a wide
    soft glow lifts the black type off the paper, and a faint warm drop keeps the
    thin gold kicker from dissolving into the beige. */
-.hp-kick{color:#6f737b;text-shadow:0 0 2px rgba(255,253,248,.98),0 0 10px rgba(255,253,248,.95),0 0 22px rgba(255,253,248,.85),0 1px 2px rgba(38,39,42,.55)}   /* 5.18:1 on the HOME paper — the global --gilt (3.22:1) failed AA for 0.68rem */
-.hp-name{color:#1f2124;text-shadow:0 0 2px rgba(255,253,248,.98),0 0 18px rgba(255,253,248,.98),0 0 46px rgba(255,253,248,.92),0 2px 5px rgba(26,27,29,.18)}
-.hp-lede{color:#383a3e;text-shadow:0 0 2px rgba(255,253,248,.98),0 0 14px rgba(255,253,248,.98),0 0 34px rgba(255,253,248,.9),0 1px 3px rgba(38,30,20,.4)}
+.hp-kick{color:#6f737b;text-shadow:0 0 2px rgba(251,253,255,.98),0 0 10px rgba(251,253,255,.95),0 0 22px rgba(251,253,255,.85),0 1px 2px rgba(38,39,42,.55)}   /* 5.18:1 on the HOME paper — the global --gilt (3.22:1) failed AA for 0.68rem */
+.hp-name{color:#1f2124;text-shadow:0 0 2px rgba(251,253,255,.98),0 0 18px rgba(251,253,255,.98),0 0 46px rgba(251,253,255,.92),0 2px 5px rgba(26,27,29,.18)}
+.hp-lede{color:#383a3e;text-shadow:0 0 2px rgba(251,253,255,.98),0 0 14px rgba(251,253,255,.98),0 0 34px rgba(251,253,255,.9),0 1px 3px rgba(31,31,32,.4)}
 .hp-rule{background:rgba(36,37,40,.4)}
-.hp-meta{color:#383a3e;text-shadow:0 0 2px rgba(255,253,248,.98),0 0 10px rgba(255,253,248,.95),0 1px 2px rgba(38,39,42,.5)}
+.hp-meta{color:#383a3e;text-shadow:0 0 2px rgba(251,253,255,.98),0 0 10px rgba(251,253,255,.95),0 1px 2px rgba(38,39,42,.5)}
 .hint{color:#74777c}
 
 </style>
@@ -325,7 +325,7 @@ const _probe=new THREE.PerspectiveCamera(FOCUS_FOV,innerWidth/innerHeight,0.1,12
     new THREE.MeshBasicMaterial({color:0xf0efe9,side:THREE.BackSide})));
   const soft=(w,h,x,y,z,c)=>{ const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),
     new THREE.MeshBasicMaterial({color:c})); m.position.set(x,y,z); m.lookAt(0,1.5,0); es.add(m); };
-  soft(7,4,0,6.4,0,0xffffff); soft(4,2,-6,4.2,3,0xfdf4e2); soft(4,2,6,4.2,-3,0xeef2f6); // key + warm/cool fills
+  soft(4,4,4,6.4,0,0xffffff); soft(4,2,-6,4.2,3,0xfdf4e2); soft(4,2,6,4.2,-3,0xeef2f6); // key + warm/cool fills
   scene.environment=pm.fromScene(es,0.04).texture;
   try{ scene.environmentIntensity=0.55; }catch(e){}       // older bundles ignore this harmlessly
   pm.dispose();
