@@ -348,6 +348,19 @@ header.light.stuck{background:rgba(236,238,241,.78);border-bottom-color:var(--li
   .pl-more{margin-top:8px;padding-top:7px}
   .pl-more summary{font-size:.56rem;letter-spacing:.2em}
 }
+/* a 320pt phone is the narrowest screen still in use: the blurb wraps to eight lines there and
+two plates came out 4-10px taller than the viewport, so the type tightens once more */
+@media (max-width:360px){
+  /* the header is fixed at 62px and the 4vh top padding came to 23px, so on a 320pt screen the
+     frame sat 16px below the viewport top and its top moulding was hidden under the nav. Clearing
+     the header costs 46px of height, which the print and the leading give back. */
+  .plate{padding:68px 5vw 10px;gap:6px}
+  .pl-blurb{font-size:.82rem;line-height:1.3}
+  .pl-title{margin-bottom:2px}
+  .pl-media img{max-height:min(calc(16svh - 1px),135px)}
+  .perf-stage{height:min(16svh,135px)}
+  .pl-more{margin-top:6px;padding-top:5px}
+}
 
 /* fixed counter, visible only while the plates are on screen */
 #counter{position:fixed;left:34px;bottom:28px;z-index:55;display:flex;align-items:baseline;gap:.5rem;
@@ -455,6 +468,11 @@ header.light.stuck{background:rgba(236,238,241,.78);border-bottom-color:var(--li
   .pl-kick,.pl-med{font-size:.6rem;letter-spacing:.2em}
   .pl-blurb{font-size:clamp(.86rem,1.15vw,.98rem);line-height:1.44}
   .pl-more{margin-top:8px;padding-top:8px}
+}
+/* narrow phones stack the plate and the header stays over it, so the width rule keeps the top
+   padding - the height rules below would otherwise pull it back to 14px and hide the moulding */
+@media (max-width:360px){
+  .plate{padding-top:68px;padding-bottom:6px}
 }
 .jr-rail-wrap{position:relative}
 .jr-rail{display:flex;gap:clamp(8px,1vw,14px);overflow-x:auto;overflow-y:hidden;
