@@ -30,7 +30,7 @@ def main():
         for m in missing[:10]:
             print("   MISS %s" % m)
 
-    museum_dirs = sorted(os.listdir(MUSEUM))
+    museum_dirs = sorted(d for d in os.listdir(MUSEUM) if os.path.isdir(os.path.join(MUSEUM, d)))
     thumb_dirs = sorted(d for d in os.listdir(THUMB) if os.path.isdir(os.path.join(THUMB, d)))
     stale = [d for d in thumb_dirs if d not in museum_dirs]
     absent = [d for d in museum_dirs if d not in thumb_dirs]
