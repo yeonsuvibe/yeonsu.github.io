@@ -220,14 +220,14 @@ header.light.stuck{background:rgba(236,238,241,.78);border-bottom-color:var(--li
 /* ---------- 2. one plate at a time ---------- */
 .plates{background:var(--espresso-2);color:var(--sand)}
 .plate{min-height:100svh;display:grid;grid-template-columns:minmax(0,1.12fr) minmax(0,.75fr);align-items:center;
-  align-content:center;gap:clamp(26px,4.5vw,74px);padding:clamp(44px,9.6vh,96px) 6vw;position:relative;
+  align-content:center;justify-items:center;gap:clamp(26px,4.5vw,74px);padding:clamp(44px,9.6vh,96px) 6vw;position:relative;
   scroll-snap-align:start;scroll-snap-stop:always}
 .plate+.plate{border-top:1px solid rgba(236,238,241,.06)}
 .pl-media{position:relative;overflow:visible;border-radius:0;background:transparent;min-width:0;
   display:flex;align-items:center;justify-content:center}
 .pl-media img{width:100%;height:min(72svh,720px);object-fit:contain;will-change:transform,opacity;
   filter:drop-shadow(0 24px 50px rgba(0,0,0,.78))}
-.pl-text{max-width:46ch;min-width:0}
+.pl-text{max-width:46ch;min-width:0;justify-self:center}
 .pl-kick{margin:0 0 14px;font-size:.62rem;letter-spacing:.34em;text-transform:uppercase;color:#a9aebb}
 .pl-kick span{color:var(--mute)}
 .pl-title{margin:0 0 12px;font-family:var(--serif);font-weight:300;font-size:clamp(2rem,4.6vw,3.6rem);
@@ -326,10 +326,27 @@ header.light.stuck{background:rgba(236,238,241,.78);border-bottom-color:var(--li
 .perf-bar i{display:block;height:100%;width:0;background:#a9aebb;opacity:.9}
 .pl-media.perf.is-live .perf-bar i{transition:width var(--perf-dur,1500ms) linear;width:100%}
 @media (max-width:860px){
-  .plate{grid-template-columns:1fr;gap:22px;padding:10vh 7vw;align-content:center}
+  .plate{grid-template-columns:1fr;gap:22px;padding:6vh 7vw;align-content:center;justify-items:center}
+  /* the track is the bound: a media box left to its own width grew past the column and the
+     frame was pushed 12px off the left edge of a phone screen */
+  .pl-media{justify-self:center;max-width:100%;min-width:0}
+  .pl-media>div{max-width:100%}
   .plate{--mat:14px;--mould:7px}
-  .pl-media img{max-height:min(calc(46svh - 1px),420px)}
-  .perf-stage{height:min(46svh,420px)}
+  .pl-media img{max-height:min(calc(35svh - 1px),320px)}
+  .perf-stage{height:min(35svh,320px)}
+}
+/* stacked on a phone the print, the title and the blurb together ran 204px past the screen, so
+   the picture opened on one page and its frame ran off the next. The print keeps three tenths of
+   the height and the type tightens so the whole plate closes inside one screen. */
+@media (max-width:600px){
+  .plate{padding:5vh 6vw;gap:10px}
+  .pl-media img{max-height:min(calc(27svh - 1px),240px)}
+  .perf-stage{height:min(27svh,240px)}
+  .pl-title{font-size:clamp(1.28rem,5.6vw,1.7rem);margin-bottom:5px}
+  .pl-kick,.pl-med{font-size:.58rem;letter-spacing:.18em}
+  .pl-blurb{font-size:.88rem;line-height:1.42}
+  .pl-more{margin-top:8px;padding-top:7px}
+  .pl-more summary{font-size:.56rem;letter-spacing:.2em}
 }
 
 /* fixed counter, visible only while the plates are on screen */
@@ -401,8 +418,10 @@ header.light.stuck{background:rgba(236,238,241,.78);border-bottom-color:var(--li
   font-size:clamp(1.5rem,3.4vw,2.6rem);line-height:1.14;letter-spacing:-.01em}
 /* The room note sits under the venue name and above the rail: two sentences of what the place
    actually is, so a visitor meeting the wall knows what they are looking at before the pictures. */
-.jr-story{margin:0;max-width:64ch;font-family:var(--serif);font-style:italic;
-  font-size:clamp(.86rem,1.05vw,.98rem);line-height:1.72;color:var(--mute-d,#6d6a62)}
+.jr-story{margin:0;max-width:78ch;font-family:var(--serif);font-style:italic;
+  font-size:clamp(.86rem,1.05vw,.98rem);line-height:1.72;color:var(--mute-d,#6d6a62);
+  display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:1;overflow:hidden;
+  text-overflow:ellipsis}
 /* a rail that cannot scroll should not carry a scroll button */
 .jr-nav{position:absolute;top:50%;transform:translateY(-50%);z-index:3;
   width:44px;height:44px;display:none;place-items:center;padding:0;cursor:pointer;
@@ -418,6 +437,25 @@ header.light.stuck{background:rgba(236,238,241,.78);border-bottom-color:var(--li
 .jr-nav[disabled]{opacity:.26;pointer-events:none}
 .jr-nav:hover{background:#fff}
 @media (max-width:820px){.jr-nav{width:38px;height:38px}.jr-nav.prev{left:6px}.jr-nav.next{right:6px}}
+/* A laptop with the browser chrome showing gives a plate about 660px, and at that height the
+   title, blurb and statement together ran 39px past the bottom of the screen - the print then
+   straddled two pages instead of sitting on one. The type steps down and the padding gives way
+   before anything is allowed to overflow. */
+@media (max-height:780px){
+  .plate{padding:clamp(22px,3.8vh,46px) 6vw;gap:clamp(20px,3vw,48px)}
+  .pl-title{font-size:clamp(1.5rem,3.2vw,2.5rem);margin-bottom:8px}
+  .pl-med{margin-bottom:8px}
+  .pl-blurb{font-size:clamp(.95rem,1.35vw,1.12rem);line-height:1.5}
+  .pl-more{margin-top:12px;padding-top:10px}
+  .pl-more p{font-size:.86rem;line-height:1.66}
+}
+@media (max-height:660px){
+  .plate{padding:clamp(14px,2.4vh,26px) 5vw}
+  .pl-title{font-size:clamp(1.3rem,2.6vw,1.9rem);margin-bottom:6px}
+  .pl-kick,.pl-med{font-size:.6rem;letter-spacing:.2em}
+  .pl-blurb{font-size:clamp(.86rem,1.15vw,.98rem);line-height:1.44}
+  .pl-more{margin-top:8px;padding-top:8px}
+}
 .jr-rail-wrap{position:relative}
 .jr-rail{display:flex;gap:clamp(8px,1vw,14px);overflow-x:auto;overflow-y:hidden;
   scroll-snap-type:x proximity;padding-bottom:10px;
@@ -444,6 +482,9 @@ header.light.stuck{background:rgba(236,238,241,.78);border-bottom-color:var(--li
      a sliver of the next plate says "there is more" without a fade over the only picture */
   .jr-rail{-webkit-mask-image:linear-gradient(to right,#000 0,#000 calc(100% - 14px),transparent 100%);
     mask-image:linear-gradient(to right,#000 0,#000 calc(100% - 14px),transparent 100%)}
+  /* a phone column holds about forty characters, so a ninety-character note could only ever be
+     one line by cutting the sentence short. Two lines fit inside the room's own screen here. */
+  .jr-story{-webkit-line-clamp:2;display:-webkit-box}
 }
 @media (prefers-reduced-motion:reduce){.jr{opacity:1;transform:none}}
 
@@ -852,7 +893,7 @@ footer{background:var(--espresso-2);color:var(--mute);padding:56px 6vw 44px;bord
 <div class="jrs">
 <article class="jr" data-reveal>
   <h3 class="jr-name">Musée d'Orsay, Paris</h3>
-  <p class="jr-story">A Beaux-Arts railway station built for the 1900 World's Fair, saved from demolition and reopened as a museum in 1986. Its vaulted glass roof now covers the largest holding of Impressionist and Post-Impressionist work anywhere, hung in rough chronological order so the top floor reads as one continuous argument from Manet through Van Gogh. The great clock faces at either end still look out over the Seine.</p>
+  <p class="jr-story">A Beaux-Arts railway station of 1900, now the deepest holding of Impressionism anywhere.</p>
   <div class="jr-rail" role="list">
     <figure class="jr-plate" role="listitem"><img src="photos/journeys/orsay/001.jpg" width="1125" height="1500" alt="" loading="lazy" decoding="async"></figure>
     <figure class="jr-plate" role="listitem"><img src="photos/journeys/orsay/002.jpg" width="1125" height="1500" alt="" loading="lazy" decoding="async"></figure>
@@ -870,7 +911,7 @@ footer{background:var(--espresso-2);color:var(--mute);padding:56px 6vw 44px;bord
 </article>
 <article class="jr" data-reveal>
   <h3 class="jr-name">Louvre Museum, Paris</h3>
-  <p class="jr-story">A royal palace turned public museum in 1793, and now the most visited art museum in the world. The collection runs from Mesopotamian brick to nineteenth-century French canvas across eight departments, which is why no visit covers it: the Egyptian, Greek and painting wings are three separate days. The glass pyramid of 1989 marks the axis that the palace itself was built along.</p>
+  <p class="jr-story">A royal palace opened as a museum in 1793 — eight departments, one visit will not cover it.</p>
   <div class="jr-rail" role="list">
     <figure class="jr-plate" role="listitem"><img src="photos/journeys/louvre/001.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
     <figure class="jr-plate" role="listitem"><img src="photos/journeys/louvre/002.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
@@ -890,7 +931,7 @@ footer{background:var(--espresso-2);color:var(--mute);padding:56px 6vw 44px;bord
 </article>
 <article class="jr" data-reveal>
   <h3 class="jr-name">Musée de l'Orangerie, Paris</h3>
-  <p class="jr-story">Two oval rooms built to a plan Monet set himself, holding the Water Lilies cycle he worked on from 1914 until his death and which opened to the public in 1927. The rooms are the museum: daylight enters from above and the canvases wrap the walls without a horizon line to stop them. The lower floor holds the Jean Walter and Paul Guillaume collection, Renoir to Soutine.</p>
+  <p class="jr-story">Two oval rooms Monet designed himself, and the Water Lilies cycle they were built to hold.</p>
   <div class="jr-rail" role="list">
     <figure class="jr-plate" role="listitem"><img src="photos/journeys/orangerie/001.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
     <figure class="jr-plate" role="listitem"><img src="photos/journeys/orangerie/002.jpg" width="1125" height="1500" alt="" loading="lazy" decoding="async"></figure>
@@ -910,7 +951,7 @@ footer{background:var(--espresso-2);color:var(--mute);padding:56px 6vw 44px;bord
 </article>
 <article class="jr" data-reveal>
   <h3 class="jr-name">Musée Jacquemart-André, Paris</h3>
-  <p class="jr-story">A private mansion on Boulevard Haussmann, left as its collectors arranged it rather than rearranged for a public. Édouard André and Nélie Jacquemart travelled for decades and hung what they bought in the rooms it was bought for, so the Italian Renaissance galleries and the eighteenth-century French salon read as a house that happens to be open. The winter garden stair by Tiepolo's frescoes is the centre of the building.</p>
+  <p class="jr-story">A private mansion kept as its collectors left it — a home you walk through like a guest.</p>
   <div class="jr-rail" role="list">
     <figure class="jr-plate" role="listitem"><img src="photos/journeys/jacquemart-andre/001.jpg" width="1125" height="1500" alt="" loading="lazy" decoding="async"></figure>
     <figure class="jr-plate" role="listitem"><img src="photos/journeys/jacquemart-andre/002.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
@@ -923,7 +964,7 @@ footer{background:var(--espresso-2);color:var(--mute);padding:56px 6vw 44px;bord
 </article>
 <article class="jr" data-reveal>
   <h3 class="jr-name">Palais de Tokyo, Paris</h3>
-  <p class="jr-story">A 1937 exhibition pavilion on the Seine that sat largely unused for decades before reopening in 2002 as a space with no permanent collection at all. Every floor is a rotating set of exhibitions, so the building is always different and often unfinished on purpose. It is the most consistently experimental large space in Paris.</p>
+  <p class="jr-story">A 1937 exhibition pavilion on the Seine, now the city's most restless contemporary space.</p>
   <div class="jr-rail" role="list">
     <figure class="jr-plate" role="listitem"><img src="photos/journeys/palais-de-tokyo/001.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
     <figure class="jr-plate" role="listitem"><img src="photos/journeys/palais-de-tokyo/002.jpg" width="1500" height="970" alt="" loading="lazy" decoding="async"></figure>
@@ -954,7 +995,7 @@ footer{background:var(--espresso-2);color:var(--mute);padding:56px 6vw 44px;bord
 </article>
 <article class="jr" data-reveal>
   <h3 class="jr-name">Bourse de Commerce, Paris</h3>
-  <p class="jr-story">An eighteenth-century grain exchange, roofed in 1811 with a cast-iron dome that had to be seen from the inside. Tadao Ando inserted a concrete cylinder inside that rotunda without touching the ring of frescoes behind it, and the François Pinault Collection opened there in 2021. Contemporary work is shown in the round, in dialogue with a building that was never meant for it.</p>
+  <p class="jr-story">An eighteenth-century grain exchange, domed in 1811 and reopened in 2021 for Pinault's collection.</p>
   <div class="jr-rail" role="list">
     <figure class="jr-plate" role="listitem"><img src="photos/journeys/bourse-de-commerce/001.jpg" width="1125" height="1500" alt="" loading="lazy" decoding="async"></figure>
     <figure class="jr-plate" role="listitem"><img src="photos/journeys/bourse-de-commerce/002.jpg" width="1125" height="1500" alt="" loading="lazy" decoding="async"></figure>
@@ -975,7 +1016,7 @@ footer{background:var(--espresso-2);color:var(--mute);padding:56px 6vw 44px;bord
 </article>
 <article class="jr" data-reveal>
   <h3 class="jr-name">Petit Palais, Paris</h3>
-  <p class="jr-story">Built as the fine-arts pavilion of the 1900 World's Fair, opposite the Grand Palais across a gilded courtyard garden. It holds the city of Paris's own collection: Greek and Roman objects, medieval and Renaissance pieces, and a strong run of French painting and sculpture from the nineteenth century. Admission to the permanent rooms is free, which is not incidental to how it is used.</p>
+  <p class="jr-story">The fine-arts pavilion of the 1900 World's Fair, facing the Grand Palais across the street.</p>
   <div class="jr-rail" role="list">
     <figure class="jr-plate" role="listitem"><img src="photos/journeys/petit-palais/001.jpg" width="1125" height="1500" alt="" loading="lazy" decoding="async"></figure>
     <figure class="jr-plate" role="listitem"><img src="photos/journeys/petit-palais/002.jpg" width="1125" height="1500" alt="" loading="lazy" decoding="async"></figure>
@@ -994,7 +1035,7 @@ footer{background:var(--espresso-2);color:var(--mute);padding:56px 6vw 44px;bord
 </article>
 <article class="jr" data-reveal>
   <h3 class="jr-name">Palace of Versailles</h3>
-  <p class="jr-story">Louis XIV moved the court here in 1682 and the palace remained the centre of French government until 1789. The Hall of Mirrors is seventy-three metres of glass facing seventeen arched windows, and the gardens beyond were laid out by Le Nôtre as a single sightline running to the horizon. The Grand and Petit Trianon at the far end of the grounds are quieter and, for many, the better rooms.</p>
+  <p class="jr-story">The court of Louis XIV from 1682 — the whole building is the exhibit, not the pictures.</p>
   <div class="jr-rail" role="list">
     <figure class="jr-plate" role="listitem"><img src="photos/journeys/versailles/001.jpg" width="1125" height="1500" alt="" loading="lazy" decoding="async"></figure>
     <figure class="jr-plate" role="listitem"><img src="photos/journeys/versailles/002.jpg" width="1125" height="1500" alt="" loading="lazy" decoding="async"></figure>
@@ -1010,7 +1051,7 @@ footer{background:var(--espresso-2);color:var(--mute);padding:56px 6vw 44px;bord
 </article>
 <article class="jr" data-reveal>
   <h3 class="jr-name">Vatican Museums, Vatican City</h3>
-  <p class="jr-story">Founded from the papal collections in 1506 and now a route rather than a museum: seven kilometres of corridor that ends at the Sistine Chapel. The Raphael Rooms, the map gallery and the Belvedere courtyard's Laocoön and Apollo come before it, and the crowd is part of the architecture. Michelangelo painted the chapel ceiling between 1508 and 1512 and the Last Judgment twenty-five years after that.</p>
+  <p class="jr-story">Papal collections begun in 1506: seven kilometres of galleries, ending at the Sistine ceiling.</p>
   <div class="jr-rail" role="list">
     <figure class="jr-plate" role="listitem"><img src="photos/journeys/vatican/001.jpg" width="1125" height="1500" alt="" loading="lazy" decoding="async"></figure>
     <figure class="jr-plate" role="listitem"><img src="photos/journeys/vatican/002.jpg" width="1500" height="1050" alt="" loading="lazy" decoding="async"></figure>
@@ -1027,7 +1068,7 @@ footer{background:var(--espresso-2);color:var(--mute);padding:56px 6vw 44px;bord
 </article>
 <article class="jr" data-reveal>
   <h3 class="jr-name">Pantheon, Rome</h3>
-  <p class="jr-story">A temple finished under Hadrian around 126 AD, kept intact because it was consecrated as a church in 609. The dome is still the largest unreinforced concrete one ever built, and the oculus at its centre is the only source of light, so rain falls on the original marble floor. Raphael is buried inside, which is why the building stayed a monument through every century that followed.</p>
+  <p class="jr-story">A temple finished under Hadrian around 126 AD, kept whole because it became a church.</p>
   <div class="jr-rail" role="list">
     <figure class="jr-plate" role="listitem"><img src="photos/journeys/pantheon/001.jpg" width="1125" height="1500" alt="" loading="lazy" decoding="async"></figure>
     <figure class="jr-plate" role="listitem"><img src="photos/journeys/pantheon/002.jpg" width="1125" height="1500" alt="" loading="lazy" decoding="async"></figure>
@@ -1039,7 +1080,7 @@ footer{background:var(--espresso-2);color:var(--mute);padding:56px 6vw 44px;bord
 </article>
 <article class="jr" data-reveal>
   <h3 class="jr-name">Galleria Nazionale d'Arte Moderna, Rome</h3>
-  <p class="jr-story">Italy's national collection of modern art, opened in 1883 and housed since 1911 in a Beaux-Arts building on Via delle Belle Arti. It holds the Macchiaioli painters who broke Italian landscape open in the 1850s, and then carries that thread through Divisionism, Futurism and the twentieth century. Rooms of sculpture alternate with the paintings rather than being kept apart.</p>
+  <p class="jr-story">Italy's national modern collection, opened 1883, in a Beaux-Arts palace since 1911.</p>
   <div class="jr-rail" role="list">
     <figure class="jr-plate" role="listitem"><img src="photos/journeys/gnam/001.jpg" width="1125" height="1500" alt="" loading="lazy" decoding="async"></figure>
     <figure class="jr-plate" role="listitem"><img src="photos/journeys/gnam/002.jpg" width="1125" height="1500" alt="" loading="lazy" decoding="async"></figure>
@@ -1056,7 +1097,7 @@ footer{background:var(--espresso-2);color:var(--mute);padding:56px 6vw 44px;bord
 </article>
 <article class="jr" data-reveal>
   <h3 class="jr-name">MAXXI, Rome</h3>
-  <p class="jr-story">Zaha Hadid's museum of twenty-first-century art in the Flaminio district, opened in 2010 after a competition held a decade earlier. The building is a set of intersecting concrete bands with the steel roof trusses left exposed, and the galleries flow into each other instead of filing past a sequence of doors. It is the first national museum Italy built for contemporary art.</p>
+  <p class="jr-story">Zaha Hadid's twenty-first-century museum, opened 2010 — the building argues with the art.</p>
   <div class="jr-rail" role="list">
     <figure class="jr-plate" role="listitem"><img src="photos/journeys/maxxi/001.jpg" width="1125" height="1500" alt="" loading="lazy" decoding="async"></figure>
     <figure class="jr-plate" role="listitem"><img src="photos/journeys/maxxi/002.jpg" width="1125" height="1500" alt="" loading="lazy" decoding="async"></figure>
@@ -1070,7 +1111,7 @@ footer{background:var(--espresso-2);color:var(--mute);padding:56px 6vw 44px;bord
 </article>
 <article class="jr" data-reveal>
   <h3 class="jr-name">Ponte, Rome</h3>
-  <p class="jr-story">A walk-through sequence of rooms rather than a hang: neon, projected crystal and hand-painted lines carried along the walls. The work is the passage through it, and the photographs here are the only record of how the rooms were lit at the time. Nothing is framed, so nothing survives as an object.</p>
+  <p class="jr-story">Not a hang but a walk: neon, projected crystal and painted rooms in sequence.</p>
   <div class="jr-rail" role="list">
     <figure class="jr-plate" role="listitem"><img src="photos/journeys/ponte/001.jpg" width="1125" height="1500" alt="" loading="lazy" decoding="async"></figure>
     <figure class="jr-plate" role="listitem"><img src="photos/journeys/ponte/002.jpg" width="1125" height="1500" alt="" loading="lazy" decoding="async"></figure>
@@ -1086,7 +1127,7 @@ footer{background:var(--espresso-2);color:var(--mute);padding:56px 6vw 44px;bord
 </article>
 <article class="jr" data-reveal>
   <h3 class="jr-name">Van Gogh Immersive, Florence</h3>
-  <p class="jr-story">Van Gogh's paintings projected to wall height across an old Florentine interior, with Starry Night and the sunflowers running past the stone. The scale changes the argument: brushstroke becomes movement, and the works read as a sequence instead of as individual canvases. It is deliberately not a museum of objects.</p>
+  <p class="jr-story">Van Gogh projected to wall height across an old Florentine interior, Starry Night overhead.</p>
   <div class="jr-rail" role="list">
     <figure class="jr-plate" role="listitem"><img src="photos/journeys/centro-storico/001.jpg" width="1125" height="1500" alt="" loading="lazy" decoding="async"></figure>
     <figure class="jr-plate" role="listitem"><img src="photos/journeys/centro-storico/002.jpg" width="1125" height="1500" alt="" loading="lazy" decoding="async"></figure>
@@ -1102,7 +1143,7 @@ footer{background:var(--espresso-2);color:var(--mute);padding:56px 6vw 44px;bord
 </article>
 <article class="jr" data-reveal>
   <h3 class="jr-name">Uffizi Gallery, Florence</h3>
-  <p class="jr-story">Built by Vasari from 1560 for Cosimo I as the offices of the Florentine magistrates, and opened to visitors from 1581, which makes it the oldest public collection in Europe. The Medici paintings arrived as a family holding, so Botticelli's Birth of Venus and the Leonardo annunciation hang a few rooms apart. The Vasari Corridor runs above the Arno to the Pitti Palace, the family's route to work.</p>
+  <p class="jr-story">Vasari's offices for Cosimo I from 1560, holding the Medici picture collection since 1765.</p>
   <div class="jr-rail" role="list">
     <figure class="jr-plate" role="listitem"><img src="photos/journeys/uffizi/001.jpg" width="1125" height="1500" alt="" loading="lazy" decoding="async"></figure>
     <figure class="jr-plate" role="listitem"><img src="photos/journeys/uffizi/002.jpg" width="1125" height="1500" alt="" loading="lazy" decoding="async"></figure>
@@ -1120,7 +1161,7 @@ footer{background:var(--espresso-2);color:var(--mute);padding:56px 6vw 44px;bord
 </article>
 <article class="jr" data-reveal>
   <h3 class="jr-name">Teatro alla Scala, Milan</h3>
-  <p class="jr-story">Piermarini's opera house, opened in 1778, and the stage against which Verdi and the nineteenth-century Italian repertoire are measured. The auditorium is horseshoe-shaped and lined with six tiers of boxes, which is why the audience sees itself as much as the stage. The adjoining museum holds costumes, instruments and the archive of the house.</p>
+  <p class="jr-story">Piermarini's opera house of 1778 — the stage Verdi and the nineteenth century answered to.</p>
   <div class="jr-rail" role="list">
     <figure class="jr-plate" role="listitem"><img src="photos/journeys/scala/001.jpg" width="1125" height="1500" alt="" loading="lazy" decoding="async"></figure>
     <figure class="jr-plate" role="listitem"><img src="photos/journeys/scala/002.jpg" width="1125" height="1500" alt="" loading="lazy" decoding="async"></figure>
@@ -1137,7 +1178,7 @@ footer{background:var(--espresso-2);color:var(--mute);padding:56px 6vw 44px;bord
 </article>
 <article class="jr" data-reveal>
   <h3 class="jr-name">Venice Biennale</h3>
-  <p class="jr-story">Held since 1895 in the Giardini, where thirty national pavilions each stage their own answer to the same question, and extended into the Arsenale, the medieval shipyard that gives the exhibition its scale. Nations with no pavilion of their own take space in the city itself, so the exhibition spreads through Venice rather than sitting in one place. The art and architecture editions alternate.</p>
+  <p class="jr-story">Since 1895 in the Giardini: thirty national pavilions, each giving its own answer.</p>
   <div class="jr-rail" role="list">
     <figure class="jr-plate" role="listitem"><img src="photos/journeys/venice-biennale/001.jpg" width="1125" height="1500" alt="" loading="lazy" decoding="async"></figure>
     <figure class="jr-plate" role="listitem"><img src="photos/journeys/venice-biennale/002.jpg" width="1125" height="1500" alt="" loading="lazy" decoding="async"></figure>
@@ -1166,7 +1207,7 @@ footer{background:var(--espresso-2);color:var(--mute);padding:56px 6vw 44px;bord
 </article>
 <article class="jr" data-reveal>
   <h3 class="jr-name">Städel Museum, Frankfurt</h3>
-  <p class="jr-story">A civic foundation since 1815, holding seven hundred years of European art in one building on the Main. It runs from Cranach and Holbein through the German Romantics to Baselitz and Richter, and the twentieth century upstairs is unusually strong for a collection of this size. The 2012 garden wing was sunk under the lawn to add a skylit gallery without changing the street.</p>
+  <p class="jr-story">A civic foundation since 1815, holding seven hundred years of European art in one building.</p>
   <div class="jr-rail" role="list">
     <figure class="jr-plate" role="listitem"><img src="photos/journeys/staedel/001.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
     <figure class="jr-plate" role="listitem"><img src="photos/journeys/staedel/002.jpg" width="1125" height="1500" alt="" loading="lazy" decoding="async"></figure>
@@ -1190,7 +1231,7 @@ footer{background:var(--espresso-2);color:var(--mute);padding:56px 6vw 44px;bord
 </article>
 <article class="jr" data-reveal>
   <h3 class="jr-name">Kunsthaus Zürich</h3>
-  <p class="jr-story">Switzerland's largest art museum, run by an artists' society founded in 1787, and still shaped by that origin. Monet, Munch, Picasso and Giacometti form the spine, with a whole room given to the Chagall windows. David Chipperfield's 2021 extension opened the museum onto the Heimplatz and doubled the exhibition space without touching the 1910 building.</p>
+  <p class="jr-story">Switzerland's largest art museum, run by an artists' society founded in 1787 — still artist-led.</p>
   <div class="jr-rail" role="list">
     <figure class="jr-plate" role="listitem"><img src="photos/journeys/kunsthaus-zurich/001.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
     <figure class="jr-plate" role="listitem"><img src="photos/journeys/kunsthaus-zurich/002.jpg" width="1125" height="1500" alt="" loading="lazy" decoding="async"></figure>
@@ -1213,7 +1254,7 @@ footer{background:var(--espresso-2);color:var(--mute);padding:56px 6vw 44px;bord
 </article>
 <article class="jr" data-reveal>
   <h3 class="jr-name">Expo 2025, Osaka</h3>
-  <p class="jr-story">A world's fair on the artificial island of Yumeshima, with national pavilions built largely in mass timber around Sou Fujimoto's Grand Ring, which circles the whole site and remains the largest timber structure in the world. Each pavilion is a country stating its own case about the future, and the architecture is the argument. Access was by the metro extension built for the site.</p>
+  <p class="jr-story">A world's fair on the artificial island of Yumeshima, pavilions built largely of timber and light.</p>
   <div class="jr-rail" role="list">
     <figure class="jr-plate" role="listitem"><img src="photos/journeys/expo-osaka/001.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
     <figure class="jr-plate" role="listitem"><img src="photos/journeys/expo-osaka/002.jpg" width="1125" height="1500" alt="" loading="lazy" decoding="async"></figure>
