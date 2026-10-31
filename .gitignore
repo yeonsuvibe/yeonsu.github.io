@@ -9,6 +9,8 @@ spike/
 photos/_sheets/
 photos/museum/
 photos/art/_DSF*.jpg
+# the .jpeg files are the camera masters of the frames served as .jpg
+photos/art/performance/*.jpeg
 
 # 3D experiments for the root sculpture studies.
 *.stl
