@@ -66,6 +66,41 @@ header.light.stuck{background:rgba(242,238,228,.78);border-bottom-color:var(--li
 #bar{position:fixed;top:0;left:0;height:2px;width:100%;transform:scaleX(0);transform-origin:0 50%;
   background:var(--accent);z-index:70;will-change:transform}
 
+/* ---------- 0. the name, before anything ---------- */
+.home{position:relative;height:100svh;min-height:600px;display:grid;place-items:center;
+  overflow:hidden;background:var(--sand);isolation:isolate}
+/* the glazed wall behind the name: the same eighteen works, seen out of focus */
+.home-wall{position:absolute;inset:-6% -4%;display:grid;grid-template-columns:repeat(6,1fr);
+  grid-template-rows:repeat(2,1fr);gap:4px;z-index:-1;opacity:.42;
+  filter:blur(13px) saturate(.8) brightness(1.14);
+  -webkit-mask-image:radial-gradient(68% 62% at 50% 46%,#000 0%,#000 42%,transparent 88%);
+          mask-image:radial-gradient(68% 62% at 50% 46%,#000 0%,#000 42%,transparent 88%)}
+.home-wall img{width:100%;height:100%;object-fit:cover}
+.home-inner{position:relative;width:min(1180px,92vw);text-align:center;
+  padding:24px 0 0;transform:translateY(-2vh)}
+.hp-kick{margin:0 0 clamp(1.4rem,3.4vh,2.4rem);color:var(--crimson);font-size:clamp(.5rem,.72vw,.6rem);
+  letter-spacing:.42em;text-transform:uppercase}
+.hp-name{margin:0;font-family:var(--serif);font-weight:300;line-height:.94;
+  font-size:clamp(3.1rem,11.6vw,10.4rem);letter-spacing:.02em;color:var(--espresso);
+  text-shadow:0 1px 0 rgba(255,255,255,.55)}
+.hp-lede{width:min(660px,90%);margin:clamp(1.6rem,3.6vh,2.6rem) auto 0;
+  font-family:var(--serif);font-style:italic;font-weight:300;
+  font-size:clamp(.95rem,1.5vw,1.32rem);line-height:1.72;color:#4a423a}
+.hp-bottom{margin-top:clamp(2rem,4.6vh,3.4rem);display:flex;flex-direction:column;align-items:center;gap:14px}
+.hp-rule{display:block;width:44px;height:1px;background:#8d8175}
+.hp-meta{margin:0;color:#6d6459;font-size:clamp(.5rem,.66vw,.56rem);letter-spacing:.28em;text-transform:uppercase}
+.home-cue{position:absolute;left:50%;bottom:22px;transform:translateX(-50%);
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+  color:#7d7368;font-size:.54rem;letter-spacing:.32em;text-transform:uppercase}
+.home-cue i{display:block;width:1px;height:26px;background:linear-gradient(to bottom,transparent,#8d8175);
+  animation:cue 2.4s var(--ease) infinite}
+@media (max-width:560px){
+  .home{min-height:560px}
+  .home-inner{padding:0 14px;transform:none}
+  .hp-kick{letter-spacing:.28em}
+  .hp-meta{letter-spacing:.16em;line-height:1.9}
+}
+
 /* ---------- 1. the whole body of work, on one screen ---------- */
 .hero{position:relative;height:100svh;min-height:560px;display:flex;flex-direction:column;
   padding:84px 3vw 26px;background:radial-gradient(120% 90% at 50% 0%,#1b1713 0%,var(--espresso) 62%)}
@@ -247,6 +282,28 @@ footer{background:var(--espresso-2);color:var(--mute);padding:56px 6vw 44px;bord
     <a href="#extra" data-sec="extra">Extracurricular</a>
   </nav>
 </header>
+
+<!-- 0. the name, then the room -->
+<section class="home" id="home" data-theme="light">
+  <div class="home-wall" aria-hidden="true">
+    <img src="museum/art/_DSF7519.jpg" alt=""><img src="museum/art/_DSF7523.jpg" alt="">
+    <img src="museum/art/_DSF7527.jpg" alt=""><img src="museum/art/_DSF7543.jpg" alt="">
+    <img src="museum/art/_DSF7549.jpg" alt=""><img src="museum/art/_DSF7555.jpg" alt="">
+    <img src="museum/art/_DSF7521.jpg" alt=""><img src="museum/art/_DSF7525.jpg" alt="">
+    <img src="museum/art/_DSF7535.jpg" alt=""><img src="museum/art/_DSF7545.jpg" alt="">
+    <img src="museum/art/_DSF7551.jpg" alt=""><img src="museum/art/_DSF7519.jpg" alt="">
+  </div>
+  <div class="home-inner">
+    <p class="hp-kick">Artist &amp; Scholar · 2018 — 2026</p>
+    <h1 class="hp-name">YEONSU AHN</h1>
+    <p class="hp-lede">An eight-year record of drawing, looking, and wandering — assembled as a working archive for art-college admission. Every plate is an original; every journey is first-hand.</p>
+    <div class="hp-bottom">
+      <span class="hp-rule"></span>
+      <p class="hp-meta">Works · Exhibitions · Records &nbsp;—&nbsp; Student at Cheongshim International Academy, Class of 2026</p>
+    </div>
+  </div>
+  <div class="home-cue"><i></i><span>Scroll</span></div>
+</section>
 
 <!-- 1. every work on one screen, in order -->
 <section class="hero" id="gallery" data-theme="dark">
@@ -878,11 +935,13 @@ footer{background:var(--espresso-2);color:var(--mute);padding:56px 6vw 44px;bord
   var cnum = document.getElementById('cnum');
   var hero = document.querySelector('.hero');
   var mosaic = document.getElementById('mosaic');
+  var platesRoot = document.getElementById('plates');
   var navLinks = [].slice.call(document.querySelectorAll('#nav a'));
 
   // DOM order, top to bottom — the active-link sweep walks this list in sequence
   var sections = [
-    {el:document.getElementById('gallery'),   key:'hero',       theme:'dark'},
+    {el:document.getElementById('home'),      key:'hero',       theme:'light'},
+    {el:document.getElementById('gallery'),   key:'gallery',    theme:'dark'},
     {el:document.getElementById('plates'),    key:'gallery',    theme:'dark'},
     {el:document.getElementById('journeys'),  key:'journeys',   theme:'light'},
     {el:document.getElementById('journalism'),key:'journalism', theme:'light'},
@@ -898,9 +957,10 @@ footer{background:var(--espresso-2);color:var(--mute);padding:56px 6vw 44px;bord
     if(bar) bar.style.transform = 'scaleX(' + (max > 0 ? Math.min(1, y / max) : 0) + ')';
     if(hdr) hdr.classList.toggle('stuck', y > 40);
 
-    /* the opening mosaic recedes as the plates take over */
+    /* the mosaic recedes as its own plates take over — measured from the mosaic's top,
+       not the page top, so the new hero section above it does not pre-fade it */
     if(!reduce && hero && mosaic){
-      var p = clamp(y / (vh * 0.9), 0, 1);
+      var p = clamp((y - hero.offsetTop) / (vh * 0.9), 0, 1);
       mosaic.style.transform = 'translateY(' + (p * -26) + 'px) scale(' + (1 - p * 0.05) + ')';
       mosaic.style.opacity = String(1 - p * 0.55);
     }
@@ -924,8 +984,11 @@ footer{background:var(--espresso-2);color:var(--mute);padding:56px 6vw 44px;bord
       var d = Math.abs((r.top + r.height/2) - vh/2);
       if(ratio > 0.35 && d < bestD){ bestD = d; best = i; }
     }
+    /* the counter belongs to the one-plate-at-a-time stretch only: it waits until the
+       mosaic has handed over, then follows the plate that owns the screen */
     if(counter){
-      counter.classList.toggle('on', best !== null);
+      var handedOver = platesRoot ? platesRoot.getBoundingClientRect().top < vh * 0.5 : true;
+      counter.classList.toggle('on', best !== null && handedOver);
       if(best !== null) cnum.textContent = ('0' + (best + 1)).slice(-2);
     }
 
