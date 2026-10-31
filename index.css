@@ -1,5 +1,5 @@
 /* ============================================================
-   AHN YEONSU — Portfolio for Art College Admission
+   YEONSU AHN — Portfolio for Art College Admission
    Fine-art exhibition-catalogue aesthetic:
    gallery-wall paper, ink typography, museum-label captions,
    hairline rules, artwork shown true-tone (no sepia filter).
@@ -360,6 +360,11 @@ nav ul li a:hover { color: var(--ink); }
     font-style: normal;
     font-weight: 500;
     letter-spacing: 0.04em;
+    /* Lining figures: Cormorant's default old-style 1 reads as a bare stem
+       ("1st Arrondissement" rendered as "ıst"), which is wrong in a date-bearing
+       heading. Lining figures also keep the year columns optically aligned. */
+    font-variant-numeric: lining-nums tabular-nums;
+    font-feature-settings: 'lnum' 1, 'tnum' 1;
     margin-bottom: 18px;
     border-top: 1px solid var(--rule);
     border-bottom: 1px solid var(--rule);
@@ -463,6 +468,7 @@ nav ul li a:hover { color: var(--ink); }
     font-family: var(--font-display);
     font-size: 1.1rem;
     font-style: italic;
+    font-variant-numeric: lining-nums tabular-nums;   /* years, not old-style figures */
     color: var(--ink);
     margin-bottom: 2px;
     display: block;

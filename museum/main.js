@@ -5,7 +5,7 @@ import { installEnvironment } from './src/lighting.js';
 import { WallTour } from './src/guide.js';
 
 /* ---------------------------------------------------------------
-   AHN YEONSU — 3D Art Museum
+   YEONSU AHN — 3D Art Museum
    One continuous hall. The camera rides a rail parallel to the art
    wall; ← → slide it along the wall, so the view never turns away
    from a work. The wheel fades the distance slightly.
