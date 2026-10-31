@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- VERSION 2 - single scrolling page, no 3D. Branched from VERSION 1 on 2026-10-31.
-     Order follows the top navigation: Art Gallery, Cultural Journeys, Journalism, Extracurricular.
+     Order follows the top navigation: Art Gallery, Cultural Journeys, Journalism.
      The gallery opens on the whole body of work at once, then advances one plate at a time. -->
 <html lang="en">
 <head>
@@ -19,7 +19,7 @@
 }
 *{box-sizing:border-box}
 /* Cormorant defaults to oldstyle figures, which make a headline "1st" read as "ıst". Lining figures for titles. */
-.hero-head h1,.sec-head h2,.pl-title,.jr h3,.ex-block h3,.record h4{font-variant-numeric:lining-nums}
+.hero-head h1,.sec-head h2,.pl-title,.jr h3,.clip h3{font-variant-numeric:lining-nums}
 html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
 body{margin:0;background:var(--espresso);color:var(--ink);font-family:var(--sans);font-weight:300;
@@ -68,43 +68,77 @@ header.light.stuck{background:rgba(242,238,228,.78);border-bottom-color:var(--li
 
 /* ---------- 0. the name, before anything ---------- */
 .home{position:relative;height:100svh;min-height:600px;display:grid;place-items:center;
-  overflow:hidden;background:var(--sand);isolation:isolate}
-/* the glazed wall behind the name: the same eighteen works, seen out of focus */
-.home-wall{position:absolute;inset:-6% -4%;display:grid;grid-template-columns:repeat(6,1fr);
-  grid-template-rows:repeat(2,1fr);gap:4px;z-index:-1;opacity:.42;
-  filter:blur(13px) saturate(.8) brightness(1.14);
-  -webkit-mask-image:radial-gradient(68% 62% at 50% 46%,#000 0%,#000 42%,transparent 88%);
-          mask-image:radial-gradient(68% 62% at 50% 46%,#000 0%,#000 42%,transparent 88%)}
-.home-wall img{width:100%;height:100%;object-fit:cover}
-.home-inner{position:relative;width:min(1180px,92vw);text-align:center;
-  padding:24px 0 0;transform:translateY(-2vh)}
-.hp-kick{margin:0 0 clamp(1.4rem,3.4vh,2.4rem);color:var(--crimson);font-size:clamp(.5rem,.72vw,.6rem);
+  overflow:hidden;isolation:isolate;
+  background:linear-gradient(180deg,#efe9dd 0%,#e8e0d1 52%,#ded4c2 100%);
+  scroll-snap-align:start;scroll-snap-stop:always}
+/* The wall behind the name IS the gallery wall: same element classes (.mosaic.wall .tile), same
+   frame CSS, same hang function, and — set by script — the same box size. That is what makes the
+   tiles land at identical sizes and identical positions; a hand-tuned copy could only approximate. */
+#home-mosaic{position:absolute;top:0;left:0;z-index:1;overflow:visible}
+/* .mosaic.wall sets position:relative with two classes, which outranks a single .home-wall
+   selector — that quietly left the wall in the flow, pushing the type a whole grid row down.
+   An id keeps the wall out of the grid so the type can sit in the middle of the hang. */
+/* A translucent sheet over the hang. These are the same eighteen works in the same places as the
+   gallery; the sheet only lifts the type off them, so the name stays sharp without hiding art.
+   Kept deliberately weak — the heavy lifting for legibility is done by the paper plate behind
+   the type itself, not by bleaching a whole course of pictures. */
+.home-wall::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:3;
+  background:radial-gradient(56% 34% at 50% 48%,
+    rgba(247,242,232,.5) 0%,rgba(247,242,232,.42) 42%,rgba(245,239,229,.22) 68%,
+    rgba(242,235,223,.06) 86%,rgba(240,232,219,0) 96%)}
+/* one hung plate: the mat, the gilt rebate, the dark moulding, then the print */
+
+/* The type sits in a clear paper column through the middle of the hang. The hang function already
+   leaves the centre for the title, so the column only has to be wide enough for the name to end
+   inside it — at 88vw the word still ran into the frames on both sides. */
+.home-inner{position:relative;width:min(1180px,92vw);margin:0 auto;text-align:center;
+  padding:0;transform:none;z-index:2}
+/* A frosted plate behind the type. "Translucent" has to mean a sheet with an edge, not a soft
+   halo: a radial fade is already invisible by the time it reaches the kicker and the bottom line,
+   which is exactly where it was needed. So this plate is a real rounded sheet over the whole text
+   block — the art still reads through it, the letters sit on a steady tone everywhere. */
+.home-inner::before{content:"";position:absolute;left:50%;top:50%;z-index:-1;
+  transform:translate(-50%,-50%);width:min(1240px,94vw);height:calc(100% + clamp(70px,10vh,120px));
+  border-radius:20px;
+  background:rgba(248,244,236,.64);
+  -webkit-backdrop-filter:blur(5px) saturate(.94);backdrop-filter:blur(5px) saturate(.94);
+  box-shadow:0 28px 70px -34px rgba(60,46,28,.38),inset 0 0 0 1px rgba(255,253,248,.5)}
+.hp-kick{margin:0 0 clamp(.9rem,2.2vh,1.5rem);color:var(--crimson);font-size:clamp(.5rem,.72vw,.6rem);
+  /* the wall sits directly behind these two small lines, so they carry a paper-coloured halo
+     instead of relying on the veil alone: the pictures stay visible, the letters stay legible */
+  text-shadow:0 0 16px rgba(246,240,229,1),0 0 9px rgba(246,240,229,1),0 0 4px rgba(246,240,229,1),
+    0 1px 0 rgba(255,253,248,.95),0 -1px 0 rgba(255,253,248,.9);
   letter-spacing:.42em;text-transform:uppercase}
 .hp-name{margin:0;font-family:var(--serif);font-weight:300;line-height:.94;
-  font-size:clamp(3.1rem,11.6vw,10.4rem);letter-spacing:.02em;color:var(--espresso);
+  font-size:clamp(2.7rem,9.4vw,8.2rem);letter-spacing:.02em;color:var(--espresso);
   text-shadow:0 1px 0 rgba(255,255,255,.55)}
 .hp-lede{width:min(660px,90%);margin:clamp(1.6rem,3.6vh,2.6rem) auto 0;
+  text-shadow:0 0 16px rgba(246,240,229,.95),0 0 8px rgba(246,240,229,.9);
   font-family:var(--serif);font-style:italic;font-weight:300;
   font-size:clamp(.95rem,1.5vw,1.32rem);line-height:1.72;color:#4a423a}
 .hp-bottom{margin-top:clamp(2rem,4.6vh,3.4rem);display:flex;flex-direction:column;align-items:center;gap:14px}
 .hp-rule{display:block;width:44px;height:1px;background:#8d8175}
-.hp-meta{margin:0;color:#6d6459;font-size:clamp(.5rem,.66vw,.56rem);letter-spacing:.28em;text-transform:uppercase}
-.home-cue{position:absolute;left:50%;bottom:22px;transform:translateX(-50%);
-  display:flex;flex-direction:column;align-items:center;gap:8px;
-  color:#7d7368;font-size:.54rem;letter-spacing:.32em;text-transform:uppercase}
-.home-cue i{display:block;width:1px;height:26px;background:linear-gradient(to bottom,transparent,#8d8175);
+.hp-meta{margin:0;color:#4f4738;font-size:clamp(.5rem,.66vw,.56rem);letter-spacing:.28em;text-transform:uppercase;
+  text-shadow:0 0 13px rgba(246,240,229,.98),0 0 6px rgba(246,240,229,.96)}
+.home-cue{position:absolute;left:50%;bottom:6px;transform:translateX(-50%);
+  display:flex;flex-direction:column;align-items:center;gap:5px;
+  color:#4a4238;font-size:.5rem;letter-spacing:.32em;text-transform:uppercase;
+  text-shadow:0 0 12px rgba(248,244,236,.98),0 0 5px rgba(248,244,236,.95),0 1px 0 rgba(255,253,248,.9)}
+.home-cue i{display:block;width:1px;height:20px;background:linear-gradient(to bottom,transparent,#8d8175);
   animation:cue 2.4s var(--ease) infinite}
 @media (max-width:560px){
+  /* the hang owns every tile position on a phone too, and no veil is laid over the art */
   .home{min-height:560px}
-  .home-inner{padding:0 14px;transform:none}
+  .home-inner{padding:0 14px;transform:none;width:min(100%,84vw)}
   .hp-kick{letter-spacing:.28em}
   .hp-meta{letter-spacing:.16em;line-height:1.9}
 }
 
 /* ---------- 1. the whole body of work, on one screen ---------- */
 .hero{position:relative;height:100svh;min-height:560px;display:flex;flex-direction:column;
-  padding:84px 3vw 26px;background:radial-gradient(120% 90% at 50% 0%,#1b1713 0%,var(--espresso) 62%)}
-.hero-head{display:flex;justify-content:space-between;align-items:flex-end;gap:2rem;padding:0 1.2vw 22px;
+  padding:84px 3vw 26px;background:radial-gradient(120% 90% at 50% 0%,#1b1713 0%,var(--espresso) 62%);
+  scroll-snap-align:start;scroll-snap-stop:always}
+.hero-head{display:flex;justify-content:flex-end;align-items:flex-end;gap:2rem;padding:0 1.2vw 22px;
   color:var(--sand);font-family:var(--sans)}
 .hero-head h1{margin:0;font-family:var(--serif);font-weight:300;font-size:clamp(1.9rem,4.4vw,3.4rem);
   line-height:1.02;letter-spacing:-.01em}
@@ -113,8 +147,39 @@ header.light.stuck{background:rgba(242,238,228,.78);border-bottom-color:var(--li
 .hero-head{flex:0 0 auto}
 .mosaic{display:grid;grid-template-columns:repeat(6,1fr);grid-template-rows:repeat(3,minmax(0,1fr));gap:5px;
   flex:1 1 auto;min-height:0;opacity:0}
-.tile{position:relative;margin:0;overflow:hidden;background:#1d1916;opacity:0;transform:translateY(14px) scale(.97);
-  transition:opacity .9s var(--ease),transform 1.1s var(--ease);transition-delay:calc(var(--i) * 38ms)}
+/* one wall, not a grid: each work hangs at its own size and the wall shows between them */
+.mosaic.wall{display:block;position:relative}
+.mosaic.wall .tile{position:absolute;margin:0;--pin:10px}
+@media (max-width:620px){.mosaic.wall .tile{--pin:6px}}
+/* framing: a bronze hairline, a dark mat, a printed-print shadow inside the mat, and a cast
+   shadow on the wall so each work sits in front of the wall instead of being a flat photo */
+.mosaic.wall .tile{
+  box-sizing:border-box;
+  padding:var(--pin);
+  background:linear-gradient(150deg,#332a1f 0%,#1d1710 44%,#13100b 100%);
+  border:1px solid rgba(0,0,0,.88);
+  box-shadow:
+    inset 0 1px 0 rgba(255,236,203,.13),
+    inset 0 -1px 0 rgba(0,0,0,.85),
+    0 0 0 1px rgba(201,169,127,.46),
+    0 0 0 2px rgba(0,0,0,.7),
+    0 24px 48px -20px rgba(0,0,0,.98),
+    0 6px 16px rgba(0,0,0,.58);
+}
+/* the sight edge: a gold rebate where the mat meets the print. Every ring here is painted
+   OUTWARD (0 0 0 Npx, no inset) so the frame never eats into the picture — an inset shadow
+   used to bleed 5px across the print and read as the frame covering the photo. */
+.mosaic.wall .tile::after{content:"";position:absolute;inset:var(--pin);pointer-events:none;
+  box-shadow:
+    0 0 0 1px rgba(0,0,0,.95),
+    0 0 0 2px rgba(206,174,132,.4),
+    0 0 0 4px rgba(0,0,0,.5)}
+.mosaic.wall .tile:hover{border-color:rgba(0,0,0,.9)}
+.mosaic.wall .tile img{object-fit:contain;box-shadow:0 0 0 1px rgba(0,0,0,.9)}
+.tile{position:relative;margin:0;overflow:hidden;background:#1d1916;opacity:0;
+  transform:translate3d(var(--fx,0px),var(--fy,16px),0) scale(.965);
+  transition:opacity .95s var(--ease),transform 1.4s cubic-bezier(.16,.84,.28,1);
+  transition-delay:calc(var(--i) * 62ms)}
 .tile img{width:100%;height:100%;min-height:0;object-fit:cover;filter:saturate(.94) brightness(.9);
   transition:transform 1.2s var(--ease),filter .6s var(--ease)}
 .tile:hover img{transform:scale(1.06);filter:saturate(1.02) brightness(1)}
@@ -125,23 +190,34 @@ header.light.stuck{background:rgba(242,238,228,.78);border-bottom-color:var(--li
 .tile:hover figcaption,.tile:focus-within figcaption{opacity:1;transform:none}
 .tile .tn{color:#c9a97f;font-weight:400}
 .tile .tt{letter-spacing:.1em}
+/* a performance tile holds its takes stacked in one frame; the cycle swaps which one is
+   painted, so the tile keeps a single footprint instead of growing with the frame count */
+/* a performance tile holds its takes stacked in one frame; the cycle swaps which one is
+   painted, so the tile keeps a single footprint instead of growing with the frame count.
+   inset must be the mat width, not 0: an absolute image at inset:0 spans the whole padding
+   box and ran 10px under the mat on every side, which put the gold sight edge on top of the
+   photo. Anchoring it to --pin keeps the takes inside the mat like every other work. */
+.tile.perf img{position:absolute;left:var(--pin);top:var(--pin);
+  width:calc(100% - var(--pin) * 2);height:calc(100% - var(--pin) * 2);max-width:none;
+  opacity:0;transition:opacity .5s var(--ease),transform 1.2s var(--ease),filter .6s var(--ease)}
+.tile.perf img.on{opacity:1}
 .ready .mosaic{opacity:1}
-.ready .tile{opacity:1;transform:none}
+.ready .tile{opacity:1;transform:none;transition-delay:calc(var(--i) * 78ms)}
 .hero-cue{flex:0 0 auto;display:flex;align-items:center;gap:.7rem;justify-content:center;margin-top:12px;
   color:var(--mute);font-size:.58rem;letter-spacing:.3em;text-transform:uppercase}
 .hero-cue i{display:block;width:1px;height:24px;background:linear-gradient(to bottom,transparent,var(--mute));
   animation:cue 2.4s var(--ease) infinite}
 @keyframes cue{0%{transform:scaleY(.2);transform-origin:top;opacity:0}40%{opacity:1}100%{transform:scaleY(1);transform-origin:top;opacity:0}}
 @media (max-width:900px){
-  .mosaic{grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(6,1fr);height:min(60svh,520px)}
-  .hero-head{flex-direction:column;align-items:flex-start;gap:.6rem}
+  .mosaic{grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(6,1fr);height:min(60svh,520px)}  .hero-head{flex-direction:column;align-items:flex-start;justify-content:flex-start;gap:.6rem}
   .hero-meta{text-align:left}
 }
 
 /* ---------- 2. one plate at a time ---------- */
 .plates{background:var(--espresso-2);color:var(--sand)}
 .plate{min-height:100svh;display:grid;grid-template-columns:1.12fr .88fr;align-items:center;
-  align-content:center;gap:clamp(26px,4.5vw,74px);padding:11vh 6vw;position:relative}
+  align-content:center;gap:clamp(26px,4.5vw,74px);padding:11vh 6vw;position:relative;
+  scroll-snap-align:start;scroll-snap-stop:always}
 .plate+.plate{border-top:1px solid rgba(242,238,228,.06)}
 .pl-media{position:relative;overflow:visible;border-radius:0;background:transparent;
   display:flex;align-items:center;justify-content:center}
@@ -154,13 +230,91 @@ header.light.stuck{background:rgba(242,238,228,.78);border-bottom-color:var(--li
   line-height:1.03;letter-spacing:-.015em}
 .pl-med{margin:0 0 22px;font-size:.7rem;letter-spacing:.22em;text-transform:uppercase;color:var(--mute)}
 .pl-blurb{margin:0;font-family:var(--serif);font-size:clamp(1.05rem,1.7vw,1.35rem);line-height:1.62;color:#ded6c7;font-weight:300}
-.pl-media, .pl-text{opacity:0;transition:opacity .9s var(--ease),transform 1s var(--ease)}
-.pl-media{transform:translateY(18px) scale(.985)}
-.pl-text{transform:translateY(26px)}
-.plate.in .pl-media,.plate.in .pl-text{opacity:1;transform:none}
+/* the elements come in from outside the page and settle into place: picture from the left,
+   words from the right, and the words stagger line by line so the block assembles */
+.plate{overflow:hidden}
+/* the flight is an entry effect, not a layout: an element parked outside the page would
+   still count toward the document width, so the page clips it until it lands */
+.pl-media,.pl-text{opacity:0}
+.pl-media{transform:translate3d(-46px,22px,0)}
+.pl-text{transform:translate3d(52px,0,0)}
+.pl-kick,.pl-title,.pl-med,.pl-blurb,.pl-back{opacity:0;transform:translate3d(34px,12px,0)}
+.pl-media,.pl-text,.pl-kick,.pl-title,.pl-med,.pl-blurb,.pl-back{
+  transition:opacity 1.05s var(--ease),transform 1.15s cubic-bezier(.16,.84,.28,1)}
+.pl-kick{transition-delay:.18s}.pl-title{transition-delay:.27s}
+.pl-med{transition-delay:.36s}.pl-blurb{transition-delay:.45s}
+.plate.in .pl-media{opacity:1;transform:none;transition-delay:.04s}
+.plate.in .pl-text{opacity:1;transform:none;transition-delay:.1s}
+.plate.in .pl-kick,.plate.in .pl-title,.plate.in .pl-med,.plate.in .pl-blurb,.plate.in .pl-back{
+  opacity:1;transform:none}
+/* the way back to the wall, in the same bronze as the plate numbers */
+.pl-back{display:inline-flex;align-items:center;gap:.55rem;margin:0 0 18px;font-family:var(--sans);
+  font-size:.58rem;letter-spacing:.3em;text-transform:uppercase;color:#c9a97f;
+  transition:opacity .5s var(--ease),color .35s}
+.pl-back::before{content:"";width:18px;height:1px;background:currentColor;opacity:.75}
+.pl-back:hover{color:#e8d5b6}
+/* journeys and press clips arrive from outside too, so every page assembles the same way */
+.jr[data-reveal],.clip[data-reveal]{opacity:0;transform:translate3d(0,30px,0);
+  transition:opacity .9s var(--ease),transform 1.05s cubic-bezier(.16,.84,.28,1)}
+.jr[data-reveal].in,.clip[data-reveal].in{opacity:1;transform:none}
+/* a reader who asked the system to stop motion gets the settled page, never the flight */
+@media (prefers-reduced-motion:reduce){
+  .pl-media,.pl-text,.pl-kick,.pl-title,.pl-med,.pl-blurb,.pl-back,
+  .tile,.jr[data-reveal],.clip[data-reveal]{
+    transform:none !important;opacity:1 !important;transition:none !important}
+  .pl-media{transition-delay:0s !important}
+}
+.plate{--mat:26px;--mould:9px}
+/* The plate wears the same frame language as the wall tiles — a moulding, a gold outer
+   line, a mat, a gold rebate against the print — but sized for one work instead of a grid.
+   The box hugs the picture: JavaScript sets the width from the picture's own ratio, so the
+   moulding traces the print instead of stretching to the column. */
+.pl-media{position:relative;overflow:visible;border-radius:2px;box-sizing:border-box;
+  padding:var(--mat);display:flex;align-items:center;justify-content:center;
+  /* three-step moulding profile: gold fillet against the mat, a dark moulding face,
+     then a gold pinstripe and a black outer edge — all drawn outward so the print is never
+     covered. --mould is the total outward reach and the frame width maths subtracts it. */
+  background:
+    radial-gradient(120% 90% at 30% 0%,rgba(255,240,212,.09),rgba(0,0,0,0) 60%),
+    linear-gradient(150deg,#3b3022 0%,#241c13 46%,#14110c 100%);
+  border:1px solid rgba(0,0,0,.95);
+  box-shadow:
+    inset 0 0 0 1px rgba(255,238,208,.16),
+    inset 0 2px 0 rgba(255,240,212,.09),
+    inset 0 -2px 0 rgba(0,0,0,.6),
+    0 0 0 1px rgba(214,180,136,.9),
+    0 0 0 2px #1b1510,
+    0 0 0 8px #1b1510,
+    0 0 0 9px rgba(201,169,127,.62),
+    0 0 0 11px rgba(0,0,0,.92),
+    0 40px 78px -24px rgba(0,0,0,.96),
+    0 10px 26px rgba(0,0,0,.62)}
+/* the sight edge, painted outward so no ring ever lands on the print */
+.pl-media::after{content:"";position:absolute;inset:calc(var(--mat) - 1px);
+  pointer-events:none;
+  box-shadow:0 0 0 1px rgba(0,0,0,.95),0 0 0 3px rgba(206,174,132,.42)}
+/* the print fills the opening exactly: both axes are intrinsic and only capped
+   (max-width/max-height keep the ratio), so no letterbox can sit between mat and picture */
+.pl-media img{width:auto;height:auto;max-width:100%;max-height:min(calc(72svh - 1px),720px);display:block;
+  will-change:transform,opacity;
+  filter:drop-shadow(0 12px 26px rgba(0,0,0,.6))}
+/* stacked performance frames: one stage box at the artwork's own ratio, frames painted one
+   at a time and cross-faded by the cycle below */
+.pl-media.perf{width:100%;display:flex;align-items:center;justify-content:center}
+.perf-stage{position:relative;height:min(72svh,720px);aspect-ratio:var(--ar,.75);max-width:100%}
+.perf-stage img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;opacity:0;
+  transition:opacity .5s var(--ease);will-change:opacity;
+  filter:drop-shadow(0 24px 50px rgba(0,0,0,.78))}
+.perf-stage img.on{opacity:1}
+/* the hairline that fills across one cycle — reads as a slide sequence in a dark room */
+.perf-bar{position:absolute;left:0;right:0;bottom:-20px;height:1px;background:rgba(242,238,228,.16);overflow:hidden}
+.perf-bar i{display:block;height:100%;width:0;background:#c9a97f;opacity:.9}
+.pl-media.perf.is-live .perf-bar i{transition:width var(--perf-dur,1500ms) linear;width:100%}
 @media (max-width:860px){
   .plate{grid-template-columns:1fr;gap:22px;padding:10vh 7vw;align-content:center}
-  .pl-media img{height:min(46svh,420px)}
+  .plate{--mat:14px;--mould:7px}
+  .pl-media img{max-height:min(calc(46svh - 1px),420px)}
+  .perf-stage{height:min(46svh,420px)}
 }
 
 /* fixed counter, visible only while the plates are on screen */
@@ -173,16 +327,21 @@ header.light.stuck{background:rgba(242,238,228,.78);border-bottom-color:var(--li
 @media (max-width:860px){#counter{left:18px;bottom:18px}}
 
 /* ---------- 3. journalism ---------- */
-.journal{background:var(--sand);color:var(--ink);padding:clamp(70px,11vh,130px) 6vw}
+.journal{background:var(--sand);color:var(--ink);padding:0 6vw}
+/* the section opener is a full page in its own right, so a section-level top pad would
+   push it off the viewport grid and make one seam land half a page off (measured: +99px) */
+.sec-head.page-snap{padding-top:clamp(70px,11vh,130px)}
 .sec-head{display:flex;justify-content:space-between;align-items:flex-end;gap:2rem;
   border-bottom:1px solid var(--line);padding-bottom:26px;margin-bottom:clamp(34px,6vh,72px)}
 .sec-head .kicker{font-size:.62rem;letter-spacing:.32em;text-transform:uppercase;color:var(--accent);margin:0 0 12px}
 .sec-head h2{margin:0;font-family:var(--serif);font-weight:300;font-size:clamp(2.1rem,5vw,4rem);line-height:1;letter-spacing:-.02em}
 .sec-head p{margin:0;max-width:34ch;font-size:.86rem;line-height:1.75;color:var(--soft)}
 @media (max-width:760px){.sec-head{flex-direction:column;align-items:flex-start;gap:14px}}
-.clips{display:grid;gap:clamp(28px,5vh,58px)}
+.clips{display:grid;gap:0}
 .clip{display:grid;grid-template-columns:1.02fr .98fr;gap:clamp(20px,3.4vw,52px);align-items:center;
-  padding-bottom:clamp(28px,5vh,58px);border-bottom:1px solid var(--line);
+  padding:clamp(40px,7vh,80px) 0;border-bottom:1px solid var(--line);
+  height:100svh;box-sizing:border-box;align-content:center;
+  scroll-snap-align:start;scroll-snap-stop:always;
   opacity:0;transform:translateY(30px);transition:opacity .9s var(--ease),transform 1s var(--ease)}
 .clip:last-child{border-bottom:0;padding-bottom:0}
 .clip:nth-child(even) .clip-media{order:2}
@@ -209,57 +368,56 @@ header.light.stuck{background:rgba(242,238,228,.78);border-bottom-color:var(--li
 }
 
 /* ---------- 4. cultural journeys ---------- */
-.journeys{background:var(--sand-2);color:var(--ink);padding:clamp(70px,11vh,130px) 6vw}
-.jrs{display:grid;gap:clamp(34px,6vh,74px)}
-.jr{display:grid;grid-template-columns:.9fr 1.1fr;gap:clamp(20px,3.4vw,52px);align-items:center;
+/* One place per stop: the name, then its photographs. No captions, no counts, no dates —
+   the folder is the unit, so a stop is as long or as short as the photographs make it.
+   The rail scrolls sideways inside the page: forty-one Venice plates would otherwise push
+   the next place two screens down, and a journey reads as a sequence of rooms, not columns. */
+.journeys{background:var(--sand-2);color:var(--ink);padding:0 6vw}
+.jrs{display:grid;gap:0}
+.jr{display:flex;flex-direction:column;justify-content:center;gap:clamp(14px,2.4vh,26px);
+  height:100svh;box-sizing:border-box;padding:clamp(40px,7vh,80px) 0;
+  scroll-snap-align:start;scroll-snap-stop:always;
   opacity:0;transform:translateY(34px);transition:opacity .9s var(--ease),transform 1s var(--ease)}
 .jr.in{opacity:1;transform:none}
-.jr-cover{position:relative;overflow:hidden;aspect-ratio:5/4;background:#d8d0c0}
-.jr-cover img{width:100%;height:100%;object-fit:cover;transition:transform 1.4s var(--ease)}
-.jr:hover .jr-cover img{transform:scale(1.035)}
-.jr-count{position:absolute;left:0;bottom:0;padding:7px 12px;background:rgba(16,14,12,.72);color:var(--sand);
-  font-size:.56rem;letter-spacing:.2em;text-transform:uppercase}
-.jr h3{margin:0 0 14px;font-family:var(--serif);font-weight:400;font-size:clamp(1.35rem,2.5vw,2.1rem);line-height:1.16}
-.jr-story{margin:0 0 18px;font-size:.9rem;line-height:1.8;color:var(--soft);max-width:52ch}
-.jr-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
-.jr-strip img{width:100%;aspect-ratio:1;object-fit:cover;filter:saturate(.92);transition:filter .4s}
-.jr-strip img:hover{filter:saturate(1.05)}
+.jr-name{margin:0;font-family:var(--serif);font-weight:400;
+  font-size:clamp(1.5rem,3.4vw,2.6rem);line-height:1.14;letter-spacing:-.01em}
+.jr-rail{display:flex;gap:clamp(8px,1vw,14px);overflow-x:auto;overflow-y:hidden;
+  scroll-snap-type:x proximity;padding-bottom:10px;
+  scrollbar-width:thin;scrollbar-color:rgba(90,74,54,.34) transparent;
+  /* The last plate is always half out of frame; a hard cut reads as a broken layout, a fade
+     reads as "there is more". The mask is anchored to the container, so it marks the edge
+     rather than any particular photograph. */
+  -webkit-mask-image:linear-gradient(to right,#000 0,#000 calc(100% - 52px),transparent 100%);
+  mask-image:linear-gradient(to right,#000 0,#000 calc(100% - 52px),transparent 100%)}
+.jr-rail::-webkit-scrollbar{height:5px}
+.jr-rail::-webkit-scrollbar-thumb{background:rgba(90,74,54,.3);border-radius:3px}
+.jr-rail::-webkit-scrollbar-track{background:transparent}
+.jr-plate{flex:0 0 auto;margin:0;scroll-snap-align:start;background:#cdc4b3;overflow:hidden}
+/* Height is the budget, width follows the photograph's own ratio: a vertical plate must stay
+   vertical. Cropping them to a common cell is what makes a room of paintings look like a
+   contact sheet instead of a wall. */
+.jr-plate img{display:block;height:clamp(280px,60vh,580px);width:auto;object-fit:cover;
+  transition:filter .45s var(--ease),transform 1.2s var(--ease)}
+.jr-plate img:hover{filter:saturate(1.06)}
 @media (max-width:820px){
-  .jr{grid-template-columns:1fr;gap:18px}
-  .jr-cover{aspect-ratio:16/10}
+  .jr{gap:12px;padding:clamp(28px,5vh,48px) 0}
+  .jr-plate img{height:clamp(230px,50vh,420px)}
+  /* one plate would otherwise fill the whole rail, leaving no sign that the stop continues;
+     a sliver of the next plate says "there is more" without a fade over the only picture */
+  .jr-rail{-webkit-mask-image:linear-gradient(to right,#000 0,#000 calc(100% - 14px),transparent 100%);
+    mask-image:linear-gradient(to right,#000 0,#000 calc(100% - 14px),transparent 100%)}
 }
+@media (prefers-reduced-motion:reduce){.jr{opacity:1;transform:none}}
 
-/* ---------- 5. extracurricular ---------- */
-.extra{background:var(--espresso);color:var(--sand);padding:clamp(70px,11vh,130px) 6vw}
-.extra .sec-head{border-bottom-color:var(--line-d)}
-.extra .sec-head h2{color:var(--sand)}
-.extra .sec-head p{color:var(--mute)}
-.ex-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:clamp(26px,4vw,64px)}
-.ex-block{opacity:0;transform:translateY(26px);transition:opacity .9s var(--ease),transform 1s var(--ease)}
-.ex-block.in{opacity:1;transform:none}
-.ex-block h3{margin:0 0 6px;font-family:var(--serif);font-weight:400;font-size:clamp(1.3rem,2.2vw,1.8rem)}
-.ex-block .sub{margin:0 0 20px;font-size:.6rem;letter-spacing:.26em;text-transform:uppercase;color:#c9a97f}
-.record{border:1px solid var(--line-d);padding:22px}
-.record h4{margin:0 0 12px;font-family:var(--serif);font-weight:400;font-size:1.12rem;line-height:1.4;color:var(--sand)}
-.facts{display:grid;grid-template-columns:1fr 1fr;gap:16px 20px;margin:18px 0 0}
-.facts div{border-top:1px solid var(--line-d);padding-top:8px}
-.facts dt{font-size:.55rem;letter-spacing:.2em;text-transform:uppercase;color:var(--mute);margin-bottom:5px}
-.facts dd{margin:0;font-size:.86rem;color:var(--sand)}
-.note-line{margin:18px 0 0;font-size:.78rem;line-height:1.8;color:#a99f8e}
-.ledger{width:100%;border-collapse:collapse;font-size:.8rem}
-.ledger caption{caption-side:top;text-align:left;font-size:.55rem;letter-spacing:.2em;text-transform:uppercase;
-  color:var(--mute);padding-bottom:10px}
-.ledger th{text-align:left;font-weight:400;font-size:.55rem;letter-spacing:.2em;text-transform:uppercase;
-  color:var(--mute);padding:0 0 9px;border-bottom:1px solid var(--line-d)}
-.ledger td{padding:9px 0;border-bottom:1px solid rgba(242,238,228,.07);color:#d7cfc1;vertical-align:top;line-height:1.5}
-.ledger td:first-child{white-space:nowrap;color:var(--mute);width:1%;padding-right:14px}
-.ledger td b{font-weight:400;color:var(--sand)}
-.ex-list{list-style:none;margin:0;padding:0;font-size:.82rem}
-.ex-list li{display:grid;grid-template-columns:64px 1fr;gap:12px;padding:8px 0;
-  border-bottom:1px solid rgba(242,238,228,.07);line-height:1.6}
-.ex-list li span:first-child{color:var(--mute);white-space:nowrap;font-size:.7rem;letter-spacing:.06em;padding-top:2px}
-.ex-list b{font-weight:400;color:var(--sand)}
-@media (max-width:860px){.ex-grid{grid-template-columns:1fr}}
+/* one screen, one step — the page stops only where a page ends */
+html{scroll-snap-type:y mandatory}
+.page-snap{scroll-snap-align:start;scroll-snap-stop:always}
+html,body{overscroll-behavior-y:none}
+@media (prefers-reduced-motion:reduce){html{scroll-snap-type:y proximity}}
+
+/* the two section openers stand on a page of their own */
+.sec-head.page-snap{min-height:100svh;margin:0;display:flex;align-items:center;
+  border-bottom:0;padding-bottom:clamp(28px,6vh,64px)}
 
 /* ---------- footer ---------- */
 footer{background:var(--espresso-2);color:var(--mute);padding:56px 6vw 44px;border-top:1px solid var(--line-d)}
@@ -279,19 +437,30 @@ footer{background:var(--espresso-2);color:var(--mute);padding:56px 6vw 44px;bord
     <a href="#gallery" data-sec="gallery">Art Gallery</a>
     <a href="#journeys" data-sec="journeys">Cultural Journeys</a>
     <a href="#journalism" data-sec="journalism">Journalism</a>
-    <a href="#extra" data-sec="extra">Extracurricular</a>
   </nav>
 </header>
 
 <!-- 0. the name, then the room -->
 <section class="home" id="home" data-theme="light">
-  <div class="home-wall" aria-hidden="true">
-    <img src="museum/art/_DSF7519.jpg" alt=""><img src="museum/art/_DSF7523.jpg" alt="">
-    <img src="museum/art/_DSF7527.jpg" alt=""><img src="museum/art/_DSF7543.jpg" alt="">
-    <img src="museum/art/_DSF7549.jpg" alt=""><img src="museum/art/_DSF7555.jpg" alt="">
-    <img src="museum/art/_DSF7521.jpg" alt=""><img src="museum/art/_DSF7525.jpg" alt="">
-    <img src="museum/art/_DSF7535.jpg" alt=""><img src="museum/art/_DSF7545.jpg" alt="">
-    <img src="museum/art/_DSF7551.jpg" alt=""><img src="museum/art/_DSF7519.jpg" alt="">
+  <div class="mosaic wall home-wall" id="home-mosaic" aria-hidden="true">
+    <figure class="tile" style="--i:1" data-reveal data-ar="1.4801"><img src="museum/art/_DSF7519.jpg" alt="Kept Warm" loading="eager" decoding="async"></figure>
+    <figure class="tile" style="--i:2" data-reveal data-ar="0.7256"><img src="museum/art/_DSF7521.jpg" alt="Leaves by the Bed" decoding="async"></figure>
+    <figure class="tile" style="--i:3" data-reveal data-ar="1.1687"><img src="museum/art/_DSF7523.jpg" alt="City from Above" decoding="async"></figure>
+    <figure class="tile" style="--i:4" data-reveal data-ar="0.8638"><img src="museum/art/_DSF7525.jpg" alt="Turned Over" decoding="async"></figure>
+    <figure class="tile" style="--i:5" data-reveal data-ar="1.1722"><img src="museum/art/_DSF7527.jpg" alt="What the Day Left" decoding="async"></figure>
+    <figure class="tile" style="--i:6" data-reveal data-ar="1.0044"><img src="museum/art/_DSF7535.jpg" alt="Who Is Listening" decoding="async"></figure>
+    <figure class="tile" style="--i:7" data-reveal data-ar="1.3333"><img src="museum/art/_DSF7543.jpg" alt="Covered Valley" decoding="async"></figure>
+    <figure class="tile" style="--i:8" data-reveal data-ar="0.6631"><img src="museum/art/_DSF7545.jpg" alt="Held Together" decoding="async"></figure>
+    <figure class="tile" style="--i:9" data-reveal data-ar="0.8237"><img src="museum/art/_DSF7549.jpg" alt="Under the Ice" decoding="async"></figure>
+    <figure class="tile" style="--i:10" data-reveal data-ar="1.3267"><img src="museum/art/_DSF7551.jpg" alt="The Shell" decoding="async"></figure>
+    <figure class="tile" style="--i:11" data-reveal data-ar="0.7144"><img src="museum/art/_DSF7555.jpg" alt="Another Sky" decoding="async"></figure>
+    <figure class="tile" style="--i:12" data-reveal data-ar="0.7512"><img src="museum/art/_DSF7559.jpg" alt="Black Panels, Fish" decoding="async"></figure>
+    <figure class="tile" style="--i:13" data-reveal data-ar="0.75"><img src="museum/art/_DSF7566.jpg" alt="Roots for a Head" decoding="async"></figure>
+    <figure class="tile" style="--i:14" data-reveal data-ar="1.3333"><img src="museum/art/_DSF7572.jpg" alt="Sea Inside a Shell" decoding="async"></figure>
+    <figure class="tile" style="--i:15" data-reveal data-ar="1.4995"><img src="museum/art/_DSF7580.jpg" alt="Standing, Lying" decoding="async"></figure>
+    <figure class="tile" style="--i:16" data-reveal data-ar="1.3333"><img src="museum/art/_DSF7589.jpg" alt="One Line, Many Bodies" decoding="async"></figure>
+    <figure class="tile" style="--i:17" data-reveal data-ar="0.7643"><img src="photos/art/performance/again_01.jpg" alt="Again, frame 1" decoding="async"></figure>
+    <figure class="tile" style="--i:18" data-reveal data-ar="0.5621"><img src="photos/art/performance/release_01.jpg" alt="Release, frame 1" decoding="async"></figure>
   </div>
   <div class="home-inner">
     <p class="hp-kick">Artist &amp; Scholar · 2018 — 2026</p>
@@ -308,80 +477,85 @@ footer{background:var(--espresso-2);color:var(--mute);padding:56px 6vw 44px;bord
 <!-- 1. every work on one screen, in order -->
 <section class="hero" id="gallery" data-theme="dark">
   <div class="hero-head">
-    <h1>Eighteen works,<br><em>in one room.</em></h1>
-    <div class="hero-meta">Drawing · Painting · Installation<br>2023 — 2026</div>
+    <div class="hero-meta">Drawing · Painting · Installation<br>2026</div>
   </div>
   <div class="mosaic" id="mosaic">
-<figure class="tile" style="--i:1" data-reveal>
+<figure class="tile" style="--i:1" data-reveal data-ar="1.4801">
   <img src="museum/art/_DSF7519.jpg" alt="Kept Warm" loading="lazy" decoding="async">
   <figcaption><span class="tn">01</span><span class="tt">Kept Warm</span></figcaption>
 </figure>
-<figure class="tile" style="--i:2" data-reveal>
+<figure class="tile" style="--i:2" data-reveal data-ar="0.7256">
   <img src="museum/art/_DSF7521.jpg" alt="Leaves by the Bed" loading="lazy" decoding="async">
   <figcaption><span class="tn">02</span><span class="tt">Leaves by the Bed</span></figcaption>
 </figure>
-<figure class="tile" style="--i:3" data-reveal>
+<figure class="tile" style="--i:3" data-reveal data-ar="1.1687">
   <img src="museum/art/_DSF7523.jpg" alt="City from Above" loading="lazy" decoding="async">
   <figcaption><span class="tn">03</span><span class="tt">City from Above</span></figcaption>
 </figure>
-<figure class="tile" style="--i:4" data-reveal>
+<figure class="tile" style="--i:4" data-reveal data-ar="0.8638">
   <img src="museum/art/_DSF7525.jpg" alt="Turned Over" loading="lazy" decoding="async">
   <figcaption><span class="tn">04</span><span class="tt">Turned Over</span></figcaption>
 </figure>
-<figure class="tile" style="--i:5" data-reveal>
+<figure class="tile" style="--i:5" data-reveal data-ar="1.1722">
   <img src="museum/art/_DSF7527.jpg" alt="What the Day Left" loading="lazy" decoding="async">
   <figcaption><span class="tn">05</span><span class="tt">What the Day Left</span></figcaption>
 </figure>
-<figure class="tile" style="--i:6" data-reveal>
+<figure class="tile" style="--i:6" data-reveal data-ar="1.0044">
   <img src="museum/art/_DSF7535.jpg" alt="Who Is Listening" loading="lazy" decoding="async">
   <figcaption><span class="tn">06</span><span class="tt">Who Is Listening</span></figcaption>
 </figure>
-<figure class="tile" style="--i:7" data-reveal>
+<figure class="tile" style="--i:7" data-reveal data-ar="1.3333">
   <img src="museum/art/_DSF7543.jpg" alt="Covered Valley" loading="lazy" decoding="async">
   <figcaption><span class="tn">07</span><span class="tt">Covered Valley</span></figcaption>
 </figure>
-<figure class="tile" style="--i:8" data-reveal>
+<figure class="tile" style="--i:8" data-reveal data-ar="0.6631">
   <img src="museum/art/_DSF7545.jpg" alt="Held Together" loading="lazy" decoding="async">
   <figcaption><span class="tn">08</span><span class="tt">Held Together</span></figcaption>
 </figure>
-<figure class="tile" style="--i:9" data-reveal>
+<figure class="tile" style="--i:9" data-reveal data-ar="0.8237">
   <img src="museum/art/_DSF7549.jpg" alt="Under the Ice" loading="lazy" decoding="async">
   <figcaption><span class="tn">09</span><span class="tt">Under the Ice</span></figcaption>
 </figure>
-<figure class="tile" style="--i:10" data-reveal>
+<figure class="tile" style="--i:10" data-reveal data-ar="1.3267">
   <img src="museum/art/_DSF7551.jpg" alt="The Shell" loading="lazy" decoding="async">
   <figcaption><span class="tn">10</span><span class="tt">The Shell</span></figcaption>
 </figure>
-<figure class="tile" style="--i:11" data-reveal>
+<figure class="tile" style="--i:11" data-reveal data-ar="0.7144">
   <img src="museum/art/_DSF7555.jpg" alt="Another Sky" loading="lazy" decoding="async">
   <figcaption><span class="tn">11</span><span class="tt">Another Sky</span></figcaption>
 </figure>
-<figure class="tile" style="--i:12" data-reveal>
+<figure class="tile" style="--i:12" data-reveal data-ar="0.7512">
   <img src="museum/art/_DSF7559.jpg" alt="Black Panels, Fish" loading="lazy" decoding="async">
   <figcaption><span class="tn">12</span><span class="tt">Black Panels, Fish</span></figcaption>
 </figure>
-<figure class="tile" style="--i:13" data-reveal>
+<figure class="tile" style="--i:13" data-reveal data-ar="0.75">
   <img src="museum/art/_DSF7566.jpg" alt="Roots for a Head" loading="lazy" decoding="async">
   <figcaption><span class="tn">13</span><span class="tt">Roots for a Head</span></figcaption>
 </figure>
-<figure class="tile" style="--i:14" data-reveal>
+<figure class="tile" style="--i:14" data-reveal data-ar="1.3333">
   <img src="museum/art/_DSF7572.jpg" alt="Sea Inside a Shell" loading="lazy" decoding="async">
   <figcaption><span class="tn">14</span><span class="tt">Sea Inside a Shell</span></figcaption>
 </figure>
-<figure class="tile" style="--i:15" data-reveal>
+<figure class="tile" style="--i:15" data-reveal data-ar="1.4995">
   <img src="museum/art/_DSF7580.jpg" alt="Standing, Lying" loading="lazy" decoding="async">
   <figcaption><span class="tn">15</span><span class="tt">Standing, Lying</span></figcaption>
 </figure>
-<figure class="tile" style="--i:16" data-reveal>
+<figure class="tile" style="--i:16" data-reveal data-ar="1.3333">
   <img src="museum/art/_DSF7589.jpg" alt="One Line, Many Bodies" loading="lazy" decoding="async">
   <figcaption><span class="tn">16</span><span class="tt">One Line, Many Bodies</span></figcaption>
 </figure>
-<figure class="tile" style="--i:17" data-reveal>
-  <img src="photos/art/performance/again_01.jpg" alt="Again" loading="lazy" decoding="async">
+<figure class="tile perf" style="--i:17" data-reveal data-perf data-frames="photos/art/performance/again_01.jpg|photos/art/performance/again_02.jpg|photos/art/performance/again_03.jpg" data-dur="1500" data-ar="0.7643">
+  <img src="photos/art/performance/again_01.jpg" alt="Again, frame 1" class="on" decoding="async">
+  <img src="photos/art/performance/again_02.jpg" alt="Again, frame 2" loading="lazy" decoding="async">
+  <img src="photos/art/performance/again_03.jpg" alt="Again, frame 3" loading="lazy" decoding="async">
   <figcaption><span class="tn">17</span><span class="tt">Again</span></figcaption>
 </figure>
-<figure class="tile" style="--i:18" data-reveal>
-  <img src="photos/art/performance/release_01.jpg" alt="Release" loading="lazy" decoding="async">
+<figure class="tile perf" style="--i:18" data-reveal data-perf data-frames="photos/art/performance/release_01.jpg|photos/art/performance/release_02.jpg|photos/art/performance/release_03.jpg|photos/art/performance/release_04.jpg|photos/art/performance/release_05.jpg" data-dur="1500" data-ar="0.5621">
+  <img src="photos/art/performance/release_01.jpg" alt="Release, frame 1" class="on" decoding="async">
+  <img src="photos/art/performance/release_02.jpg" alt="Release, frame 2" loading="lazy" decoding="async">
+  <img src="photos/art/performance/release_03.jpg" alt="Release, frame 3" loading="lazy" decoding="async">
+  <img src="photos/art/performance/release_04.jpg" alt="Release, frame 4" loading="lazy" decoding="async">
+  <img src="photos/art/performance/release_05.jpg" alt="Release, frame 5" loading="lazy" decoding="async">
   <figcaption><span class="tn">18</span><span class="tt">Release</span></figcaption>
 </figure>
   </div>
@@ -393,6 +567,7 @@ footer{background:var(--espresso-2);color:var(--mute);padding:56px 6vw 44px;bord
 <section class="plate" id="pl01" data-plate data-idx="1">
   <div class="pl-media"><img src="museum/art/_DSF7519.jpg" alt="Kept Warm" loading="lazy" decoding="async"></div>
   <div class="pl-text">
+    <a class="pl-back" href="#gallery">Back to the wall</a>
     <p class="pl-kick">Plate 01 <span>/ 18</span></p>
     <h3 class="pl-title">Kept Warm</h3>
     <p class="pl-med">graphite on paper</p>
@@ -402,6 +577,7 @@ footer{background:var(--espresso-2);color:var(--mute);padding:56px 6vw 44px;bord
 <section class="plate" id="pl02" data-plate data-idx="2">
   <div class="pl-media"><img src="museum/art/_DSF7521.jpg" alt="Leaves by the Bed" loading="lazy" decoding="async"></div>
   <div class="pl-text">
+    <a class="pl-back" href="#gallery">Back to the wall</a>
     <p class="pl-kick">Plate 02 <span>/ 18</span></p>
     <h3 class="pl-title">Leaves by the Bed</h3>
     <p class="pl-med">graphite on paper</p>
@@ -411,6 +587,7 @@ footer{background:var(--espresso-2);color:var(--mute);padding:56px 6vw 44px;bord
 <section class="plate" id="pl03" data-plate data-idx="3">
   <div class="pl-media"><img src="museum/art/_DSF7523.jpg" alt="City from Above" loading="lazy" decoding="async"></div>
   <div class="pl-text">
+    <a class="pl-back" href="#gallery">Back to the wall</a>
     <p class="pl-kick">Plate 03 <span>/ 18</span></p>
     <h3 class="pl-title">City from Above</h3>
     <p class="pl-med">acrylic on canvas</p>
@@ -420,6 +597,7 @@ footer{background:var(--espresso-2);color:var(--mute);padding:56px 6vw 44px;bord
 <section class="plate" id="pl04" data-plate data-idx="4">
   <div class="pl-media"><img src="museum/art/_DSF7525.jpg" alt="Turned Over" loading="lazy" decoding="async"></div>
   <div class="pl-text">
+    <a class="pl-back" href="#gallery">Back to the wall</a>
     <p class="pl-kick">Plate 04 <span>/ 18</span></p>
     <h3 class="pl-title">Turned Over</h3>
     <p class="pl-med">oil on canvas</p>
@@ -429,6 +607,7 @@ footer{background:var(--espresso-2);color:var(--mute);padding:56px 6vw 44px;bord
 <section class="plate" id="pl05" data-plate data-idx="5">
   <div class="pl-media"><img src="museum/art/_DSF7527.jpg" alt="What the Day Left" loading="lazy" decoding="async"></div>
   <div class="pl-text">
+    <a class="pl-back" href="#gallery">Back to the wall</a>
     <p class="pl-kick">Plate 05 <span>/ 18</span></p>
     <h3 class="pl-title">What the Day Left</h3>
     <p class="pl-med">oil on canvas</p>
@@ -438,6 +617,7 @@ footer{background:var(--espresso-2);color:var(--mute);padding:56px 6vw 44px;bord
 <section class="plate" id="pl06" data-plate data-idx="6">
   <div class="pl-media"><img src="museum/art/_DSF7535.jpg" alt="Who Is Listening" loading="lazy" decoding="async"></div>
   <div class="pl-text">
+    <a class="pl-back" href="#gallery">Back to the wall</a>
     <p class="pl-kick">Plate 06 <span>/ 18</span></p>
     <h3 class="pl-title">Who Is Listening</h3>
     <p class="pl-med">acrylic on panel</p>
@@ -447,6 +627,7 @@ footer{background:var(--espresso-2);color:var(--mute);padding:56px 6vw 44px;bord
 <section class="plate" id="pl07" data-plate data-idx="7">
   <div class="pl-media"><img src="museum/art/_DSF7543.jpg" alt="Covered Valley" loading="lazy" decoding="async"></div>
   <div class="pl-text">
+    <a class="pl-back" href="#gallery">Back to the wall</a>
     <p class="pl-kick">Plate 07 <span>/ 18</span></p>
     <h3 class="pl-title">Covered Valley</h3>
     <p class="pl-med">acrylic on canvas</p>
@@ -456,6 +637,7 @@ footer{background:var(--espresso-2);color:var(--mute);padding:56px 6vw 44px;bord
 <section class="plate" id="pl08" data-plate data-idx="8">
   <div class="pl-media"><img src="museum/art/_DSF7545.jpg" alt="Held Together" loading="lazy" decoding="async"></div>
   <div class="pl-text">
+    <a class="pl-back" href="#gallery">Back to the wall</a>
     <p class="pl-kick">Plate 08 <span>/ 18</span></p>
     <h3 class="pl-title">Held Together</h3>
     <p class="pl-med">acrylic and collage</p>
@@ -465,6 +647,7 @@ footer{background:var(--espresso-2);color:var(--mute);padding:56px 6vw 44px;bord
 <section class="plate" id="pl09" data-plate data-idx="9">
   <div class="pl-media"><img src="museum/art/_DSF7549.jpg" alt="Under the Ice" loading="lazy" decoding="async"></div>
   <div class="pl-text">
+    <a class="pl-back" href="#gallery">Back to the wall</a>
     <p class="pl-kick">Plate 09 <span>/ 18</span></p>
     <h3 class="pl-title">Under the Ice</h3>
     <p class="pl-med">oil on canvas</p>
@@ -474,6 +657,7 @@ footer{background:var(--espresso-2);color:var(--mute);padding:56px 6vw 44px;bord
 <section class="plate" id="pl10" data-plate data-idx="10">
   <div class="pl-media"><img src="museum/art/_DSF7551.jpg" alt="The Shell" loading="lazy" decoding="async"></div>
   <div class="pl-text">
+    <a class="pl-back" href="#gallery">Back to the wall</a>
     <p class="pl-kick">Plate 10 <span>/ 18</span></p>
     <h3 class="pl-title">The Shell</h3>
     <p class="pl-med">oil on canvas</p>
@@ -483,6 +667,7 @@ footer{background:var(--espresso-2);color:var(--mute);padding:56px 6vw 44px;bord
 <section class="plate" id="pl11" data-plate data-idx="11">
   <div class="pl-media"><img src="museum/art/_DSF7555.jpg" alt="Another Sky" loading="lazy" decoding="async"></div>
   <div class="pl-text">
+    <a class="pl-back" href="#gallery">Back to the wall</a>
     <p class="pl-kick">Plate 11 <span>/ 18</span></p>
     <h3 class="pl-title">Another Sky</h3>
     <p class="pl-med">acrylic and gouache</p>
@@ -492,6 +677,7 @@ footer{background:var(--espresso-2);color:var(--mute);padding:56px 6vw 44px;bord
 <section class="plate" id="pl12" data-plate data-idx="12">
   <div class="pl-media"><img src="museum/art/_DSF7559.jpg" alt="Black Panels, Fish" loading="lazy" decoding="async"></div>
   <div class="pl-text">
+    <a class="pl-back" href="#gallery">Back to the wall</a>
     <p class="pl-kick">Plate 12 <span>/ 18</span></p>
     <h3 class="pl-title">Black Panels, Fish</h3>
     <p class="pl-med">mixed media on panel</p>
@@ -501,6 +687,7 @@ footer{background:var(--espresso-2);color:var(--mute);padding:56px 6vw 44px;bord
 <section class="plate" id="pl13" data-plate data-idx="13">
   <div class="pl-media"><img src="museum/art/_DSF7566.jpg" alt="Roots for a Head" loading="lazy" decoding="async"></div>
   <div class="pl-text">
+    <a class="pl-back" href="#gallery">Back to the wall</a>
     <p class="pl-kick">Plate 13 <span>/ 18</span></p>
     <h3 class="pl-title">Roots for a Head</h3>
     <p class="pl-med">installation — drawing, glass, red twigs</p>
@@ -510,6 +697,7 @@ footer{background:var(--espresso-2);color:var(--mute);padding:56px 6vw 44px;bord
 <section class="plate" id="pl14" data-plate data-idx="14">
   <div class="pl-media"><img src="museum/art/_DSF7572.jpg" alt="Sea Inside a Shell" loading="lazy" decoding="async"></div>
   <div class="pl-text">
+    <a class="pl-back" href="#gallery">Back to the wall</a>
     <p class="pl-kick">Plate 14 <span>/ 18</span></p>
     <h3 class="pl-title">Sea Inside a Shell</h3>
     <p class="pl-med">installation — diorama with painted sea</p>
@@ -519,6 +707,7 @@ footer{background:var(--espresso-2);color:var(--mute);padding:56px 6vw 44px;bord
 <section class="plate" id="pl15" data-plate data-idx="15">
   <div class="pl-media"><img src="museum/art/_DSF7580.jpg" alt="Standing, Lying" loading="lazy" decoding="async"></div>
   <div class="pl-text">
+    <a class="pl-back" href="#gallery">Back to the wall</a>
     <p class="pl-kick">Plate 15 <span>/ 18</span></p>
     <h3 class="pl-title">Standing, Lying</h3>
     <p class="pl-med">installation — mural and figures</p>
@@ -528,6 +717,7 @@ footer{background:var(--espresso-2);color:var(--mute);padding:56px 6vw 44px;bord
 <section class="plate" id="pl16" data-plate data-idx="16">
   <div class="pl-media"><img src="museum/art/_DSF7589.jpg" alt="One Line, Many Bodies" loading="lazy" decoding="async"></div>
   <div class="pl-text">
+    <a class="pl-back" href="#gallery">Back to the wall</a>
     <p class="pl-kick">Plate 16 <span>/ 18</span></p>
     <h3 class="pl-title">One Line, Many Bodies</h3>
     <p class="pl-med">drawing — ink and watercolour</p>
@@ -535,8 +725,16 @@ footer{background:var(--espresso-2);color:var(--mute);padding:56px 6vw 44px;bord
   </div>
 </section>
 <section class="plate" id="pl17" data-plate data-idx="17">
-  <div class="pl-media"><img src="photos/art/performance/again_01.jpg" alt="Again" loading="lazy" decoding="async"></div>
+  <div class="pl-media perf" data-perf data-frames="photos/art/performance/again_01.jpg|photos/art/performance/again_02.jpg|photos/art/performance/again_03.jpg" data-dur="1500" style="--ar:.7643">
+    <div class="perf-stage">
+      <img src="photos/art/performance/again_01.jpg" alt="Again, frame 1" class="on" decoding="async">
+      <img src="photos/art/performance/again_02.jpg" alt="Again, frame 2" loading="lazy" decoding="async">
+      <img src="photos/art/performance/again_03.jpg" alt="Again, frame 3" loading="lazy" decoding="async">
+      <span class="perf-bar" aria-hidden="true"><i></i></span>
+    </div>
+  </div>
   <div class="pl-text">
+    <a class="pl-back" href="#gallery">Back to the wall</a>
     <p class="pl-kick">Plate 17 <span>/ 18</span></p>
     <h3 class="pl-title">Again</h3>
     <p class="pl-med">performance — three frames, replayed</p>
@@ -544,8 +742,18 @@ footer{background:var(--espresso-2);color:var(--mute);padding:56px 6vw 44px;bord
   </div>
 </section>
 <section class="plate" id="pl18" data-plate data-idx="18">
-  <div class="pl-media"><img src="photos/art/performance/release_01.jpg" alt="Release" loading="lazy" decoding="async"></div>
+  <div class="pl-media perf" data-perf data-frames="photos/art/performance/release_01.jpg|photos/art/performance/release_02.jpg|photos/art/performance/release_03.jpg|photos/art/performance/release_04.jpg|photos/art/performance/release_05.jpg" data-dur="1500" style="--ar:.5621">
+    <div class="perf-stage">
+      <img src="photos/art/performance/release_01.jpg" alt="Release, frame 1" class="on" decoding="async">
+      <img src="photos/art/performance/release_02.jpg" alt="Release, frame 2" loading="lazy" decoding="async">
+      <img src="photos/art/performance/release_03.jpg" alt="Release, frame 3" loading="lazy" decoding="async">
+      <img src="photos/art/performance/release_04.jpg" alt="Release, frame 4" loading="lazy" decoding="async">
+      <img src="photos/art/performance/release_05.jpg" alt="Release, frame 5" loading="lazy" decoding="async">
+      <span class="perf-bar" aria-hidden="true"><i></i></span>
+    </div>
+  </div>
   <div class="pl-text">
+    <a class="pl-back" href="#gallery">Back to the wall</a>
     <p class="pl-kick">Plate 18 <span>/ 18</span></p>
     <h3 class="pl-title">Release</h3>
     <p class="pl-med">performance — five frames, replayed</p>
@@ -557,165 +765,395 @@ footer{background:var(--espresso-2);color:var(--mute);padding:56px 6vw 44px;bord
 
 <!-- 3. cultural journeys -->
 <section class="journeys" id="journeys" data-theme="light">
-  <div class="sec-head">
+  <div class="sec-head page-snap">
     <div>
       <p class="kicker">Cultural Journeys</p>
-      <h2>Rooms worth travelling for.</h2>
+      <h2>Twenty-four places, 2023&mdash;2026.</h2>
     </div>
-    <p>Seventeen museum visits, photographed and written on site — what the work did, and what it was like to stand in front of it.</p>
+    <p>Photographs only, one room per stop.</p>
   </div>
-  <div class="jrs">
+<div class="jrs">
 <article class="jr" data-reveal>
-  <div class="jr-cover"><img src="photos/thumb/IMG_9941.jpg" alt="" loading="lazy" decoding="async">
-    <span class="jr-count">29 photographs</span></div>
-  <div class="jr-body">
-    <h3>1st Arrondissement, Paris (2023-09-22)</h3>
-    <p class="jr-story">The historical heart of Paris, home to the Louvre Museum and the Tuileries Garden. A testament to classical French art and architecture.</p>
-    <div class="jr-strip"><img src="photos/thumb/IMG_0182.jpg" alt="" loading="lazy" decoding="async"><img src="photos/thumb/IMG_4795.jpg" alt="" loading="lazy" decoding="async"><img src="photos/thumb/IMG_0197.jpg" alt="" loading="lazy" decoding="async"><img src="photos/thumb/IMG_0202.jpg" alt="" loading="lazy" decoding="async"></div>
-  </div>
-</article>
-<article class="jr" data-reveal>
-  <div class="jr-cover"><img src="photos/thumb/IMG_6363.jpg" alt="" loading="lazy" decoding="async">
-    <span class="jr-count">1 photographs</span></div>
-  <div class="jr-body">
-    <h3>Quartier de Clignancourt, Paris (2023-09-24)</h3>
-    <p class="jr-story">Includes the vibrant and artistic Montmartre area, historically a gathering place for world-renowned artists and bohemian culture.</p>
-    
-  </div>
-</article>
-<article class="jr" data-reveal>
-  <div class="jr-cover"><img src="photos/thumb/IMG_4970.jpg" alt="" loading="lazy" decoding="async">
-    <span class="jr-count">7 photographs</span></div>
-  <div class="jr-body">
-    <h3>Chaillot, Paris (2023-09-25)</h3>
-    <p class="jr-story">Renowned for its monumental Palais de Chaillot and the Trocadéro gardens, offering some of the most iconic views of the Eiffel Tower.</p>
-    <div class="jr-strip"><img src="photos/thumb/IMG_7113.jpg" alt="" loading="lazy" decoding="async"><img src="photos/thumb/IMG_7119.jpg" alt="" loading="lazy" decoding="async"><img src="photos/thumb/IMG_7175.jpg" alt="" loading="lazy" decoding="async"><img src="photos/thumb/IMG_7178.jpg" alt="" loading="lazy" decoding="async"></div>
-  </div>
-</article>
-<article class="jr" data-reveal>
-  <div class="jr-cover"><img src="photos/thumb/IMG_6688.jpg" alt="" loading="lazy" decoding="async">
-    <span class="jr-count">1 photographs</span></div>
-  <div class="jr-body">
-    <h3>Place d&#x27;Armes, Versailles (2023-09-27)</h3>
-    <p class="jr-story">The grand entrance to the Palace of Versailles, a symbol of the absolute monarchy of the Ancien Régime and unparalleled opulence.</p>
-    
+  <h3 class="jr-name">Louvre Museum, Paris</h3>
+  <div class="jr-rail" role="list">
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/louvre/001.jpg" width="1125" height="1500" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/louvre/002.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/louvre/003.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/louvre/004.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/louvre/005.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/louvre/006.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/louvre/007.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/louvre/008.jpg" width="1080" height="1500" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/louvre/009.jpg" width="1125" height="1500" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/louvre/010.jpg" width="1125" height="1500" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/louvre/011.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/louvre/012.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/louvre/013.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/louvre/014.jpg" width="1500" height="1481" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/louvre/015.jpg" width="1500" height="1475" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/louvre/016.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/louvre/017.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/louvre/018.jpg" width="1500" height="1050" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/louvre/019.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/louvre/020.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/louvre/021.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/louvre/022.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/louvre/023.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/louvre/024.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/louvre/025.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/louvre/026.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/louvre/027.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/louvre/028.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/louvre/029.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
   </div>
 </article>
 <article class="jr" data-reveal>
-  <div class="jr-cover"><img src="photos/thumb/IMG_4744.jpg" alt="" loading="lazy" decoding="async">
-    <span class="jr-count">9 photographs</span></div>
-  <div class="jr-body">
-    <h3>KG Landstraße, Vienna (2024-02-06)</h3>
-    <p class="jr-story">Home to the stunning Belvedere Palace, showcasing masterpieces of Austrian art including Gustav Klimt&#x27;s &#x27;The Kiss&#x27;.</p>
-    <div class="jr-strip"><img src="photos/thumb/IMG_4852.jpg" alt="" loading="lazy" decoding="async"><img src="photos/thumb/IMG_4908.jpg" alt="" loading="lazy" decoding="async"><img src="photos/thumb/IMG_4926.jpg" alt="" loading="lazy" decoding="async"><img src="photos/thumb/IMG_5225.jpg" alt="" loading="lazy" decoding="async"></div>
+  <h3 class="jr-name">Musée d'Orsay, Paris</h3>
+  <div class="jr-rail" role="list">
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/orsay/001.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/orsay/002.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/orsay/003.jpg" width="1125" height="1500" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/orsay/004.jpg" width="1500" height="1209" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/orsay/005.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/orsay/006.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/orsay/007.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/orsay/008.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/orsay/009.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/orsay/010.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/orsay/011.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/orsay/012.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/orsay/013.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
   </div>
 </article>
 <article class="jr" data-reveal>
-  <div class="jr-cover"><img src="photos/thumb/IMG_6157.jpg" alt="" loading="lazy" decoding="async">
-    <span class="jr-count">5 photographs</span></div>
-  <div class="jr-body">
-    <h3>KG Schönbrunn, Vienna (2024-02-08)</h3>
-    <p class="jr-story">The magnificent Schönbrunn Palace and its expansive gardens, the former summer residence of the Habsburg rulers.</p>
-    <div class="jr-strip"><img src="photos/thumb/IMG_4373.jpg" alt="" loading="lazy" decoding="async"><img src="photos/thumb/IMG_6179.jpg" alt="" loading="lazy" decoding="async"><img src="photos/thumb/IMG_6199.jpg" alt="" loading="lazy" decoding="async"><img src="photos/thumb/IMG_4428.jpg" alt="" loading="lazy" decoding="async"></div>
+  <h3 class="jr-name">Musée de l'Orangerie, Paris</h3>
+  <div class="jr-rail" role="list">
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/orangerie/001.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/orangerie/002.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/orangerie/003.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/orangerie/004.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
   </div>
 </article>
 <article class="jr" data-reveal>
-  <div class="jr-cover"><img src="photos/thumb/IMG_7666.jpg" alt="" loading="lazy" decoding="async">
-    <span class="jr-count">16 photographs</span></div>
-  <div class="jr-body">
-    <h3>Hotel Fontana, Rome (2024-07-12)</h3>
-    <p class="jr-story">Located right opposite the breathtaking Trevi Fountain, capturing the essence of Roman romance and Baroque artistry.</p>
-    <div class="jr-strip"><img src="photos/thumb/IMG_7695.jpg" alt="" loading="lazy" decoding="async"><img src="photos/thumb/IMG_7776.jpg" alt="" loading="lazy" decoding="async"><img src="photos/thumb/IMG_8052.jpg" alt="" loading="lazy" decoding="async"><img src="photos/thumb/IMG_8072.jpg" alt="" loading="lazy" decoding="async"></div>
+  <h3 class="jr-name">Petit Palais, Paris</h3>
+  <div class="jr-rail" role="list">
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/petit-palais/001.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/petit-palais/002.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/petit-palais/003.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/petit-palais/004.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/petit-palais/005.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/petit-palais/006.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
   </div>
 </article>
 <article class="jr" data-reveal>
-  <div class="jr-cover"><img src="photos/thumb/IMG_8107.jpg" alt="" loading="lazy" decoding="async">
-    <span class="jr-count">5 photographs</span></div>
-  <div class="jr-body">
-    <h3>Caffetteria, Rome (2024-07-13)</h3>
-    <p class="jr-story">Experiencing the authentic Italian coffee culture amidst the ancient streets and vibrant piazzas of Rome.</p>
-    <div class="jr-strip"><img src="photos/thumb/IMG_8120.jpg" alt="" loading="lazy" decoding="async"><img src="photos/thumb/IMG_8123.jpg" alt="" loading="lazy" decoding="async"><img src="photos/thumb/IMG_8124.jpg" alt="" loading="lazy" decoding="async"><img src="photos/thumb/IMG_8125.jpg" alt="" loading="lazy" decoding="async"></div>
+  <h3 class="jr-name">Musée d'Art Moderne de Paris</h3>
+  <div class="jr-rail" role="list">
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/mam-paris/001.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/mam-paris/002.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/mam-paris/003.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/mam-paris/004.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/mam-paris/005.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/mam-paris/006.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/mam-paris/007.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/mam-paris/008.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/mam-paris/009.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/mam-paris/010.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/mam-paris/011.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/mam-paris/012.jpg" width="1111" height="1500" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/mam-paris/013.jpg" width="1125" height="1500" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/mam-paris/014.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/mam-paris/015.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
   </div>
 </article>
 <article class="jr" data-reveal>
-  <div class="jr-cover"><img src="photos/thumb/IMG_8748.jpg" alt="" loading="lazy" decoding="async">
-    <span class="jr-count">11 photographs</span></div>
-  <div class="jr-body">
-    <h3>Vatican Art Gallery, Rome (2024-07-15)</h3>
-    <p class="jr-story">Housing an immense collection of art amassed by the Catholic Church throughout the centuries, including works by Raphael and Caravaggio.</p>
-    <div class="jr-strip"><img src="photos/thumb/IMG_8765.jpg" alt="" loading="lazy" decoding="async"><img src="photos/thumb/IMG_3100.jpg" alt="" loading="lazy" decoding="async"><img src="photos/thumb/IMG_8772.jpg" alt="" loading="lazy" decoding="async"><img src="photos/thumb/IMG_8809.jpg" alt="" loading="lazy" decoding="async"></div>
+  <h3 class="jr-name">Palais de Tokyo, Paris</h3>
+  <div class="jr-rail" role="list">
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/palais-de-tokyo/001.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/palais-de-tokyo/002.jpg" width="1500" height="970" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/palais-de-tokyo/003.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/palais-de-tokyo/004.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/palais-de-tokyo/005.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/palais-de-tokyo/006.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/palais-de-tokyo/007.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/palais-de-tokyo/008.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/palais-de-tokyo/009.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/palais-de-tokyo/010.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/palais-de-tokyo/011.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/palais-de-tokyo/012.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/palais-de-tokyo/013.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/palais-de-tokyo/014.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/palais-de-tokyo/015.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/palais-de-tokyo/016.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/palais-de-tokyo/017.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/palais-de-tokyo/018.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/palais-de-tokyo/019.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/palais-de-tokyo/020.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
   </div>
 </article>
 <article class="jr" data-reveal>
-  <div class="jr-cover"><img src="photos/thumb/IMG_3477.jpg" alt="" loading="lazy" decoding="async">
-    <span class="jr-count">8 photographs</span></div>
-  <div class="jr-body">
-    <h3>Quartiere 1, Florence (2024-07-16)</h3>
-    <p class="jr-story">The historic center of Florence, the birthplace of the Renaissance, filled with masterpieces like the Duomo and the Uffizi Gallery.</p>
-    <div class="jr-strip"><img src="photos/thumb/IMG_3507.jpg" alt="" loading="lazy" decoding="async"><img src="photos/thumb/IMG_3816.jpg" alt="" loading="lazy" decoding="async"><img src="photos/thumb/IMG_9132.jpg" alt="" loading="lazy" decoding="async"><img src="photos/thumb/IMG_3961.jpg" alt="" loading="lazy" decoding="async"></div>
+  <h3 class="jr-name">Bourse de Commerce, Paris</h3>
+  <div class="jr-rail" role="list">
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/bourse-de-commerce/001.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/bourse-de-commerce/002.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/bourse-de-commerce/003.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/bourse-de-commerce/004.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/bourse-de-commerce/005.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/bourse-de-commerce/006.jpg" width="1125" height="1500" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/bourse-de-commerce/007.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/bourse-de-commerce/008.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/bourse-de-commerce/009.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/bourse-de-commerce/010.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/bourse-de-commerce/011.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/bourse-de-commerce/012.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/bourse-de-commerce/013.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/bourse-de-commerce/014.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/bourse-de-commerce/015.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
   </div>
 </article>
 <article class="jr" data-reveal>
-  <div class="jr-cover"><img src="photos/thumb/IMG_4356.jpg" alt="" loading="lazy" decoding="async">
-    <span class="jr-count">6 photographs</span></div>
-  <div class="jr-body">
-    <h3>Santa Croce, Venice (2024-07-19)</h3>
-    <p class="jr-story">A quieter, more authentic part of Venice where the historical charm of the floating city remains untouched.</p>
-    <div class="jr-strip"><img src="photos/thumb/IMG_4809.jpg" alt="" loading="lazy" decoding="async"><img src="photos/thumb/IMG_4963.jpg" alt="" loading="lazy" decoding="async"><img src="photos/thumb/IMG_4969.jpg" alt="" loading="lazy" decoding="async"><img src="photos/thumb/IMG_4973.jpg" alt="" loading="lazy" decoding="async"></div>
+  <h3 class="jr-name">Musée Jacquemart-André, Paris</h3>
+  <div class="jr-rail" role="list">
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/jacquemart-andre/001.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
   </div>
 </article>
 <article class="jr" data-reveal>
-  <div class="jr-cover"><img src="photos/thumb/IMG_9864.jpg" alt="" loading="lazy" decoding="async">
-    <span class="jr-count">8 photographs</span></div>
-  <div class="jr-body">
-    <h3>Altstadt, Zurich (2024-07-24)</h3>
-    <p class="jr-story">The picturesque Old Town of Zurich, with its narrow cobblestone streets, medieval guilds, and stunning views of the Limmat river.</p>
-    <div class="jr-strip"><img src="photos/thumb/IMG_9872.jpg" alt="" loading="lazy" decoding="async"><img src="photos/thumb/IMG_5142.jpg" alt="" loading="lazy" decoding="async"><img src="photos/thumb/IMG_5154.jpg" alt="" loading="lazy" decoding="async"><img src="photos/thumb/IMG_5162.jpg" alt="" loading="lazy" decoding="async"></div>
+  <h3 class="jr-name">Palais Garnier, Paris</h3>
+  <div class="jr-rail" role="list">
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/palais-garnier/001.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/palais-garnier/002.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/palais-garnier/003.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
   </div>
 </article>
 <article class="jr" data-reveal>
-  <div class="jr-cover"><img src="photos/thumb/IMG_6817.jpg" alt="" loading="lazy" decoding="async">
-    <span class="jr-count">2 photographs</span></div>
-  <div class="jr-body">
-    <h3>New Town, Prague (2025-06-02)</h3>
-    <p class="jr-story">Founded by Charles IV in the 14th century, blending historical Gothic architecture with modern urban energy in the heart of Prague.</p>
-    <div class="jr-strip"><img src="photos/thumb/IMG_6853.jpg" alt="" loading="lazy" decoding="async"></div>
+  <h3 class="jr-name">Palace of Versailles</h3>
+  <div class="jr-rail" role="list">
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/versailles/001.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/versailles/002.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/versailles/003.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/versailles/004.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/versailles/005.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/versailles/006.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/versailles/007.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/versailles/008.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/versailles/009.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
   </div>
 </article>
 <article class="jr" data-reveal>
-  <div class="jr-cover"><img src="photos/thumb/IMG_6595.jpg" alt="" loading="lazy" decoding="async">
-    <span class="jr-count">9 photographs</span></div>
-  <div class="jr-body">
-    <h3>Hradčany, Prague (2025-06-02)</h3>
-    <p class="jr-story">The Castle District, dominating the city skyline and guarding centuries of Bohemian history within the walls of Prague Castle.</p>
-    <div class="jr-strip"><img src="photos/thumb/IMG_6628.jpg" alt="" loading="lazy" decoding="async"><img src="photos/thumb/IMG_6632.jpg" alt="" loading="lazy" decoding="async"><img src="photos/thumb/IMG_6634.jpg" alt="" loading="lazy" decoding="async"><img src="photos/thumb/IMG_6647.jpg" alt="" loading="lazy" decoding="async"></div>
+  <h3 class="jr-name">Galleria Borghese, Rome</h3>
+  <div class="jr-rail" role="list">
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/borghese/001.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/borghese/002.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/borghese/003.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/borghese/004.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/borghese/005.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
   </div>
 </article>
 <article class="jr" data-reveal>
-  <div class="jr-cover"><img src="photos/thumb/IMG_6911.jpg" alt="" loading="lazy" decoding="async">
-    <span class="jr-count">2 photographs</span></div>
-  <div class="jr-body">
-    <h3>Stubenviertel, Vienna (2025-06-03)</h3>
-    <p class="jr-story">A historic neighborhood within the Innere Stadt, characterized by its elegant aristocratic palaces and traditional Viennese charm.</p>
-    <div class="jr-strip"><img src="photos/thumb/IMG_6924.jpg" alt="" loading="lazy" decoding="async"></div>
+  <h3 class="jr-name">Galleria Nazionale d'Arte Moderna, Rome</h3>
+  <div class="jr-rail" role="list">
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/gnam/001.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/gnam/002.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/gnam/003.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/gnam/004.jpg" width="1317" height="1500" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/gnam/005.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/gnam/006.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/gnam/007.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/gnam/008.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/gnam/009.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/gnam/010.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
   </div>
 </article>
 <article class="jr" data-reveal>
-  <div class="jr-cover"><img src="photos/thumb/IMG_1609.jpg" alt="" loading="lazy" decoding="async">
-    <span class="jr-count">4 photographs</span></div>
-  <div class="jr-body">
-    <h3>夢洲, Osaka (2025-07-21)</h3>
-    <p class="jr-story">Yumeshima, an artificial island serving as a symbol of futuristic urban development and the site for Expo 2025.</p>
-    <div class="jr-strip"><img src="photos/thumb/IMG_1656.jpg" alt="" loading="lazy" decoding="async"><img src="photos/thumb/IMG_1657.jpg" alt="" loading="lazy" decoding="async"><img src="photos/thumb/IMG_1661.jpg" alt="" loading="lazy" decoding="async"></div>
+  <h3 class="jr-name">MAXXI, Rome</h3>
+  <div class="jr-rail" role="list">
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/maxxi/001.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
   </div>
 </article>
 <article class="jr" data-reveal>
-  <div class="jr-cover"><img src="photos/thumb/IMG_9212.jpg" alt="" loading="lazy" decoding="async">
-    <span class="jr-count">6 photographs</span></div>
-  <div class="jr-body">
-    <h3>Musée Jacquemart-André, Paris (2025-12-30)</h3>
-    <p class="jr-story">A private museum displaying an exquisite collection of art in a lavish 19th-century Parisian mansion.</p>
-    <div class="jr-strip"><img src="photos/thumb/IMG_9222.jpg" alt="" loading="lazy" decoding="async"><img src="photos/thumb/IMG_9264.jpg" alt="" loading="lazy" decoding="async"><img src="photos/thumb/IMG_9273.jpg" alt="" loading="lazy" decoding="async"><img src="photos/thumb/IMG_6812.jpg" alt="" loading="lazy" decoding="async"></div>
+  <h3 class="jr-name">Pantheon, Rome</h3>
+  <div class="jr-rail" role="list">
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/pantheon/001.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/pantheon/002.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/pantheon/003.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/pantheon/004.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/pantheon/005.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/pantheon/006.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+  </div>
+</article>
+<article class="jr" data-reveal>
+  <h3 class="jr-name">San Luigi dei Francesi, Rome</h3>
+  <div class="jr-rail" role="list">
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/san-luigi/001.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/san-luigi/002.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/san-luigi/003.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/san-luigi/004.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/san-luigi/005.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+  </div>
+</article>
+<article class="jr" data-reveal>
+  <h3 class="jr-name">Vatican Museums, Vatican City</h3>
+  <div class="jr-rail" role="list">
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/vatican/001.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/vatican/002.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/vatican/003.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/vatican/004.jpg" width="1125" height="1500" alt="" loading="lazy" decoding="async"></figure>
+  </div>
+</article>
+<article class="jr" data-reveal>
+  <h3 class="jr-name">Uffizi Gallery, Florence</h3>
+  <div class="jr-rail" role="list">
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/uffizi/001.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/uffizi/002.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/uffizi/003.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/uffizi/004.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/uffizi/005.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/uffizi/006.jpg" width="1500" height="1064" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/uffizi/007.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/uffizi/008.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/uffizi/009.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+  </div>
+</article>
+<article class="jr" data-reveal>
+  <h3 class="jr-name">Centro Storico, Florence</h3>
+  <div class="jr-rail" role="list">
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/centro-storico/001.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/centro-storico/002.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/centro-storico/003.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/centro-storico/004.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/centro-storico/005.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/centro-storico/006.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/centro-storico/007.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/centro-storico/008.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+  </div>
+</article>
+<article class="jr" data-reveal>
+  <h3 class="jr-name">Teatro alla Scala, Milan</h3>
+  <div class="jr-rail" role="list">
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/scala/001.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/scala/002.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/scala/003.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/scala/004.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/scala/005.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/scala/006.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/scala/007.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/scala/008.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/scala/009.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/scala/010.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/scala/011.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+  </div>
+</article>
+<article class="jr" data-reveal>
+  <h3 class="jr-name">Venice</h3>
+  <div class="jr-rail" role="list">
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/venice/001.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/venice/002.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+  </div>
+</article>
+<article class="jr" data-reveal>
+  <h3 class="jr-name">Venice Biennale</h3>
+  <div class="jr-rail" role="list">
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/venice-biennale/001.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/venice-biennale/002.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/venice-biennale/003.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/venice-biennale/004.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/venice-biennale/005.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/venice-biennale/006.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/venice-biennale/007.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/venice-biennale/008.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/venice-biennale/009.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/venice-biennale/010.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/venice-biennale/011.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/venice-biennale/012.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/venice-biennale/013.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/venice-biennale/014.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/venice-biennale/015.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/venice-biennale/016.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/venice-biennale/017.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/venice-biennale/018.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/venice-biennale/019.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/venice-biennale/020.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/venice-biennale/021.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/venice-biennale/022.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/venice-biennale/023.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/venice-biennale/024.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/venice-biennale/025.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/venice-biennale/026.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/venice-biennale/027.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/venice-biennale/028.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/venice-biennale/029.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/venice-biennale/030.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/venice-biennale/031.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/venice-biennale/032.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/venice-biennale/033.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/venice-biennale/034.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/venice-biennale/035.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/venice-biennale/036.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/venice-biennale/037.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/venice-biennale/038.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/venice-biennale/039.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/venice-biennale/040.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/venice-biennale/041.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+  </div>
+</article>
+<article class="jr" data-reveal>
+  <h3 class="jr-name">Städel Museum, Frankfurt</h3>
+  <div class="jr-rail" role="list">
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/staedel/001.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/staedel/002.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/staedel/003.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/staedel/004.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/staedel/005.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/staedel/006.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/staedel/007.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/staedel/008.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/staedel/009.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/staedel/010.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/staedel/011.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/staedel/012.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/staedel/013.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/staedel/014.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+  </div>
+</article>
+<article class="jr" data-reveal>
+  <h3 class="jr-name">Kunsthaus Zürich</h3>
+  <div class="jr-rail" role="list">
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/kunsthaus-zurich/001.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/kunsthaus-zurich/002.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/kunsthaus-zurich/003.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/kunsthaus-zurich/004.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/kunsthaus-zurich/005.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/kunsthaus-zurich/006.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/kunsthaus-zurich/007.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/kunsthaus-zurich/008.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/kunsthaus-zurich/009.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/kunsthaus-zurich/010.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/kunsthaus-zurich/011.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/kunsthaus-zurich/012.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/kunsthaus-zurich/013.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/kunsthaus-zurich/014.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/kunsthaus-zurich/015.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/kunsthaus-zurich/016.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/kunsthaus-zurich/017.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+  </div>
+</article>
+<article class="jr" data-reveal>
+  <h3 class="jr-name">Expo 2025, Osaka</h3>
+  <div class="jr-rail" role="list">
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/expo-osaka/001.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/expo-osaka/002.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/expo-osaka/003.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/expo-osaka/004.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/expo-osaka/005.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/expo-osaka/006.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/expo-osaka/007.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/expo-osaka/008.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/expo-osaka/009.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/expo-osaka/010.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/expo-osaka/011.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/expo-osaka/012.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/expo-osaka/013.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/expo-osaka/014.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
+    <figure class="jr-plate" role="listitem"><img src="photos/journeys/expo-osaka/015.jpg" width="1500" height="1125" alt="" loading="lazy" decoding="async"></figure>
   </div>
 </article>
 </div>
@@ -723,7 +1161,7 @@ footer{background:var(--espresso-2);color:var(--mute);padding:56px 6vw 44px;bord
 
 <!-- 4. journalism -->
 <section class="journal" id="journalism" data-theme="light">
-  <div class="sec-head">
+  <div class="sec-head page-snap">
     <div>
       <p class="kicker">Journalism</p>
       <h2>Writing on art, for the record.</h2>
@@ -844,70 +1282,6 @@ footer{background:var(--espresso-2);color:var(--mute);padding:56px 6vw 44px;bord
   </div>
 </section>
 
-<!-- 5. extracurricular -->
-<section class="extra" id="extra" data-theme="dark">
-  <div class="sec-head">
-    <div>
-      <p class="kicker">Extracurricular</p>
-      <h2>Filed, held, and awarded.</h2>
-    </div>
-    <p>A patent application, twelve school roles, the studio work outside school, and sixteen honours between 2023 and 2026.</p>
-  </div>
-  <div class="ex-grid">
-<div class="ex-block">
-  <h3>Filed patent</h3>
-  <p class="sub">Certificate of application · Korean Intellectual Property Office</p>
-  <div class="record">
-    <h4>Smart 3D-printed lumbar orthosis with variable ventilation, reflecting patient-customised body data and surgical history</h4>
-    
-    <div class="facts"><div><dt>Application no.</dt><dd>10-2026-0194336</dd></div><div><dt>Filing date</dt><dd>11 Oct 2026</dd></div><div><dt>Applicant / Inventor</dt><dd>YEONSU AHN</dd></div><div><dt>Certificate issued</dt><dd>29 Oct 2026</dd></div></div>
-    <p class="note-line">Design work carried out as <b>EMMA Spinal Brace</b>, a lattice-structured brace designed during recovery from spinal surgery in 2023. The filing is at application stage: no request for examination and no claims were submitted at filing (provisional specification), so no registration has been granted.</p>
-  </div>
-</div>
-<div class="ex-block">
-  <h3>Leadership &amp; service</h3>
-  <p class="sub">Within school</p>
-  <table class="ledger">
-    <caption>Role held, by years active</caption>
-    <thead><tr><th scope="col">Years</th><th scope="col">Organisation</th><th scope="col">Role</th></tr></thead>
-    <tbody><tr><td>4 yrs</td><td><b>CSIAMUN</b></td><td>Head Chair of Crisis &middot; President of the Security Council</td></tr><tr><td>2023&ndash;</td><td><b>CSIAVANK</b></td><td>Head &mdash; ran a conference for 300+ students</td></tr><tr><td>2024&ndash;2025</td><td><b>Smart Eco Farm</b></td><td>Head of Web Designing Team</td></tr><tr><td>2024&ndash;2025</td><td><b>Football Team</b></td><td>Head Designer</td></tr><tr><td>4 yrs</td><td><b>Communication Department</b></td><td>Head of Design</td></tr><tr><td>4 yrs</td><td><b>Omid for Girls</b></td><td>World History tutor, 2 hrs weekly</td></tr><tr><td>2023&ndash;2025</td><td><b>Avengers</b></td><td>Leader &mdash; English-language book service</td></tr><tr><td>2023&ndash;2025</td><td><b>KNHBA</b></td><td>Signed an MOU with the basketball association and hosted a tournament</td></tr><tr><td>2023&ndash;2024</td><td><b>Peace Designer</b></td><td>Member &middot; UN Vienna Youth Conference</td></tr><tr><td>2023&ndash;2026</td><td><b>The Planning Department</b></td><td>Member</td></tr><tr><td>2023&ndash;2024</td><td><b>Drama Club &middot; Flag Corps</b></td><td>Staff member &middot; Leader</td></tr><tr><td>2023</td><td><b>SkyBlueTimes</b></td><td>Member &mdash; school newspaper</td></tr></tbody>
-  </table>
-</div>
-<div class="ex-block">
-  <h3>Studio, work &amp; exhibitions</h3>
-  <p class="sub">Beyond school</p>
-  <ul class="ex-list"><li><span>2026</span><span>Cornell Pre-College Online Drawing — completed with grade A, July 2026.</span></li>
-<li><span>2026</span><span>Venice exhibition — paintings on social issues shown in Venice.</span></li>
-<li><span>2026</span><span>D-Paper — art exhibition, raised $1,000.</span></li>
-<li><span>2025–</span><span>Hope Library — intern, illustrating Korean folktales.</span></li>
-<li><span>4 yrs</span><span>EMREI — web designer and illustrator, earning $600 a month.</span></li>
-<li><span>2026</span><span>Herald Student Reporters — 30th term, Feb–Jul 2026. See Journalism .</span></li>
-<li><span>2024</span><span>ETOCS — member.</span></li>
-<li><span>2023</span><span>EMMA Spinal Brace — brace designed during surgical recovery; basis of the 2026 patent filing.</span></li></ul>
-</div>
-<div class="ex-block">
-  <h3>Awards &amp; honours</h3>
-  <p class="sub">Sixteen, 2023 — 2026</p>
-  <ul class="ex-list"><li><span>2026</span><span>AP Scholar of Distinction</span></li>
-<li><span>2026</span><span>Outstanding Talent Award in the Arts</span></li>
-<li><span>2026</span><span>Outstanding Service Award</span></li>
-<li><span>2026</span><span>CSIAMUN Crisis — Best Delegate</span></li>
-<li><span>2026</span><span>Academic Excellence Award — AP Studio Art: Drawing II</span></li>
-<li><span>2025</span><span>No Such Innocence — shortlisted artist</span></li>
-<li><span>2025</span><span>Korea Institute of Design Promotion Award</span></li>
-<li><span>2025</span><span>International Society Research and Analysis — essay competition, Grand Prize</span></li>
-<li><span>2025</span><span>Herald Student Reporters — winner, 30th term</span></li>
-<li><span>2025</span><span>Business Black Box — 3rd place</span></li>
-<li><span>2025</span><span>Outstanding Talent Award in the Humanities</span></li>
-<li><span>2025</span><span>Academic Excellence Award — Music and Theater I</span></li>
-<li><span>2024</span><span>Sorodha International Art Competition — 2nd place</span></li>
-<li><span>2024</span><span>Outstanding Talent Award in Social Sciences</span></li>
-<li><span>2023</span><span>TTbiz Bloomberg — grand finalist</span></li>
-<li><span>2023</span><span>CSIAMUN ECOSOC — Honorable Mention</span></li></ul>
-</div>
-  </div>
-</section>
-
 <footer>
   <div class="f-top">
     <div class="f-brand">YEONSU AHN</div>
@@ -927,6 +1301,93 @@ footer{background:var(--espresso-2);color:var(--mute);padding:56px 6vw 44px;bord
   /* --- the mosaic arrives in order, then the page takes over --- */
   addEventListener('load', function(){ document.body.classList.add('ready'); });
 
+  /* --- one gesture, one page ---------------------------------------------------
+     CSS scroll-snap alone only lands on a page once the wheel travel passes half a
+     screen (measured: 120px and 400px both spring back to 0, 600px goes). That reads
+     as a dead zone. So a wheel gesture or a key press is turned into an explicit jump
+     to the next page edge, and the snap type is switched off while the jump runs so
+     the two do not fight. Every stop is a real element top, so nothing lands mid-page. */
+  var pages = [];
+  /* offsetTop, walked up the offsetParent chain: getBoundingClientRect would bake in the
+     34px reveal translateY and land every journey 34px off its own page edge */
+  function docTop(el){
+    var y = 0;
+    while(el){ y += el.offsetTop; el = el.offsetParent; }
+    return y;
+  }
+  function measurePages(){
+    pages = [].slice.call(document.querySelectorAll('.home,.hero,.plate,.jr,.clip,.sec-head.page-snap'))
+      .map(docTop)
+      .sort(function(a,b){ return a - b; });
+  }
+  measurePages();
+  addEventListener('resize', measurePages);
+  addEventListener('load', measurePages);
+
+  var lock = false, acc = 0, accT = 0;
+  function here(){
+    var y = scrollY, best = 0, bestD = 1e9;
+    for(var i=0;i<pages.length;i++){
+      var d = Math.abs(pages[i] - y);
+      if(d < bestD){ bestD = d; best = i; }
+    }
+    return best;
+  }
+  function goTo(i){
+    var last = pages.length - 1;
+    if(i < 0) i = 0;
+    var y;
+    if(i > last){
+      y = Math.max(0, document.documentElement.scrollHeight - innerHeight);  /* the footer */
+    }else{
+      y = pages[i];
+    }
+    if(Math.abs(y - scrollY) < 1) return;
+    lock = true;
+    document.documentElement.style.scrollSnapType = 'none';
+    scrollTo({top:y, behavior: reduce ? 'auto' : 'smooth'});
+    var done = function(){
+      document.documentElement.style.scrollSnapType = '';
+      setTimeout(function(){ lock = false; }, 90);
+    };
+    if(reduce) done(); else setTimeout(done, 720);
+  }
+  function step(dir){
+    var i = here();
+    /* sitting between two pages: finish the one the gesture was heading for */
+    if(pages[i] > scrollY + 2) i -= 1;
+    goTo(i + dir);
+  }
+
+  if(!reduce){
+    addEventListener('wheel', function(e){
+      if(e.ctrlKey) return;                       /* pinch-zoom stays native */
+      e.preventDefault();
+      if(lock) return;
+      var now = Date.now();
+      if(now - accT > 320) acc = 0;               /* a new gesture starts */
+      accT = now; acc += e.deltaY;
+      if(Math.abs(acc) < 6) return;
+      var dir = acc > 0 ? 1 : -1;
+      acc = 0;
+      step(dir);
+    }, {passive:false});
+
+    addEventListener('keydown', function(e){
+      var k = e.key, dir = 0;
+      if(k === 'PageDown' || k === 'ArrowDown' || k === ' ') dir = 1;
+      else if(k === 'PageUp' || k === 'ArrowUp') dir = -1;
+      else if(k === 'Home'){ e.preventDefault(); goTo(0); return; }
+      else if(k === 'End'){ e.preventDefault(); goTo(pages.length); return; }
+      if(!dir) return;
+      var tag = (e.target && e.target.tagName) || '';
+      if(/^(INPUT|TEXTAREA|SELECT)$/.test(tag)) return;
+      e.preventDefault();
+      if(lock) return;
+      step(dir);
+    }, {passive:false});
+  }
+
   /* --- scroll driven motion, one rAF frame at a time --- */
   var hdr   = document.getElementById('hdr');
   var bar   = document.getElementById('bar');
@@ -944,8 +1405,7 @@ footer{background:var(--espresso-2);color:var(--mute);padding:56px 6vw 44px;bord
     {el:document.getElementById('gallery'),   key:'gallery',    theme:'dark'},
     {el:document.getElementById('plates'),    key:'gallery',    theme:'dark'},
     {el:document.getElementById('journeys'),  key:'journeys',   theme:'light'},
-    {el:document.getElementById('journalism'),key:'journalism', theme:'light'},
-    {el:document.getElementById('extra'),     key:'extra',      theme:'dark'}
+    {el:document.getElementById('journalism'),key:'journalism', theme:'light'}
   ];
 
   function frame(){
@@ -970,14 +1430,10 @@ footer{background:var(--espresso-2);color:var(--mute);padding:56px 6vw 44px;bord
     for(var i=0;i<plates.length;i++){
       var el = plates[i], r = el.getBoundingClientRect();
       var vis = clamp((vh - r.top) / (vh * 0.92), 0, 1);
-      if(vis > 0.32) el.classList.add('in');
-      if(!reduce){
-        var img = el.querySelector('.pl-media img');
-        if(img && r.bottom > 0 && r.top < vh){
-          var q = clamp((vh - r.top) / (vh + r.height), 0, 1);
-          img.style.transform = 'scale(' + (1.06 - q * 0.06) + ')';
-        }
-      }
+      if(vis > 0.08) el.classList.add('in');
+      /* the plate picture is never transformed: a scroll-driven scale > 1 made the print
+         overhang its mat by a different amount on each ratio, which read as crooked corners.
+         The wall mosaic keeps its own zoom instead. */
       /* how much of this plate is actually on screen — a 1px sliver at the seam counts as nothing */
       var shown = Math.min(r.bottom, vh) - Math.max(r.top, 0);
       var ratio = shown > 0 ? shown / Math.min(r.height, vh) : 0;
@@ -1015,7 +1471,312 @@ footer{background:var(--espresso-2);color:var(--mute);padding:56px 6vw 44px;bord
   var io = new IntersectionObserver(function(entries){
     entries.forEach(function(e){ if(e.isIntersecting) e.target.classList.add('in'); });
   }, {rootMargin:'0px 0px -12% 0px', threshold:0.12});
-  document.querySelectorAll('.clip, .jr, .ex-block').forEach(function(el){ io.observe(el); });
+  document.querySelectorAll('.clip, .jr').forEach(function(el){ io.observe(el); });
+
+  /* --- the wall ------------------------------------------------------------------
+     Eighteen works hung in one room. The grid used to give every frame the same cell, so
+     a narrow study took as much wall as a wide drawing. Here each work keeps its own
+     height-to-width ratio: three courses, each course shares one height, so the whole
+     room still fits a single screen and the works keep their true proportions. */
+  var wall = document.getElementById('mosaic');
+  if(wall){
+    var ROWS = innerWidth < 620 ? 5 : 3;
+    function hangWall(w){
+      w = w || wall;
+      ROWS = innerWidth < 620 ? 5 : 3;
+      var tiles = [].slice.call(w.querySelectorAll('.tile'));
+      if(!tiles.length) return;
+      var W = w.clientWidth, H = w.clientHeight;
+      if(W < 2 || H < 2) return;
+      /* wall, not contact sheet: leave real air between the works so each one reads on its own */
+      var GX = Math.max(10, W * 0.016), GY = Math.max(16, H * 0.045);
+
+      var items = tiles.map(function(el, k){
+        var img = el.querySelector('img');
+        var ar = parseFloat(el.getAttribute('data-ar')) ||
+                 (img && img.naturalWidth ? img.naturalWidth / img.naturalHeight : 1);
+        return {el:el, k:k, ar:ar};
+      });
+
+      /* Hang in catalogue order. The wall used to group works by how wide they were, which
+         put 1, 5, 9 on the first course and read as a contact sheet, not as a show. Now the
+         works run 1..18 left to right, top to bottom, and only the row breaks are chosen so
+         each course carries a similar amount of picture. */
+      var courses = [];
+      var i0 = 0;
+      for(var r=0;r<ROWS;r++){
+        var rowsLeft = ROWS - r;
+        if(rowsLeft === 1){ courses.push(items.slice(i0)); break; }
+        var remaining = items.slice(i0).reduce(function(s,it){ return s + it.ar; }, 0);
+        var target = remaining / rowsLeft;   /* a fair share of picture width for this course */
+        var c = [], acc = 0;
+        while(i0 < items.length && acc < target && (items.length - i0) > (rowsLeft - 1)){
+          c.push(items[i0]);
+          acc += items[i0].ar;
+          i0++;
+        }
+        if(!c.length){ c.push(items[i0]); i0++; }   /* every course keeps at least one work */
+        courses.push(c);
+      }
+
+      /* the frame is part of the object now: measure how much wall it eats on each side so a
+         picture can be sized to its frame instead of being squeezed inside it */
+      var st0 = getComputedStyle(items[0].el);
+      var INx = (parseFloat(st0.paddingLeft) || 0) + (parseFloat(st0.borderLeftWidth) || 0);
+      var INy = (parseFloat(st0.paddingTop) || 0) + (parseFloat(st0.borderTopWidth) || 0);
+
+      var rowH = (H - GY * (ROWS - 1)) / ROWS;
+      /* pass one: how tall each course actually hangs (a course of wide works sits lower) */
+      courses.forEach(function(c){
+        var sum = c.reduce(function(s,it){ return s + it.ar; }, 0);
+        var frameW = 2 * INx * c.length + GX * (c.length - 1);
+        var avail = Math.max(20, W - frameW);          /* picture width left after frames and air */
+        c.h = Math.min(rowH - 2 * INy, avail / sum);
+        if(!(c.h > 4)) c.h = 4;
+        c.w = c.reduce(function(s,it){ return s + it.ar * c.h + 2 * INx; }, 0) + GX * (c.length - 1);
+      });
+      /* pass two: share whatever height is left evenly between courses, so the wall keeps a
+         steady rhythm instead of uneven gaps where one course came out shorter */
+      var used = courses.reduce(function(s,c){ return s + c.h + 2 * INy; }, 0);
+      var vGap = ROWS > 1 ? (H - used) / (ROWS - 1) : 0;
+      var y = 0;
+      courses.forEach(function(c){
+        var x = (W - c.w) / 2;                      /* centre the hang, leaving wall at both ends */
+        c.forEach(function(it){
+          var w = it.ar * c.h + 2 * INx, h = c.h + 2 * INy;
+          it.el.style.width = w + 'px';
+          it.el.style.height = h + 'px';
+          it.el.style.left = x + 'px';
+          it.el.style.top = y + 'px';
+          x += w + GX;
+        });
+        y += c.h + 2 * INy + vGap;
+      });
+
+      /* where each work sat decides which edge it flies in from: the left of the hang comes
+         from the left, the right from the right, so the wall assembles instead of rising as
+         one sheet. --i already holds the stagger, so the flight is ordered 1..18. */
+      var gx = items.map(function(it){ return it.el.offsetLeft + it.el.offsetWidth / 2; });
+      var lo = Math.min.apply(null, gx), hi = Math.max.apply(null, gx), halfG = Math.max(1, (hi - lo) / 2);
+      items.forEach(function(it){
+        var cx = it.el.offsetLeft + it.el.offsetWidth / 2;
+        var off = Math.max(-1, Math.min(1, (cx - lo) / halfG - 1));
+        var dx = Math.round(off * 78);
+        it.el.style.setProperty('--fx', dx + 'px');
+        it.el.style.setProperty('--fy', (dx ? 10 : 26) + 'px');
+      });
+    }
+    wall.classList.add('wall');
+
+    /* The wall behind the name is hung by THIS function, not by a copy of it. A copy can drift —
+       one different gap constant and the two rooms stop matching. So the home wall gets the same
+       element classes, the same frame CSS, the same course split, and — below — the same box
+       size, which is what makes every tile land at an identical size in an identical place. */
+     var hwall = document.getElementById('home-mosaic');
+     var hero = document.getElementById('gallery');
+     var home = document.getElementById('home');
+     function hangBoth(){
+       /* Copy the gallery's PLACE, not just its size. Both sections are one screen tall and both
+          snap to the same origin, so an offset measured against the gallery's own section is the
+          same offset inside the home section. Copying the offset is what makes the works sit at
+          identical screen positions; a centred box could only line up by luck.
+          The offset is CALIBRATED, not assumed: the wall is first parked at 0, its real painted
+          position is read, and only the shortfall is written back. Guessing the basis (padding
+          box, grid area, containing block) is how a box ends up exactly one gutter too far. */
+       if(hwall && hero && home){
+         var hr = hero.getBoundingClientRect();
+         var nr = home.getBoundingClientRect();
+         var r = wall.getBoundingClientRect();
+         hwall.style.width = r.width + 'px';
+         hwall.style.height = r.height + 'px';
+         hwall.style.left = '0px';
+         hwall.style.top = '0px';
+         var z = hwall.getBoundingClientRect();
+         hwall.style.left = ((r.left - hr.left) - (z.left - nr.left)) + 'px';
+         hwall.style.top = ((r.top - hr.top) - (z.top - nr.top)) + 'px';
+       }
+       hangWall(wall);
+       if(hwall) hangWall(hwall);
+     }
+
+    hangBoth();
+    addEventListener('load', hangBoth);
+    var wallT = 0;
+    addEventListener('resize', function(){ clearTimeout(wallT); wallT = setTimeout(hangBoth, 120); });
+    /* frames that arrive late change nothing, but their intrinsic ratio is a useful fallback */
+    wall.querySelectorAll('img').forEach(function(im){
+      if(!im.complete) im.addEventListener('load', function(){ if(!im.closest('[data-ar]')) hangBoth(); });
+    });
+  }
+
+  /* --- performance frames -------------------------------------------------------
+     Two works are performances: they arrived as a run of takes, and the page only ever
+     painted take one, so they sat still next to captions that say "three frames,
+     replayed". Each stack cycles its own takes while it is on screen, pauses when it
+     scrolls away or the tab is hidden, and holds frame one when motion is reduced. */
+  var stacks = [].slice.call(document.querySelectorAll('[data-perf]'));
+  function build(el){
+    var imgs = [].slice.call(el.querySelectorAll('img'));
+    if(imgs.length < 2) return null;
+    var dur = parseInt(el.getAttribute('data-dur'), 10) || 1500;
+    el.style.setProperty('--perf-dur', dur + 'ms');
+    return {el:el, imgs:imgs, i:0, dur:dur, timer:0, live:false};
+  }
+  var running = stacks.map(build).filter(Boolean);
+  function paint(st, n){
+    st.i = (n + st.imgs.length) % st.imgs.length;
+    st.imgs.forEach(function(im, k){ im.classList.toggle('on', k === st.i); });
+    var bar = st.el.querySelector('.perf-bar i');
+    if(bar){                       /* restart the cycle hairline without a reflow flash */
+      st.el.classList.remove('is-live');
+      void bar.offsetWidth;
+      st.el.classList.add('is-live');
+    }
+  }
+  function cycle(st){
+    clearTimeout(st.timer);
+    if(!st.live || reduce) return;
+    st.timer = setTimeout(function(){
+      paint(st, st.i + 1);
+      cycle(st);
+    }, st.dur);
+  }
+  function setLive(st, on){
+    if(st.live === on) return;
+    st.live = on;
+    if(on){ paint(st, st.i); cycle(st); }
+    else { clearTimeout(st.timer); st.el.classList.remove('is-live'); }
+  }
+  if(!reduce && running.length){
+    var pio = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        var st = running.filter(function(s){ return s.el === e.target; })[0];
+        if(st) setLive(st, e.isIntersecting);
+      });
+    }, {threshold:0.05});
+    running.forEach(function(st){ pio.observe(st.el); });
+    document.addEventListener('visibilitychange', function(){
+      running.forEach(function(st){
+        setLive(st, !document.hidden && st.el.getBoundingClientRect().top < innerHeight &&
+                        st.el.getBoundingClientRect().bottom > 0);
+      });
+    });
+  }
+})();
+
+/* --- the wall is a way in -------------------------------------------------------
+   Clicking a work jumps to its own plate. The plate sections carry the same DOM order as
+   the tiles, so the tile's position in the wall is the plate it belongs to; matching on
+   the picture file instead would break the moment two rooms shared a scan. Anchor links
+   rather than history pushes, so the back button and scroll-snap both keep working. */
+(function(){
+  var wall = document.getElementById('mosaic');
+  if(!wall) return;
+  var tiles = Array.prototype.slice.call(wall.querySelectorAll('.tile'));
+  var plates = Array.prototype.slice.call(document.querySelectorAll('[data-plate]'));
+  if(!tiles.length || tiles.length !== plates.length) return;
+  tiles.forEach(function(t, i){
+    var title = (t.querySelector('.tt') || {}).textContent || '';
+    t.setAttribute('role', 'link');
+    t.setAttribute('tabindex', '0');
+    if(title) t.setAttribute('aria-label', 'Open plate for ' + title.trim());
+    var fresh = function(){
+      var id = plates[i].id;
+      var target = document.getElementById(id);
+      if(!target) return false;
+      /* scroll-snap only accepts a landing on a snap point, so aim the page at it and let
+         snap settle: a smooth scroll is silently cancelled by the mandatory snap axis */
+      target.classList.add('in');
+      scrollTo({top: target.getBoundingClientRect().top + scrollY, behavior: 'auto'});
+      history.replaceState(null, '', '#' + id);
+      return true;
+    };
+    t.addEventListener('click', function(e){ e.preventDefault(); fresh(); });
+    t.addEventListener('keydown', function(e){
+      if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); fresh(); }
+    });
+  });
+})();
+
+/* --- the plate frame is cut to the print ---------------------------------------
+   A moulding that stretches to the column reads as a filled box, not a frame. The height
+   of a plate picture is already fixed by CSS (min(72svh,720px), or 46svh on small screens),
+   so the width follows from the work's own ratio: outer = picture + mat on both sides. */
+(function(){
+  var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function fitPlateFrames(){
+    var plates = document.querySelectorAll('[data-plate]');
+    for(var i = 0; i < plates.length; i++){
+      var pl = plates[i];
+      var box = pl.querySelector('.pl-media');
+      if(!box) continue;
+      var cs = getComputedStyle(box);
+      var mat = parseFloat(cs.paddingLeft) || 0;
+      var bord = parseFloat(cs.borderLeftWidth) || 0;
+      var mould = parseFloat(getComputedStyle(box).getPropertyValue('--mould')) || 0;
+      var ring = (mat + bord) * 2;              /* the frame's own box: mat + its 1px edge */
+      var ringAll = (mat + bord + mould) * 2;   /* plus the outward moulding profile */
+      var par = box.parentNode || pl;
+      var pcs = getComputedStyle(par);
+      var col = par.clientWidth - (parseFloat(pcs.paddingLeft) || 0) - (parseFloat(pcs.paddingRight) || 0);
+      /* the track's own content width, not its border box — max-width:100% on the frame
+         resolves against this, so measuring anything wider left the print letterboxed */
+      var stage = box.querySelector('.perf-stage');
+      var img = box.querySelector('img');
+      var inner = 0;
+      if(stage){
+        /* a performance stack is sized in svh, so its own box is the thing to wrap */
+        inner = stage.getBoundingClientRect().width;
+        if(inner > 0) stage.style.height = Math.round(inner / (parseFloat(getComputedStyle(stage).getPropertyValue('--ar')) || 0.75)) + 'px';
+      } else if(img){
+        var ratio = img.naturalWidth && img.naturalHeight ? img.naturalWidth / img.naturalHeight
+                    : (parseFloat(pl.getAttribute('data-ar')) || 1);
+        /* Both axes are driven from the work's own ratio. The picture box therefore *is* the
+           painted area, so the four mat widths come out equal on every ratio — relying on
+           CSS max-* caps let the box drift off-ratio and letterbox the print inward. */
+        var maxH = parseFloat(getComputedStyle(img).maxHeight);
+        if(!(maxH > 0)) maxH = Math.min(innerHeight * 0.72, 720);
+        /* the cap is read back from CSS (the mobile query halves it), so the picture never
+           gets a height the stylesheet will refuse — that mismatch is what letterboxed */
+        var maxWcss = getComputedStyle(img).maxWidth;
+        var maxW = /px$/.test(maxWcss) ? parseFloat(maxWcss) : Infinity;
+        /* a percentage never bounds the print here — the column cap below does; treating
+           '100%' as 100px once shrank a frame to a third of its size */
+        inner = maxH * ratio;
+        if(maxW > 0) inner = Math.min(inner, maxW);
+        if(col > 0 && inner > col - ringAll) inner = col - ringAll;
+        img.style.width = Math.round(inner * 100) / 100 + 'px';
+        img.style.height = Math.round(inner / ratio * 100) / 100 + 'px';
+      } else continue;
+      if(col > 0) inner = Math.min(inner, col - ringAll);
+      if(!(inner > 0)) continue;
+      /* the moulding is painted outward by box-shadow, so it never consumes the mat —
+         adding it to the box width is what pushed the print off centre by half of it */
+      box.style.width = (inner + ring) + 'px';
+      box.style.maxWidth = 'none';
+    }
+  }
+  fitPlateFrames();
+  addEventListener('load', fitPlateFrames);
+  var t = 0;
+  addEventListener('resize', function(){ clearTimeout(t); t = setTimeout(fitPlateFrames, 120); });
+  /* pictures that decode late carry the true ratio */
+  document.querySelectorAll('.pl-media img').forEach(function(im){
+    if(!im.complete) im.addEventListener('load', fitPlateFrames);
+  });
+
+  /* sections that assemble on arrival — plates above, journeys and clips here */
+  if(!('IntersectionObserver' in window)) {
+    document.querySelectorAll('.jr[data-reveal],.clip[data-reveal]').forEach(function(e){ e.classList.add('in'); });
+    return;
+  }
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting) e.target.classList.add('in');
+    });
+  }, {threshold:0.18, rootMargin:'0px 0px -8% 0px'});
+  document.querySelectorAll('.jr[data-reveal],.clip[data-reveal]').forEach(function(e){ io.observe(e); });
+  if(reduce) document.querySelectorAll('.jr[data-reveal],.clip[data-reveal]').forEach(function(e){ e.classList.add('in'); });
 })();
 </script>
 </body>
