@@ -14,8 +14,6 @@
   --espresso:#100e0c; --espresso-2:#151516;
   --ink:#151515; --soft:#595a5b; --mute:#7d7f84;
   --accent:#a8351f; --line:rgba(21,21,21,.14); --line-d:rgba(236,238,241,.15);
-  /* rose-gold picture frames: the moulding face, its lit copper edge, its shaded edge, the blush fillet */
-  --frame:#b76e79; --frame-lite:#e8bda9; --frame-deep:#7a4550; --frame-pale:#f4dfd6;
   --serif:'Cormorant Garamond',serif; --sans:'Jost',sans-serif;
   --ease:cubic-bezier(.22,.61,.36,1);
 }
@@ -88,7 +86,7 @@ header.light.stuck{background:rgba(236,238,241,.78);border-bottom-color:var(--li
   background:radial-gradient(56% 34% at 50% 48%,
     rgba(241,243,246,.5) 0%,rgba(241,243,246,.42) 42%,rgba(238,240,243,.22) 68%,
     rgba(234,236,239,.06) 86%,rgba(231,233,236,0) 96%)}
-/* one hung plate: the mat, the pale rebate, the rose-gold moulding, then the print */
+/* one hung plate: the mat, the silver rebate, the dark moulding, then the print */
 
 /* The type sits in a clear paper column through the middle of the hang. The hang function already
    leaves the centre for the title, so the column only has to be wide enough for the name to end
@@ -153,31 +151,31 @@ header.light.stuck{background:rgba(236,238,241,.78);border-bottom-color:var(--li
 .mosaic.wall{display:block;position:relative}
 .mosaic.wall .tile{position:absolute;margin:0;--pin:10px}
 @media (max-width:620px){.mosaic.wall .tile{--pin:6px}}
-/* framing: a pale hairline, a rose-gold mat, a printed-print shadow inside the mat, and a cast
+/* framing: a silver hairline, a dark mat, a printed-print shadow inside the mat, and a cast
    shadow on the wall so each work sits in front of the wall instead of being a flat photo */
 .mosaic.wall .tile{
   box-sizing:border-box;
   padding:var(--pin);
-  background:linear-gradient(150deg,var(--frame-lite) 0%,var(--frame) 44%,var(--frame-deep) 100%);
-  border:1px solid rgba(109,56,66,.95);
+  background:linear-gradient(150deg,#2a2b2e 0%,#17181a 44%,#101011 100%);
+  border:1px solid rgba(0,0,0,.88);
   box-shadow:
-    inset 0 1px 0 rgba(255,244,238,.42),
-    inset 0 -1px 0 rgba(86,40,49,.6),
-    0 0 0 1px rgba(244,223,214,.85),
-    0 0 0 2px rgba(109,56,66,.92),
-    0 24px 48px -20px rgba(0,0,0,.9),
-    0 6px 16px rgba(0,0,0,.5);
+    inset 0 1px 0 rgba(231,238,254,.13),
+    inset 0 -1px 0 rgba(0,0,0,.85),
+    0 0 0 1px rgba(169,174,187,.46),
+    0 0 0 2px rgba(0,0,0,.7),
+    0 24px 48px -20px rgba(0,0,0,.98),
+    0 6px 16px rgba(0,0,0,.58);
 }
-/* the sight edge: a pale rebate where the mat meets the print. Every ring here is painted
+/* the sight edge: a silver rebate where the mat meets the print. Every ring here is painted
    OUTWARD (0 0 0 Npx, no inset) so the frame never eats into the picture — an inset shadow
    used to bleed 5px across the print and read as the frame covering the photo. */
 .mosaic.wall .tile::after{content:"";position:absolute;inset:var(--pin);pointer-events:none;
   box-shadow:
-    0 0 0 1px rgba(109,56,66,.9),
-    0 0 0 2px rgba(244,223,214,.9),
-    0 0 0 4px rgba(109,56,66,.55)}
-.mosaic.wall .tile:hover{border-color:rgba(244,223,214,.95)}
-.mosaic.wall .tile img{object-fit:contain;box-shadow:0 0 0 1px rgba(109,56,66,.9)}
+    0 0 0 1px rgba(0,0,0,.95),
+    0 0 0 2px rgba(174,179,192,.4),
+    0 0 0 4px rgba(0,0,0,.5)}
+.mosaic.wall .tile:hover{border-color:rgba(0,0,0,.9)}
+.mosaic.wall .tile img{object-fit:contain;box-shadow:0 0 0 1px rgba(0,0,0,.9)}
 .tile{position:relative;margin:0;overflow:hidden;background:#191a1c;opacity:0;
   transform:translate3d(var(--fx,0px),var(--fy,16px),0) scale(.965);
   transition:opacity .95s var(--ease),transform 1.4s cubic-bezier(.16,.84,.28,1);
@@ -278,34 +276,34 @@ header.light.stuck{background:rgba(236,238,241,.78);border-bottom-color:var(--li
   .pl-media{transition-delay:0s !important}
 }
 .plate{--mat:26px;--mould:9px}
-/* The plate wears the same frame language as the wall tiles — a moulding, a pale outer
-   line, a mat, a pale rebate against the print — but sized for one work instead of a grid.
+/* The plate wears the same frame language as the wall tiles — a moulding, a silver outer
+   line, a mat, a silver rebate against the print — but sized for one work instead of a grid.
    The box hugs the picture: JavaScript sets the width from the picture's own ratio, so the
    moulding traces the print instead of stretching to the column. */
 .pl-media{position:relative;overflow:visible;border-radius:2px;box-sizing:border-box;
   padding:var(--mat);display:flex;align-items:center;justify-content:center;
-  /* three-step moulding profile: blush fillet against the mat, a rose-gold moulding face,
-     then a blush pinstripe and a deep rose outer edge — all drawn outward so the print is never
+  /* three-step moulding profile: silver fillet against the mat, a dark moulding face,
+     then a silver pinstripe and a black outer edge — all drawn outward so the print is never
      covered. --mould is the total outward reach and the frame width maths subtracts it. */
   background:
-    radial-gradient(120% 90% at 30% 0%,rgba(255,246,240,.34),rgba(255,246,240,0) 60%),
-    linear-gradient(150deg,var(--frame-lite) 0%,var(--frame) 46%,var(--frame-deep) 100%);
-  border:1px solid rgba(109,56,66,.95);
+    radial-gradient(120% 90% at 30% 0%,rgba(231,238,254,.09),rgba(0,0,0,0) 60%),
+    linear-gradient(150deg,#303236 0%,#1c1d1f 46%,#111112 100%);
+  border:1px solid rgba(0,0,0,.95);
   box-shadow:
-    inset 0 0 0 1px rgba(255,246,240,.38),
-    inset 0 2px 0 rgba(255,246,240,.34),
-    inset 0 -2px 0 rgba(86,40,49,.55),
-    0 0 0 1px var(--frame-pale),
-    0 0 0 2px var(--frame-deep),
-    0 0 0 8px var(--frame),
-    0 0 0 9px var(--frame-pale),
-    0 0 0 11px rgba(109,56,66,.92),
+    inset 0 0 0 1px rgba(231,238,254,.16),
+    inset 0 2px 0 rgba(231,238,254,.09),
+    inset 0 -2px 0 rgba(0,0,0,.6),
+    0 0 0 1px rgba(180,185,198,.9),
+    0 0 0 2px #151618,
+    0 0 0 8px #151618,
+    0 0 0 9px rgba(169,174,187,.62),
+    0 0 0 11px rgba(0,0,0,.92),
     0 40px 78px -24px rgba(0,0,0,.96),
     0 10px 26px rgba(0,0,0,.62)}
 /* the sight edge, painted outward so no ring ever lands on the print */
 .pl-media::after{content:"";position:absolute;inset:calc(var(--mat) - 1px);
   pointer-events:none;
-  box-shadow:0 0 0 1px rgba(109,56,66,.85),0 0 0 3px rgba(244,223,214,.9)}
+  box-shadow:0 0 0 1px rgba(0,0,0,.95),0 0 0 3px rgba(174,179,192,.42)}
 /* the print fills the opening exactly: both axes are intrinsic and only capped
    (max-width/max-height keep the ratio), so no letterbox can sit between mat and picture */
 .pl-media img{width:auto;height:auto;max-width:100%;max-height:min(calc(72svh - 1px),720px);display:block;
