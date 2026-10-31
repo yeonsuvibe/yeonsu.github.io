@@ -7,7 +7,11 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>YEONSU AHN — Art Gallery</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&amp;family=Jost:wght@300;400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.gstatic.com" rel="preconnect" crossorigin="anonymous"/>
+<!-- The stylesheet is fetched without blocking first paint: the fonts swap in once it lands,
+     rather than holding the whole page blank for ~1.8s on a slow connection. -->
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&amp;family=Jost:wght@300;400;500&amp;display=swap" rel="stylesheet" media="print" onload="this.media='all'"/>
+<noscript><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&amp;family=Jost:wght@300;400;500&amp;display=swap" rel="stylesheet"/></noscript>
 <style>
 :root{
   --sand:#eceef1; --sand-2:#dfe1e4; --paper:#f6f8fb;
@@ -768,7 +772,14 @@ footer{background:var(--espresso-2);color:var(--mute);padding:56px 6vw 44px;bord
   </div>
 </section>
 <section class="plate" id="pl14" data-plate data-idx="14">
-  <div class="pl-media perf"><img src="photos/art/performance/again_01.jpg" alt="ready, action" loading="lazy" decoding="async"></div>
+  <div class="pl-media perf" data-perf data-dur="1500" style="--ar:0.7643">
+    <div class="perf-stage">
+      <img class="on" src="photos/art/performance/again_01.jpg" alt="ready, action, frame one" decoding="async">
+      <img src="photos/art/performance/again_02.jpg" alt="ready, action, frame two" loading="lazy" decoding="async">
+      <img src="photos/art/performance/again_03.jpg" alt="ready, action, frame three" loading="lazy" decoding="async">
+      <div class="perf-bar"><i></i></div>
+    </div>
+  </div>
   <div class="pl-text">
     <a class="pl-back" href="#gallery">Back to the wall</a>
     <p class="pl-kick">Plate 14 <span>/ 15</span></p>
@@ -783,7 +794,16 @@ footer{background:var(--espresso-2);color:var(--mute);padding:56px 6vw 44px;bord
   </div>
 </section>
 <section class="plate" id="pl15" data-plate data-idx="15">
-  <div class="pl-media perf"><img src="photos/art/performance/release_03.jpg" alt="independence day" loading="lazy" decoding="async"></div>
+  <div class="pl-media perf" data-perf data-dur="1500" style="--ar:0.5621">
+    <div class="perf-stage">
+      <img class="on" src="photos/art/performance/release_01.jpg" alt="independence day, frame one" decoding="async">
+      <img src="photos/art/performance/release_02.jpg" alt="independence day, frame two" loading="lazy" decoding="async">
+      <img src="photos/art/performance/release_03.jpg" alt="independence day, frame three" loading="lazy" decoding="async">
+      <img src="photos/art/performance/release_04.jpg" alt="independence day, frame four" loading="lazy" decoding="async">
+      <img src="photos/art/performance/release_05.jpg" alt="independence day, frame five" loading="lazy" decoding="async">
+      <div class="perf-bar"><i></i></div>
+    </div>
+  </div>
   <div class="pl-text">
     <a class="pl-back" href="#gallery">Back to the wall</a>
     <p class="pl-kick">Plate 15 <span>/ 15</span></p>

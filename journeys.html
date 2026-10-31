@@ -7,7 +7,11 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%23f4f1ea'/%3E%3Crect x='3' y='3' width='10' height='10' fill='none' stroke='%2316150f'/%3E%3C/svg%3E"/>
 <title>YEONSU AHN - Digital Portfolio</title>
 <link href="index.css" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&amp;family=Jost:wght@300;400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.gstatic.com" rel="preconnect" crossorigin="anonymous"/>
+<!-- Same non-blocking font load as gallery.html: the timeline paints immediately and the
+     serif swaps in when the stylesheet arrives. -->
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&amp;family=Jost:wght@300;400;500&amp;display=swap" rel="stylesheet" media="print" onload="this.media='all'"/>
+<noscript><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&amp;family=Jost:wght@300;400;500&amp;display=swap" rel="stylesheet"/></noscript>
 </head>
 <body>
 <!-- Navigation -->
@@ -29,7 +33,7 @@
 <div class="city-header" style="text-align:center;margin:64px 0 28px;padding-bottom:14px;border-bottom:1px solid var(--paper-deep);font-family:'Cormorant Garamond',serif;font-size:2.1rem;letter-spacing:.3em;text-transform:uppercase;color:var(--ink)">Paris, France <span style="font-size:1.1rem;letter-spacing:.15em;color:var(--ink-faint)">&middot; 100 photos</span></div>
 <div class="timeline-chapter">
 <h3>Musée d'Orsay, Paris</h3>
-<p class="chapter-desc">Photos: 12</p><p class="museum-story">Impressionist masterpieces in a Beaux-Arts railway station on the Left Bank.</p>
+<p class="chapter-desc">Photos: 12</p><p class="museum-story">A Beaux-Arts railway station built for the 1900 World's Fair, saved from demolition and reopened as a museum in 1986. Its vaulted glass roof now covers the largest holding of Impressionist and Post-Impressionist work anywhere, hung in rough chronological order so the top floor reads as one continuous argument from Manet through Van Gogh. The great clock faces at either end still look out over the Seine.</p>
 </div>
 <div class="timeline-item" data-animate="">
 <div class="timeline-content">
@@ -93,7 +97,7 @@
 </div>
 <div class="timeline-chapter">
 <h3>Musée du Louvre, Paris</h3>
-<p class="chapter-desc">Photos: 14</p><p class="museum-story">The world's largest art museum, from the Mona Lisa to the Winged Victory.</p>
+<p class="chapter-desc">Photos: 14</p><p class="museum-story">A royal palace turned public museum in 1793, and now the most visited art museum in the world. The collection runs from Mesopotamian brick to nineteenth-century French canvas across eight departments, which is why no visit covers it: the Egyptian, Greek and painting wings are three separate days. The glass pyramid of 1989 marks the axis that the palace itself was built along.</p>
 </div>
 <div class="timeline-item" data-animate="">
 <div class="timeline-content">
@@ -167,7 +171,7 @@
 </div>
 <div class="timeline-chapter">
 <h3>Musée de l'Orangerie, Paris</h3>
-<p class="chapter-desc">Photos: 14</p><p class="museum-story">Monet's Water Lilies in the two elliptical rooms he designed himself.</p>
+<p class="chapter-desc">Photos: 14</p><p class="museum-story">Two oval rooms built to a plan Monet set himself, holding the Water Lilies cycle he worked on from 1914 until his death and which opened to the public in 1927. The rooms are the museum: daylight enters from above and the canvases wrap the walls without a horizon line to stop them. The lower floor holds the Jean Walter and Paul Guillaume collection, Renoir to Soutine.</p>
 </div>
 <div class="timeline-item" data-animate="">
 <div class="timeline-content">
@@ -241,7 +245,7 @@
 </div>
 <div class="timeline-chapter">
 <h3>Musée Jacquemart-André, Paris</h3>
-<p class="chapter-desc">Photos: 7</p><p class="museum-story">A banker's private mansion, still hung the way its collectors left it.</p>
+<p class="chapter-desc">Photos: 7</p><p class="museum-story">A private mansion on Boulevard Haussmann, left as its collectors arranged it rather than rearranged for a public. Édouard André and Nélie Jacquemart travelled for decades and hung what they bought in the rooms it was bought for, so the Italian Renaissance galleries and the eighteenth-century French salon read as a house that happens to be open. The winter garden stair by Tiepolo's frescoes is the centre of the building.</p>
 </div>
 <div class="timeline-item" data-animate="">
 <div class="timeline-content">
@@ -280,7 +284,7 @@
 </div>
 <div class="timeline-chapter">
 <h3>Palais de Tokyo, Paris</h3>
-<p class="chapter-desc">Photos: 25</p><p class="museum-story">Raw concrete and no permanent collection — Paris at its most experimental.</p>
+<p class="chapter-desc">Photos: 25</p><p class="museum-story">A 1937 exhibition pavilion on the Seine that sat largely unused for decades before reopening in 2002 as a space with no permanent collection at all. Every floor is a rotating set of exhibitions, so the building is always different and often unfinished on purpose. It is the most consistently experimental large space in Paris.</p>
 </div>
 <div class="timeline-item" data-animate="">
 <div class="timeline-content">
@@ -409,7 +413,7 @@
 </div>
 <div class="timeline-chapter">
 <h3>Bourse de Commerce, Paris</h3>
-<p class="chapter-desc">Photos: 15</p><p class="museum-story">Tadao Ando's concrete cylinder inside the old grain exchange, now Pinault's collection.</p>
+<p class="chapter-desc">Photos: 15</p><p class="museum-story">An eighteenth-century grain exchange, roofed in 1811 with a cast-iron dome that had to be seen from the inside. Tadao Ando inserted a concrete cylinder inside that rotunda without touching the ring of frescoes behind it, and the François Pinault Collection opened there in 2021. Contemporary work is shown in the round, in dialogue with a building that was never meant for it.</p>
 </div>
 <div class="timeline-item" data-animate="">
 <div class="timeline-content">
@@ -488,7 +492,7 @@
 </div>
 <div class="timeline-chapter">
 <h3>Petit Palais, Paris</h3>
-<p class="chapter-desc">Photos: 13</p><p class="museum-story">A Beaux-Arts palace built for the 1900 World's Fair, with a gilded courtyard garden.</p>
+<p class="chapter-desc">Photos: 13</p><p class="museum-story">Built as the fine-arts pavilion of the 1900 World's Fair, opposite the Grand Palais across a gilded courtyard garden. It holds the city of Paris's own collection: Greek and Roman objects, medieval and Renaissance pieces, and a strong run of French painting and sculpture from the nineteenth century. Admission to the permanent rooms is free, which is not incidental to how it is used.</p>
 </div>
 <div class="timeline-item" data-animate="">
 <div class="timeline-content">
@@ -558,7 +562,7 @@
 <div class="city-header" style="text-align:center;margin:64px 0 28px;padding-bottom:14px;border-bottom:1px solid var(--paper-deep);font-family:'Cormorant Garamond',serif;font-size:2.1rem;letter-spacing:.3em;text-transform:uppercase;color:var(--ink)">Versailles, France <span style="font-size:1.1rem;letter-spacing:.15em;color:var(--ink-faint)">&middot; 10 photos</span></div>
 <div class="timeline-chapter">
 <h3>Palace of Versailles</h3>
-<p class="chapter-desc">Photos: 10</p><p class="museum-story">The Sun King's court: the Hall of Mirrors, royal apartments and formal gardens.</p>
+<p class="chapter-desc">Photos: 10</p><p class="museum-story">Louis XIV moved the court here in 1682 and the palace remained the centre of French government until 1789. The Hall of Mirrors is seventy-three metres of glass facing seventeen arched windows, and the gardens beyond were laid out by Le Nôtre as a single sightline running to the horizon. The Grand and Petit Trianon at the far end of the grounds are quieter and, for many, the better rooms.</p>
 </div>
 <div class="timeline-item" data-animate="">
 <div class="timeline-content">
@@ -613,7 +617,7 @@
 <div class="city-header" style="text-align:center;margin:64px 0 28px;padding-bottom:14px;border-bottom:1px solid var(--paper-deep);font-family:'Cormorant Garamond',serif;font-size:2.1rem;letter-spacing:.3em;text-transform:uppercase;color:var(--ink)">Vatican City <span style="font-size:1.1rem;letter-spacing:.15em;color:var(--ink-faint)">&middot; 11 photos</span></div>
 <div class="timeline-chapter">
 <h3>Vatican Museums, Rome</h3>
-<p class="chapter-desc">Photos: 11</p><p class="museum-story">Papal collections along the Belvedere, ending at the Sistine Chapel ceiling.</p>
+<p class="chapter-desc">Photos: 11</p><p class="museum-story">Founded from the papal collections in 1506 and now a route rather than a museum: seven kilometres of corridor that ends at the Sistine Chapel. The Raphael Rooms, the map gallery and the Belvedere courtyard's Laocoön and Apollo come before it, and the crowd is part of the architecture. Michelangelo painted the chapel ceiling between 1508 and 1512 and the Last Judgment twenty-five years after that.</p>
 </div>
 <div class="timeline-item" data-animate="">
 <div class="timeline-content">
@@ -673,7 +677,7 @@
 <div class="city-header" style="text-align:center;margin:64px 0 28px;padding-bottom:14px;border-bottom:1px solid var(--paper-deep);font-family:'Cormorant Garamond',serif;font-size:2.1rem;letter-spacing:.3em;text-transform:uppercase;color:var(--ink)">Rome, Italy <span style="font-size:1.1rem;letter-spacing:.15em;color:var(--ink-faint)">&middot; 35 photos</span></div>
 <div class="timeline-chapter">
 <h3>Pantheon, Rome</h3>
-<p class="chapter-desc">Photos: 6</p><p class="museum-story">A second-century temple whose open oculus still lights the original marble floor.</p>
+<p class="chapter-desc">Photos: 6</p><p class="museum-story">A temple finished under Hadrian around 126 AD, kept intact because it was consecrated as a church in 609. The dome is still the largest unreinforced concrete one ever built, and the oculus at its centre is the only source of light, so rain falls on the original marble floor. Raphael is buried inside, which is why the building stayed a monument through every century that followed.</p>
 </div>
 <div class="timeline-item" data-animate="">
 <div class="timeline-content">
@@ -707,7 +711,7 @@
 </div>
 <div class="timeline-chapter">
 <h3>Galleria Nazionale d'Arte Moderna, Rome</h3>
-<p class="chapter-desc">Photos: 11</p><p class="museum-story">Italy's national modern collection, from the Macchiaioli to the twentieth century.</p>
+<p class="chapter-desc">Photos: 11</p><p class="museum-story">Italy's national collection of modern art, opened in 1883 and housed since 1911 in a Beaux-Arts building on Via delle Belle Arti. It holds the Macchiaioli painters who broke Italian landscape open in the 1850s, and then carries that thread through Divisionism, Futurism and the twentieth century. Rooms of sculpture alternate with the paintings rather than being kept apart.</p>
 </div>
 <div class="timeline-item" data-animate="">
 <div class="timeline-content">
@@ -766,7 +770,7 @@
 </div>
 <div class="timeline-chapter">
 <h3>MAXXI, Rome</h3>
-<p class="chapter-desc">Photos: 8</p><p class="museum-story">Zaha Hadid's concrete-and-steel museum for twenty-first-century art, in Flaminio.</p>
+<p class="chapter-desc">Photos: 8</p><p class="museum-story">Zaha Hadid's museum of twenty-first-century art in the Flaminio district, opened in 2010 after a competition held a decade earlier. The building is a set of intersecting concrete bands with the steel roof trusses left exposed, and the galleries flow into each other instead of filing past a sequence of doors. It is the first national museum Italy built for contemporary art.</p>
 </div>
 <div class="timeline-item" data-animate="">
 <div class="timeline-content">
@@ -810,7 +814,7 @@
 </div>
 <div class="timeline-chapter">
 <h3>Ponte, Rome</h3>
-<p class="chapter-desc">Photos: 10</p><p class="museum-story">Walk-through rooms of neon, projected crystal and hand-painted lines on the walls.</p>
+<p class="chapter-desc">Photos: 10</p><p class="museum-story">A walk-through sequence of rooms rather than a hang: neon, projected crystal and hand-painted lines carried along the walls. The work is the passage through it, and the photographs here are the only record of how the rooms were lit at the time. Nothing is framed, so nothing survives as an object.</p>
 </div>
 <div class="timeline-item" data-animate="">
 <div class="timeline-content">
@@ -865,7 +869,7 @@
 <div class="city-header" style="text-align:center;margin:64px 0 28px;padding-bottom:14px;border-bottom:1px solid var(--paper-deep);font-family:'Cormorant Garamond',serif;font-size:2.1rem;letter-spacing:.3em;text-transform:uppercase;color:var(--ink)">Florence, Italy <span style="font-size:1.1rem;letter-spacing:.15em;color:var(--ink-faint)">&middot; 22 photos</span></div>
 <div class="timeline-chapter">
 <h3>Van Gogh Immersive, Florence</h3>
-<p class="chapter-desc">Photos: 10</p><p class="museum-story">Starry Night and the sunflowers thrown across the stone of an old Florentine interior.</p>
+<p class="chapter-desc">Photos: 10</p><p class="museum-story">Van Gogh's paintings projected to wall height across an old Florentine interior, with Starry Night and the sunflowers running past the stone. The scale changes the argument: brushstroke becomes movement, and the works read as a sequence instead of as individual canvases. It is deliberately not a museum of objects.</p>
 </div>
 <div class="timeline-item" data-animate="">
 <div class="timeline-content">
@@ -919,7 +923,7 @@
 </div>
 <div class="timeline-chapter">
 <h3>Galleria degli Uffizi, Florence</h3>
-<p class="chapter-desc">Photos: 12</p><p class="museum-story">Botticelli's Venus and the Medici's unmatched Renaissance collection.</p>
+<p class="chapter-desc">Photos: 12</p><p class="museum-story">Built by Vasari from 1560 for Cosimo I as the offices of the Florentine magistrates, and opened to visitors from 1581, which makes it the oldest public collection in Europe. The Medici paintings arrived as a family holding, so Botticelli's Birth of Venus and the Leonardo annunciation hang a few rooms apart. The Vasari Corridor runs above the Arno to the Pitti Palace, the family's route to work.</p>
 </div>
 <div class="timeline-item" data-animate="">
 <div class="timeline-content">
@@ -984,7 +988,7 @@
 <div class="city-header" style="text-align:center;margin:64px 0 28px;padding-bottom:14px;border-bottom:1px solid var(--paper-deep);font-family:'Cormorant Garamond',serif;font-size:2.1rem;letter-spacing:.3em;text-transform:uppercase;color:var(--ink)">Milan, Italy <span style="font-size:1.1rem;letter-spacing:.15em;color:var(--ink-faint)">&middot; 11 photos</span></div>
 <div class="timeline-chapter">
 <h3>Teatro alla Scala, Milan</h3>
-<p class="chapter-desc">Photos: 11</p><p class="museum-story">The 1778 opera house where Verdi and Tosca premiered — gilded boxes and red velvet.</p>
+<p class="chapter-desc">Photos: 11</p><p class="museum-story">Piermarini's opera house, opened in 1778, and the stage against which Verdi and the nineteenth-century Italian repertoire are measured. The auditorium is horseshoe-shaped and lined with six tiers of boxes, which is why the audience sees itself as much as the stage. The adjoining museum holds costumes, instruments and the archive of the house.</p>
 </div>
 <div class="timeline-item" data-animate="">
 <div class="timeline-content">
@@ -1044,7 +1048,7 @@
 <div class="city-header" style="text-align:center;margin:64px 0 28px;padding-bottom:14px;border-bottom:1px solid var(--paper-deep);font-family:'Cormorant Garamond',serif;font-size:2.1rem;letter-spacing:.3em;text-transform:uppercase;color:var(--ink)">Venice, Italy <span style="font-size:1.1rem;letter-spacing:.15em;color:var(--ink-faint)">&middot; 23 photos</span></div>
 <div class="timeline-chapter">
 <h3>La Biennale di Venezia</h3>
-<p class="chapter-desc">Photos: 23</p><p class="museum-story">The Giardini and Arsenale pavilions, where each country stages its own answer.</p>
+<p class="chapter-desc">Photos: 23</p><p class="museum-story">Held since 1895 in the Giardini, where thirty national pavilions each stage their own answer to the same question, and extended into the Arsenale, the medieval shipyard that gives the exhibition its scale. Nations with no pavilion of their own take space in the city itself, so the exhibition spreads through Venice rather than sitting in one place. The art and architecture editions alternate.</p>
 </div>
 <div class="timeline-item" data-animate="">
 <div class="timeline-content">
@@ -1164,7 +1168,7 @@
 <div class="city-header" style="text-align:center;margin:64px 0 28px;padding-bottom:14px;border-bottom:1px solid var(--paper-deep);font-family:'Cormorant Garamond',serif;font-size:2.1rem;letter-spacing:.3em;text-transform:uppercase;color:var(--ink)">Frankfurt, Germany <span style="font-size:1.1rem;letter-spacing:.15em;color:var(--ink-faint)">&middot; 18 photos</span></div>
 <div class="timeline-chapter">
 <h3>Städel Museum, Frankfurt</h3>
-<p class="chapter-desc">Photos: 18</p><p class="museum-story">Seven centuries under one roof, from Cranach to the German Romantics and on to Baselitz.</p>
+<p class="chapter-desc">Photos: 18</p><p class="museum-story">A civic foundation since 1815, holding seven hundred years of European art in one building on the Main. It runs from Cranach and Holbein through the German Romantics to Baselitz and Richter, and the twentieth century upstairs is unusually strong for a collection of this size. The 2012 garden wing was sunk under the lawn to add a skylit gallery without changing the street.</p>
 </div>
 <div class="timeline-item" data-animate="">
 <div class="timeline-content">
@@ -1259,7 +1263,7 @@
 <div class="city-header" style="text-align:center;margin:64px 0 28px;padding-bottom:14px;border-bottom:1px solid var(--paper-deep);font-family:'Cormorant Garamond',serif;font-size:2.1rem;letter-spacing:.3em;text-transform:uppercase;color:var(--ink)">Zurich, Switzerland <span style="font-size:1.1rem;letter-spacing:.15em;color:var(--ink-faint)">&middot; 17 photos</span></div>
 <div class="timeline-chapter">
 <h3>Kunsthaus Zürich</h3>
-<p class="chapter-desc">Photos: 17</p><p class="museum-story">Switzerland's largest art museum: Monet and Munch through to Warhol on the Limmat.</p>
+<p class="chapter-desc">Photos: 17</p><p class="museum-story">Switzerland's largest art museum, run by an artists' society founded in 1787, and still shaped by that origin. Monet, Munch, Picasso and Giacometti form the spine, with a whole room given to the Chagall windows. David Chipperfield's 2021 extension opened the museum onto the Heimplatz and doubled the exhibition space without touching the 1910 building.</p>
 </div>
 <div class="timeline-item" data-animate="">
 <div class="timeline-content">
@@ -1349,7 +1353,7 @@
 <div class="city-header" style="text-align:center;margin:64px 0 28px;padding-bottom:14px;border-bottom:1px solid var(--paper-deep);font-family:'Cormorant Garamond',serif;font-size:2.1rem;letter-spacing:.3em;text-transform:uppercase;color:var(--ink)">Osaka, Japan <span style="font-size:1.1rem;letter-spacing:.15em;color:var(--ink-faint)">&middot; 15 photos</span></div>
 <div class="timeline-chapter">
 <h3>Expo 2025, Osaka</h3>
-<p class="chapter-desc">Photos: 15</p><p class="museum-story">The Yumeshima island expo: national pavilions, mass timber and the Grand Ring.</p>
+<p class="chapter-desc">Photos: 15</p><p class="museum-story">A world's fair on the artificial island of Yumeshima, with national pavilions built largely in mass timber around Sou Fujimoto's Grand Ring, which circles the whole site and remains the largest timber structure in the world. Each pavilion is a country stating its own case about the future, and the architecture is the argument. Access was by the metro extension built for the site.</p>
 </div>
 <div class="timeline-item" data-animate="">
 <div class="timeline-content">
@@ -1479,5 +1483,114 @@ document.addEventListener("DOMContentLoaded", () => {
     }, { threshold: 0.15, rootMargin: "0px" });
     document.querySelectorAll('[data-animate]').forEach((el) => { observer.observe(el); });
 });
+</script>
+<style>
+/* Image viewer. A thumb in the timeline is small at every width, and the right-hand column
+   sits half a page from the left one, so walking a venue by eye means jumping the thread back
+   and forth. Clicking any photo opens it large; the arrows sit at the two edges of the screen,
+   carry the same left/right order as the timeline, and stay hidden until the pointer is over
+   the viewer or a frame has just changed. */
+#jv{position:fixed;inset:0;z-index:10000;display:none;place-items:center;
+  background:rgba(18,17,13,.975);overscroll-behavior:contain}
+#jv.open{display:grid}
+#jv figure{margin:0;display:grid;gap:14px;justify-items:center;max-width:min(92vw,1180px)}
+#jv img{max-width:100%;max-height:80vh;width:auto;height:auto;display:block;
+  box-shadow:0 24px 60px rgba(0,0,0,.55);background:#0d0d0b}
+#jv figcaption{font-family:'Jost',sans-serif;font-size:.74rem;letter-spacing:.22em;
+  text-transform:uppercase;color:rgba(246,248,251,.62);text-align:center}
+#jv .jv-btn{position:fixed;top:50%;transform:translateY(-50%);width:56px;height:56px;
+  display:grid;place-items:center;border:1px solid rgba(246,248,251,.28);border-radius:50%;
+  background:rgba(20,19,15,.5);color:#f6f8fb;cursor:pointer;padding:0;
+  opacity:0;visibility:hidden;transition:opacity .28s var(--ease,ease),background .2s ease;
+  -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+#jv .jv-btn:hover{background:rgba(246,248,251,.16)}
+#jv .jv-btn[disabled]{opacity:0!important;visibility:hidden!important;pointer-events:none}
+#jv.show-ui .jv-btn{opacity:1;visibility:visible}
+#jv .jv-prev{left:max(14px,2.2vw)}
+#jv .jv-next{right:max(14px,2.2vw)}
+#jv .jv-close{position:fixed;top:16px;right:max(14px,2.2vw);width:42px;height:42px;top:18px;
+  transform:none;font-size:1.1rem}
+#jv .jv-btn i{display:block;width:10px;height:10px;border-top:1.4px solid currentColor;
+  border-right:1.4px solid currentColor}
+#jv .jv-prev i{transform:rotate(-135deg);margin-left:4px}
+#jv .jv-next i{transform:rotate(45deg);margin-right:4px}
+#jv .jv-close i{transform:rotate(45deg);border-width:1.6px}
+.timeline-content img{cursor:zoom-in}
+@media (max-width:860px){
+  #jv .jv-btn{width:46px;height:46px}
+  #jv img{max-height:70vh}
+}
+@media (prefers-reduced-motion:reduce){#jv .jv-btn{transition:none}}
+</style>
+<script>
+/* Viewer wiring. Kept in page order (every .timeline-content img, top to bottom) so the
+   arrows walk the venue sequence the same way the thread does. */
+(function(){
+  var imgs = [].slice.call(document.querySelectorAll('.timeline-content img'));
+  if(!imgs.length) return;
+  var idx = 0, hideT = 0;
+  var box = document.createElement('div');
+  box.id = 'jv';
+  box.setAttribute('role','dialog');
+  box.setAttribute('aria-modal','true');
+  box.setAttribute('aria-label','Journey photograph');
+  box.innerHTML =
+    '<button class="jv-btn jv-prev" type="button" aria-label="Previous photograph"><i></i></button>' +
+    '<button class="jv-btn jv-next" type="button" aria-label="Next photograph"><i></i></button>' +
+    '<button class="jv-btn jv-close" type="button" aria-label="Close"><i></i></button>' +
+    '<figure><img alt=""><figcaption></figcaption></figure>';
+  document.body.appendChild(box);
+
+  var pic = box.querySelector('img'), cap = box.querySelector('figcaption');
+  var prev = box.querySelector('.jv-prev'), next = box.querySelector('.jv-next');
+
+  function showUI(){
+    box.classList.add('show-ui');
+    clearTimeout(hideT);
+    hideT = setTimeout(function(){ box.classList.remove('show-ui'); }, 2200);
+  }
+  function paint(n){
+    idx = Math.max(0, Math.min(imgs.length - 1, n));
+    var src = imgs[idx];
+    pic.src = src.currentSrc || src.src;
+    pic.alt = src.alt || '';
+    var venue = src.closest('.timeline-chapter');
+    var name = '';
+    var chapters = document.querySelectorAll('.timeline-chapter h3');
+    // nearest chapter above this image in document order
+    for(var i = 0; i < chapters.length; i++){
+      if(chapters[i].compareDocumentPosition(src) & Node.DOCUMENT_POSITION_FOLLOWING) name = chapters[i].textContent;
+    }
+    cap.textContent = (name ? name + ' — ' : '') + (idx + 1) + ' / ' + imgs.length;
+    prev.disabled = idx === 0;
+    next.disabled = idx === imgs.length - 1;
+  }
+  function open(n){
+    paint(n);
+    box.classList.add('open');
+    document.documentElement.style.overflow = 'hidden';
+    showUI();
+    box.querySelector('.jv-close').focus({preventScroll:true});
+  }
+  function close(){
+    box.classList.remove('open');
+    document.documentElement.style.overflow = '';
+    clearTimeout(hideT);
+  }
+  imgs.forEach(function(im, i){
+    im.addEventListener('click', function(e){ e.preventDefault(); open(i); });
+  });
+  prev.addEventListener('click', function(e){ e.stopPropagation(); paint(idx - 1); showUI(); });
+  next.addEventListener('click', function(e){ e.stopPropagation(); paint(idx + 1); showUI(); });
+  box.querySelector('.jv-close').addEventListener('click', close);
+  box.addEventListener('click', function(e){ if(e.target === box) close(); });
+  box.addEventListener('mousemove', showUI);
+  addEventListener('keydown', function(e){
+    if(!box.classList.contains('open')) return;
+    if(e.key === 'Escape') close();
+    else if(e.key === 'ArrowLeft'){ paint(idx - 1); showUI(); }
+    else if(e.key === 'ArrowRight'){ paint(idx + 1); showUI(); }
+  });
+})();
 </script>
 </body>
