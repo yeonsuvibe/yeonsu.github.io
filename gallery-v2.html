@@ -1,1064 +1,958 @@
 <!DOCTYPE html>
-<!-- VERSION 2 - WORK IN PROGRESS, branched from VERSION 1 on 2026-10-31.
-     VERSION 1 stays live and untouched while this is built. -->
+<!-- VERSION 2 - single scrolling page, no 3D. Branched from VERSION 1 on 2026-10-31.
+     Order follows the top navigation: Art Gallery, Cultural Journeys, Journalism, Extracurricular.
+     The gallery opens on the whole body of work at once, then advances one plate at a time. -->
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1"/>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%23f4f3ef'/%3E%3Crect x='3' y='3' width='10' height='10' fill='none' stroke='%2314120f'/%3E%3C/svg%3E"/>
-<link rel="icon" href="data:,"/>
-<title>YEONSU AHN — Warm Pavilion</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>YEONSU AHN — Art Gallery</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&amp;family=Jost:wght@300;400;500&amp;display=swap" rel="stylesheet"/>
 <style>
-:root{ --wall:#f2f1ed; --ink:#1a1815; --soft:#6b665c; --line:rgba(26,24,21,.18);
-  --crimson:#b31b1b; --serif:'Cormorant Garamond',serif; --sans:'Jost',sans-serif;
-  /* palette aligned to index.css so both pages print the same ink */
-  --gilt:#9a7b46; }
-*{margin:0;padding:0;box-sizing:border-box}
-html,body{height:100%;overflow:hidden}
-body{background:var(--wall);color:var(--ink);font-family:var(--sans);font-weight:300;-webkit-font-smoothing:antialiased}
-canvas.webgl{position:fixed;inset:0;display:block}
-header{position:fixed;top:0;left:0;right:0;z-index:6;display:flex;justify-content:space-between;align-items:center;
-  padding:22px 38px;pointer-events:none}
-header *{pointer-events:auto}
-.brand{font-family:var(--serif);font-size:1.02rem;letter-spacing:.3em;font-weight:500}
-.dnav{display:flex;gap:22px;font-size:.56rem;letter-spacing:.22em;text-transform:uppercase;color:var(--soft)}
-.dnav a{color:inherit;text-decoration:none;opacity:.75}
-.dnav a.on,.dnav a.active{color:var(--ink);border-bottom:1px solid var(--crimson);padding-bottom:4px;opacity:1}
+:root{
+  --sand:#f2eee4; --sand-2:#e7e0d2; --paper:#faf8f3;
+  --espresso:#100e0c; --espresso-2:#181512;
+  --ink:#16150f; --soft:#5f594e; --mute:#8d8677;
+  --accent:#a8351f; --line:rgba(22,21,15,.14); --line-d:rgba(242,238,228,.15);
+  --serif:'Cormorant Garamond',serif; --sans:'Jost',sans-serif;
+  --ease:cubic-bezier(.22,.61,.36,1);
+}
+*{box-sizing:border-box}
+/* Cormorant defaults to oldstyle figures, which make a headline "1st" read as "ıst". Lining figures for titles. */
+.hero-head h1,.sec-head h2,.pl-title,.jr h3,.ex-block h3,.record h4{font-variant-numeric:lining-nums}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--espresso);color:var(--ink);font-family:var(--sans);font-weight:300;
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;overflow-x:hidden}
+img{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+::selection{background:var(--accent);color:var(--paper)}
 
-/* caption card — transparent, text floats directly over the artwork */
-.tourcard{position:fixed;left:38px;bottom:48px;z-index:7;width:min(330px,28vw);
-  background:rgba(246,245,241,.55);backdrop-filter:blur(14px) saturate(1.15);-webkit-backdrop-filter:blur(14px) saturate(1.15);
-  border:none;border-radius:10px;box-shadow:none;padding:18px 22px 16px;text-align:left;
-  opacity:0;transform:translateY(14px);transition:opacity .6s,transform .6s;pointer-events:none}
-.tourcard.show{opacity:1;transform:translateY(0)}
-.tourcard .pl{font-size:.55rem;letter-spacing:.34em;text-transform:uppercase;color:#8f1616}
-.tourcard .date{font-family:var(--serif);font-style:italic;font-size:2.05rem;font-weight:400;letter-spacing:.01em;margin:7px 0 3px;color:#14120f}
-.tourcard .med{font-size:.54rem;letter-spacing:.24em;text-transform:uppercase;color:#4f4b43;margin-bottom:11px}
-.tourcard p{font-size:.85rem;line-height:1.88;color:#1d1a16;font-weight:400}
-.tourcard p.ko{margin-top:7px;font-size:.76rem;color:#38342c;line-height:1.78;font-weight:400}
-.tourcard .bar{display:none}
+/* ---------- header: five links, same order as VERSION 1 ---------- */
+header{position:fixed;top:0;left:0;right:0;z-index:60;display:flex;justify-content:space-between;align-items:center;
+  gap:1rem;padding:20px 34px;font-family:var(--sans);letter-spacing:.24em;text-transform:uppercase;
+  transition:background .5s var(--ease),color .5s var(--ease),padding .5s var(--ease),border-color .5s var(--ease);
+  color:var(--sand);border-bottom:1px solid transparent}
+header::before{content:"";position:absolute;inset:0;backdrop-filter:blur(14px) saturate(1.2);-webkit-backdrop-filter:blur(14px) saturate(1.2);
+  background:inherit;opacity:0;transition:opacity .5s var(--ease);z-index:-1}
+header.stuck{background:rgba(16,14,12,.62);border-bottom-color:var(--line-d)}
+header.stuck::before{opacity:1}
+header.light{color:var(--ink)}
+header.light.stuck{background:rgba(242,238,228,.78);border-bottom-color:var(--line)}
+.brand{font-family:var(--serif);font-size:1rem;letter-spacing:.34em;font-weight:600;text-transform:uppercase;white-space:nowrap}
+.dnav{display:flex;gap:2.1rem;font-size:.72rem;font-weight:400}
+.dnav a{opacity:.62;padding-bottom:4px;border-bottom:1px solid transparent;transition:opacity .35s,color .35s,border-color .35s}
+.dnav a:hover{opacity:1}
+.dnav a.on{opacity:1;border-bottom-color:var(--accent)}
+@media (max-width:900px){
+  header{padding:15px 18px;gap:.5rem}
+  .brand{font-size:.82rem;letter-spacing:.26em}
+  .dnav{gap:1.05rem;font-size:.6rem;letter-spacing:.14em}
+}
+@media (max-width:560px){
+  header{padding:11px 14px 10px;gap:7px;flex-direction:column;align-items:flex-start}
+  .dnav{gap:.62rem;font-size:.55rem;letter-spacing:.05em;white-space:nowrap}
+  .brand{font-size:.8rem;letter-spacing:.18em}
+  .hero{padding-top:118px}
+  .plate{padding-top:12vh}
+}
 
-.controls{position:fixed;right:38px;bottom:42px;z-index:8;display:flex;gap:12px;align-items:center}
-.ctl{all:unset;cursor:pointer;width:52px;height:52px;border-radius:50%;border:1px solid var(--ink);
-  display:flex;align-items:center;justify-content:center;font-size:1.05rem;transition:.35s;background:rgba(255,253,248,.9)}
-.ctl:hover{background:var(--ink);color:#fffdf8}
-.ctl.wide{width:auto;border-radius:26px;padding:0 22px;font-size:.6rem;letter-spacing:.28em;text-transform:uppercase}
+/* 360-class phones: the same five links, one step smaller so nothing is cut */
+@media (max-width:380px){
+  .dnav{font-size:.5rem;gap:.46rem;letter-spacing:.03em}
+}
 
-.intro{position:fixed;inset:0;z-index:9;background:rgba(242,241,237,.97);display:flex;flex-direction:column;
-  align-items:center;justify-content:center;gap:18px;transition:opacity 1s;text-align:center;padding:24px}
-.intro.done{opacity:0;pointer-events:none}
-.intro .kick{font-size:.6rem;letter-spacing:.5em;text-transform:uppercase;color:var(--crimson)}
-.intro h1{font-family:var(--serif);font-weight:500;font-size:clamp(2rem,5.5vw,3.6rem);letter-spacing:.06em}
-.intro p{font-size:.8rem;color:var(--soft);max-width:560px;line-height:2.1}
-.intro button{all:unset;cursor:pointer;margin-top:14px;padding:15px 46px;border:1px solid var(--ink);
-  font-size:.62rem;letter-spacing:.4em;text-transform:uppercase;transition:.4s}
-.intro button:hover{background:var(--ink);color:#fff}
-.homechip{position:fixed;top:26px;left:38px;z-index:9}
-.hint{position:fixed;bottom:46px;left:50%;transform:translateX(-50%);z-index:8;font-size:.55rem;
-  letter-spacing:.32em;text-transform:uppercase;color:var(--soft);transition:opacity 1s;opacity:0;pointer-events:none}
-.hint.show{opacity:1}
-@media (max-width:760px){ .controls{left:50%;transform:translateX(-50%);right:auto;bottom:40px} .dnav{display:none}
-  .tourcard{bottom:110px;width:92vw;left:4vw} .hint{width:92vw;text-align:center;bottom:86px;letter-spacing:.22em}
-  header{padding:16px 18px} .brand{font-size:1rem} }
-@supports not (backdrop-filter:blur(1px)){ .tourcard{background:rgba(246,245,241,.9)} }
-/* ---- top navigation: a separate page (nav.html) overlaid permanently on everything ---- */
-.navframe{position:fixed;top:0;left:0;width:100%;height:66px;border:0;z-index:20;background:transparent}
-.wallpage{position:fixed;inset:92px 96px 52px 96px;z-index:8;display:none;align-items:stretch;justify-content:stretch;background:none;
-  /* Chair note 10-29: a full-bleed sheet hid the wall it hung on, so two sections on
-     different walls still looked like the same page in the same place. The sheet now
-     sits inset with its own shadow, leaving the wall and the corner visible around it. */
-  box-shadow:0 26px 64px rgba(44,33,20,.30),0 2px 0 rgba(255,255,255,.55) inset;
-  transform-origin:50% 50%;overflow:hidden}
-.wallpage.show{display:flex}
-/* Each section owns ONE wall sheet. The EC record sits on the press wall's own plane,
-   one bay along from journalism (see WALLS.E) — adjacent in space, still a page of its
-   own, so the two read as one section without the gallery walls taking a second job. */
-/* HOME: same dressing as the intro (THE WHITE CUBE) page — full paper field, centered column */
-.homepage{position:fixed;inset:0;z-index:9;display:none;flex-direction:column;align-items:center;justify-content:center;
-  gap:18px;background:rgba(242,241,237,.45);text-align:center;padding:24px;   /* translucent over the front view */
-  backdrop-filter:blur(3px) saturate(1.05);-webkit-backdrop-filter:blur(3px) saturate(1.05);
-  opacity:0;transition:opacity .55s ease;pointer-events:none;overflow:hidden}
-.homepage.show{display:flex;opacity:1;pointer-events:auto}
-.hp-kick{font-family:var(--sans);font-weight:500;font-size:clamp(0.72rem,1.15vw,0.84rem);letter-spacing:.5em;text-transform:uppercase;text-indent:.5em}
-.hp-name{font-family:var(--serif);font-weight:500;font-size:clamp(4.2rem,11vw,9.5rem);letter-spacing:.04em;text-transform:uppercase;line-height:1.02;text-indent:.04em;margin:6px 0 1.6rem}
-.hp-lede{font-family:var(--serif);font-style:italic;font-weight:500;font-size:clamp(1.22rem,1.9vw,1.6rem);letter-spacing:.01em;max-width:640px;line-height:1.9;margin:0}
-/* Center the lede on the exact middle of the viewport: rows 1fr / auto / 1fr make the
-   auto row (the lede) sit on the vertical center, while the kicker+name ride the
-   space above and the rule+meta the space below. */
-#wallH .hp-inner{position:absolute;inset:0;display:grid;grid-template-rows:1fr auto 1fr;
-  justify-items:center;align-items:center;gap:0;padding:24px;box-sizing:border-box}
-.hp-top{grid-row:1;align-self:end;display:flex;flex-direction:column;align-items:center;gap:18px;transform:translateY(30px)}
-.hp-bottom{grid-row:3;align-self:start;display:flex;flex-direction:column;align-items:center;gap:18px}
-.hp-rule{display:block;width:42px;height:1px;background:rgba(22,21,15,.5);margin:13px auto}
-.hp-meta{font-family:var(--sans);font-weight:500;font-size:.7rem;letter-spacing:.28em;text-transform:uppercase;text-indent:.28em}
-body.sheet header{visibility:hidden}
-body.sheet .controls,body.sheet .hint{display:none}          /* arrows belong to the gallery only — not HOME, not the sheets */
-.wp-card{width:100%;height:100%;display:flex;flex-direction:column;overflow:hidden;border:0;border-radius:0;
-  background:transparent;box-shadow:none}
-.wp-bar{display:flex;justify-content:space-between;align-items:center;padding:8px 14px;border-bottom:1px solid rgba(20,19,17,.15);
-  font:400 .58rem/1 var(--sans);letter-spacing:.34em;text-transform:uppercase;color:var(--ink);
-  text-shadow:0 0 8px rgba(246,245,241,.9),0 0 2px rgba(246,245,241,.95)}
-.wp-x{background:none;border:1px solid var(--line);color:var(--ink);cursor:pointer;padding:6px 12px;
-  font:400 .58rem/1 var(--sans);letter-spacing:.24em;text-transform:uppercase}
-.wp-x:hover{border-color:var(--crimson);color:var(--crimson)}
-.wallpage iframe{flex:1 1 auto;width:100%;min-height:0;border:0;background:transparent;color-scheme:light}
-/* fly into the wall first, only then fade the DOM in */
-.wallpage{opacity:0;transition:opacity .55s ease,transform .9s cubic-bezier(.33,.02,.24,1)}
-.wallpage.show{opacity:1}
-/* Chair note 10-29: P and E hang on the same bare front wall, so a straight hop between
-   them was invisible — the camera moved 18 units and the frame stayed a blank plane.
-   While the camera retreats, the sheet we are leaving now shrinks back into the wall on
-   its own, so the move reads as stepping back before crossing, not as a page swap. */
-.wallpage.recede{transform:scale(.78) translateY(1.4%);opacity:.18}
-@media (max-width:760px){ .wp-card{width:100%;height:100%;border:0}
-  /* the desktop inset would leave a 183px-wide sheet on a 375px screen */
-  .wallpage{inset:68px 10px 14px 10px;box-shadow:0 10px 26px rgba(44,33,20,.22),0 1px 0 rgba(255,255,255,.5) inset} }
-/* ---- CSS-3D wall sheets: the page DOM is planted ON the wall plane ---- */
-#css3d{position:fixed;inset:0;z-index:6;pointer-events:none;opacity:0;transition:opacity .5s ease}
-#css3d.live{opacity:1;pointer-events:auto}
-.sheet-pane{position:absolute;left:0;top:0;overflow:hidden;background:transparent;
-  font:400 15px/1.5 Georgia,serif;color:#1a1815}
-.sheet-pane iframe{width:100%;height:100%;border:0;background:transparent;color-scheme:light}
-.sheet-cap{position:absolute;left:0;right:0;top:0;display:flex;justify-content:space-between;align-items:center;
-  padding:.6% 1%;pointer-events:none;font:500 .5em/1 var(--sans);letter-spacing:.3em;text-transform:uppercase;color:#fff;
-  text-shadow:0 1px 3px rgba(0,0,0,.55)}
-.sheet-cap button{pointer-events:auto;background:rgba(20,18,15,.55);border:1px solid rgba(255,255,255,.5);color:#fff;
-  cursor:pointer;padding:.5em .9em;font:inherit;letter-spacing:.22em;text-transform:uppercase;border-radius:2px}
+/* ---------- scroll progress ---------- */
+#bar{position:fixed;top:0;left:0;height:2px;width:100%;transform:scaleX(0);transform-origin:0 50%;
+  background:var(--accent);z-index:70;will-change:transform}
 
-/* ===== SET 4 — WARM PAVILION (persona: quiet-luxury, limewash + oak + terracotta) ===== */
-:root{ --wall:#efe7da; --ink:#2a231c; --soft:#7a6a55; --line:rgba(42,35,28,.18);
-  --crimson:#b5643c; --gilt:#a8894f; }
-body{background:var(--wall);color:var(--ink)}
-.dnav{color:var(--soft)}
-.dnav a.on,.dnav a.active{color:var(--ink);border-bottom:1px solid var(--crimson)}
-.tourcard{background:rgba(247,241,231,.7)}
-.tourcard .pl{color:var(--crimson)}
-.tourcard .date{color:#241e18}
-.tourcard .med{color:#6b5b47}
-.tourcard p{color:#332b22}
-.tourcard p.ko{color:#4a3f33}
-.ctl{border-color:rgba(42,35,28,.5);background:rgba(252,247,239,.9)}
-.ctl:hover{background:var(--ink);color:#f7f1e7}
-.homepage{background:rgba(240,232,220,.52)}
-/* Halo pass — shared by every HOME text layer. Three stacked shadows do the work:
-   a 1-2px near-white rim cuts the letter off the busy 3D wall behind it, a wide
-   soft glow lifts the black type off the paper, and a faint warm drop keeps the
-   thin gold kicker from dissolving into the beige. */
-.hp-kick{color:#7d5820;text-shadow:0 0 2px rgba(255,253,248,.98),0 0 10px rgba(255,253,248,.95),0 0 22px rgba(255,253,248,.85),0 1px 2px rgba(44,32,18,.55)}   /* 5.18:1 on the HOME paper — the global --gilt (3.22:1) failed AA for 0.68rem */
-.hp-name{color:#241e18;text-shadow:0 0 2px rgba(255,253,248,.98),0 0 18px rgba(255,253,248,.98),0 0 46px rgba(255,253,248,.92),0 2px 5px rgba(30,24,18,.18)}
-.hp-lede{color:#3c3830;text-shadow:0 0 2px rgba(255,253,248,.98),0 0 14px rgba(255,253,248,.98),0 0 34px rgba(255,253,248,.9),0 1px 3px rgba(38,30,20,.4)}
-.hp-rule{background:rgba(42,35,28,.4)}
-.hp-meta{color:#3c3830;text-shadow:0 0 2px rgba(255,253,248,.98),0 0 10px rgba(255,253,248,.95),0 1px 2px rgba(44,32,18,.5)}
-.hint{color:#7a6a55}
+/* ---------- 1. the whole body of work, on one screen ---------- */
+.hero{position:relative;min-height:100svh;display:flex;flex-direction:column;justify-content:center;
+  padding:96px 3vw 70px;background:radial-gradient(120% 90% at 50% 0%,#1b1713 0%,var(--espresso) 62%)}
+.hero-head{display:flex;justify-content:space-between;align-items:flex-end;gap:2rem;padding:0 1.2vw 22px;
+  color:var(--sand);font-family:var(--sans)}
+.hero-head h1{margin:0;font-family:var(--serif);font-weight:300;font-size:clamp(1.9rem,4.4vw,3.4rem);
+  line-height:1.02;letter-spacing:-.01em}
+.hero-head h1 em{font-style:italic;color:#d9c9ae}
+.hero-meta{text-align:right;font-size:.66rem;letter-spacing:.26em;text-transform:uppercase;color:var(--mute);line-height:1.9}
+.mosaic{display:grid;grid-template-columns:repeat(6,1fr);grid-template-rows:repeat(3,1fr);gap:5px;
+  height:min(64svh,620px);opacity:0}
+.tile{position:relative;margin:0;overflow:hidden;background:#1d1916;opacity:0;transform:translateY(14px) scale(.97);
+  transition:opacity .9s var(--ease),transform 1.1s var(--ease);transition-delay:calc(var(--i) * 38ms)}
+.tile img{width:100%;height:100%;object-fit:cover;filter:saturate(.94) brightness(.9);
+  transition:transform 1.2s var(--ease),filter .6s var(--ease)}
+.tile:hover img{transform:scale(1.06);filter:saturate(1.02) brightness(1)}
+.tile figcaption{position:absolute;inset:auto 0 0 0;display:flex;align-items:baseline;gap:.5rem;
+  padding:9px 11px;font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;color:var(--sand);
+  background:linear-gradient(to top,rgba(8,7,6,.82),rgba(8,7,6,0));
+  opacity:0;transform:translateY(6px);transition:opacity .45s var(--ease),transform .45s var(--ease)}
+.tile:hover figcaption,.tile:focus-within figcaption{opacity:1;transform:none}
+.tile .tn{color:#c9a97f;font-weight:400}
+.tile .tt{letter-spacing:.1em}
+.ready .mosaic{opacity:1}
+.ready .tile{opacity:1;transform:none}
+.hero-cue{display:flex;align-items:center;gap:.7rem;justify-content:center;margin-top:26px;
+  color:var(--mute);font-size:.6rem;letter-spacing:.3em;text-transform:uppercase}
+.hero-cue i{display:block;width:1px;height:34px;background:linear-gradient(to bottom,transparent,var(--mute));
+  animation:cue 2.4s var(--ease) infinite}
+@keyframes cue{0%{transform:scaleY(.2);transform-origin:top;opacity:0}40%{opacity:1}100%{transform:scaleY(1);transform-origin:top;opacity:0}}
+@media (max-width:900px){
+  .mosaic{grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(6,1fr);height:min(60svh,520px)}
+  .hero-head{flex-direction:column;align-items:flex-start;gap:.6rem}
+  .hero-meta{text-align:left}
+}
 
+/* ---------- 2. one plate at a time ---------- */
+.plates{background:var(--espresso-2);color:var(--sand)}
+.plate{min-height:100svh;display:grid;grid-template-columns:1.12fr .88fr;align-items:center;
+  align-content:center;gap:clamp(26px,4.5vw,74px);padding:11vh 6vw;position:relative}
+.plate+.plate{border-top:1px solid rgba(242,238,228,.06)}
+.pl-media{position:relative;overflow:visible;border-radius:0;background:transparent;
+  display:flex;align-items:center;justify-content:center}
+.pl-media img{width:100%;height:min(72svh,720px);object-fit:contain;will-change:transform,opacity;
+  filter:drop-shadow(0 24px 50px rgba(0,0,0,.78))}
+.pl-text{max-width:46ch}
+.pl-kick{margin:0 0 14px;font-size:.62rem;letter-spacing:.34em;text-transform:uppercase;color:#c9a97f}
+.pl-kick span{color:var(--mute)}
+.pl-title{margin:0 0 12px;font-family:var(--serif);font-weight:300;font-size:clamp(2rem,4.6vw,3.6rem);
+  line-height:1.03;letter-spacing:-.015em}
+.pl-med{margin:0 0 22px;font-size:.7rem;letter-spacing:.22em;text-transform:uppercase;color:var(--mute)}
+.pl-blurb{margin:0;font-family:var(--serif);font-size:clamp(1.05rem,1.7vw,1.35rem);line-height:1.62;color:#ded6c7;font-weight:300}
+.pl-media, .pl-text{opacity:0;transition:opacity .9s var(--ease),transform 1s var(--ease)}
+.pl-media{transform:translateY(18px) scale(.985)}
+.pl-text{transform:translateY(26px)}
+.plate.in .pl-media,.plate.in .pl-text{opacity:1;transform:none}
+@media (max-width:860px){
+  .plate{grid-template-columns:1fr;gap:22px;padding:10vh 7vw;align-content:center}
+  .pl-media img{height:min(46svh,420px)}
+}
+
+/* fixed counter, visible only while the plates are on screen */
+#counter{position:fixed;left:34px;bottom:28px;z-index:55;display:flex;align-items:baseline;gap:.5rem;
+  font-size:.62rem;letter-spacing:.24em;text-transform:uppercase;color:var(--sand);
+  opacity:0;transform:translateY(8px);transition:opacity .5s var(--ease),transform .5s var(--ease);pointer-events:none}
+#counter.on{opacity:.85;transform:none}
+#counter b{font-family:var(--serif);font-size:1.5rem;font-weight:400;letter-spacing:0}
+#counter s{text-decoration:none;color:var(--mute)}
+@media (max-width:860px){#counter{left:18px;bottom:18px}}
+
+/* ---------- 3. journalism ---------- */
+.journal{background:var(--sand);color:var(--ink);padding:clamp(70px,11vh,130px) 6vw}
+.sec-head{display:flex;justify-content:space-between;align-items:flex-end;gap:2rem;
+  border-bottom:1px solid var(--line);padding-bottom:26px;margin-bottom:clamp(34px,6vh,72px)}
+.sec-head .kicker{font-size:.62rem;letter-spacing:.32em;text-transform:uppercase;color:var(--accent);margin:0 0 12px}
+.sec-head h2{margin:0;font-family:var(--serif);font-weight:300;font-size:clamp(2.1rem,5vw,4rem);line-height:1;letter-spacing:-.02em}
+.sec-head p{margin:0;max-width:34ch;font-size:.86rem;line-height:1.75;color:var(--soft)}
+@media (max-width:760px){.sec-head{flex-direction:column;align-items:flex-start;gap:14px}}
+.clips{display:grid;gap:clamp(28px,5vh,58px)}
+.clip{display:grid;grid-template-columns:1.02fr .98fr;gap:clamp(20px,3.4vw,52px);align-items:center;
+  padding-bottom:clamp(28px,5vh,58px);border-bottom:1px solid var(--line);
+  opacity:0;transform:translateY(30px);transition:opacity .9s var(--ease),transform 1s var(--ease)}
+.clip:last-child{border-bottom:0;padding-bottom:0}
+.clip:nth-child(even) .clip-media{order:2}
+.clip.in{opacity:1;transform:none}
+.clip-media{overflow:hidden;background:var(--sand-2);aspect-ratio:4/3}
+.clip-media img{width:100%;height:100%;object-fit:cover;transition:transform 1.4s var(--ease)}
+.clip:hover .clip-media img{transform:scale(1.04)}
+.clip-meta{display:flex;align-items:center;gap:.7rem;margin:0 0 14px;
+  font-size:.62rem;letter-spacing:.22em;text-transform:uppercase;color:var(--mute)}
+.clip-meta .cdot{width:3px;height:3px;border-radius:50%;background:var(--accent);display:block}
+.clip h3{margin:0 0 16px;font-family:var(--serif);font-weight:400;font-size:clamp(1.3rem,2.3vw,1.95rem);line-height:1.22}
+.clip blockquote{margin:0 0 18px;padding-left:16px;border-left:2px solid var(--accent);
+  font-family:var(--serif);font-style:italic;font-size:1.02rem;line-height:1.6;color:var(--soft)}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
+.tg{font-size:.56rem;letter-spacing:.18em;text-transform:uppercase;color:var(--soft);
+  border:1px solid var(--line);border-radius:99px;padding:4px 9px}
+.clip-go{display:inline-flex;align-items:center;gap:.5rem;font-size:.64rem;letter-spacing:.24em;
+  text-transform:uppercase;color:var(--accent)}
+.clip-go::after{content:"";width:22px;height:1px;background:var(--accent);transition:width .4s var(--ease)}
+.clip:hover .clip-go::after{width:34px}
+@media (max-width:820px){
+  .clip{grid-template-columns:1fr;gap:18px}
+  .clip:nth-child(even) .clip-media{order:0}
+}
+
+/* ---------- 4. cultural journeys ---------- */
+.journeys{background:var(--sand-2);color:var(--ink);padding:clamp(70px,11vh,130px) 6vw}
+.jrs{display:grid;gap:clamp(34px,6vh,74px)}
+.jr{display:grid;grid-template-columns:.9fr 1.1fr;gap:clamp(20px,3.4vw,52px);align-items:center;
+  opacity:0;transform:translateY(34px);transition:opacity .9s var(--ease),transform 1s var(--ease)}
+.jr.in{opacity:1;transform:none}
+.jr-cover{position:relative;overflow:hidden;aspect-ratio:5/4;background:#d8d0c0}
+.jr-cover img{width:100%;height:100%;object-fit:cover;transition:transform 1.4s var(--ease)}
+.jr:hover .jr-cover img{transform:scale(1.035)}
+.jr-count{position:absolute;left:0;bottom:0;padding:7px 12px;background:rgba(16,14,12,.72);color:var(--sand);
+  font-size:.56rem;letter-spacing:.2em;text-transform:uppercase}
+.jr h3{margin:0 0 14px;font-family:var(--serif);font-weight:400;font-size:clamp(1.35rem,2.5vw,2.1rem);line-height:1.16}
+.jr-story{margin:0 0 18px;font-size:.9rem;line-height:1.8;color:var(--soft);max-width:52ch}
+.jr-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.jr-strip img{width:100%;aspect-ratio:1;object-fit:cover;filter:saturate(.92);transition:filter .4s}
+.jr-strip img:hover{filter:saturate(1.05)}
+@media (max-width:820px){
+  .jr{grid-template-columns:1fr;gap:18px}
+  .jr-cover{aspect-ratio:16/10}
+}
+
+/* ---------- 5. extracurricular ---------- */
+.extra{background:var(--espresso);color:var(--sand);padding:clamp(70px,11vh,130px) 6vw}
+.extra .sec-head{border-bottom-color:var(--line-d)}
+.extra .sec-head h2{color:var(--sand)}
+.extra .sec-head p{color:var(--mute)}
+.ex-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:clamp(26px,4vw,64px)}
+.ex-block{opacity:0;transform:translateY(26px);transition:opacity .9s var(--ease),transform 1s var(--ease)}
+.ex-block.in{opacity:1;transform:none}
+.ex-block h3{margin:0 0 6px;font-family:var(--serif);font-weight:400;font-size:clamp(1.3rem,2.2vw,1.8rem)}
+.ex-block .sub{margin:0 0 20px;font-size:.6rem;letter-spacing:.26em;text-transform:uppercase;color:#c9a97f}
+.record{border:1px solid var(--line-d);padding:22px}
+.record h4{margin:0 0 12px;font-family:var(--serif);font-weight:400;font-size:1.12rem;line-height:1.4;color:var(--sand)}
+.facts{display:grid;grid-template-columns:1fr 1fr;gap:16px 20px;margin:18px 0 0}
+.facts div{border-top:1px solid var(--line-d);padding-top:8px}
+.facts dt{font-size:.55rem;letter-spacing:.2em;text-transform:uppercase;color:var(--mute);margin-bottom:5px}
+.facts dd{margin:0;font-size:.86rem;color:var(--sand)}
+.note-line{margin:18px 0 0;font-size:.78rem;line-height:1.8;color:#a99f8e}
+.ledger{width:100%;border-collapse:collapse;font-size:.8rem}
+.ledger caption{caption-side:top;text-align:left;font-size:.55rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--mute);padding-bottom:10px}
+.ledger th{text-align:left;font-weight:400;font-size:.55rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--mute);padding:0 0 9px;border-bottom:1px solid var(--line-d)}
+.ledger td{padding:9px 0;border-bottom:1px solid rgba(242,238,228,.07);color:#d7cfc1;vertical-align:top;line-height:1.5}
+.ledger td:first-child{white-space:nowrap;color:var(--mute);width:1%;padding-right:14px}
+.ledger td b{font-weight:400;color:var(--sand)}
+.ex-list{list-style:none;margin:0;padding:0;font-size:.82rem}
+.ex-list li{display:grid;grid-template-columns:64px 1fr;gap:12px;padding:8px 0;
+  border-bottom:1px solid rgba(242,238,228,.07);line-height:1.6}
+.ex-list li span:first-child{color:var(--mute);white-space:nowrap;font-size:.7rem;letter-spacing:.06em;padding-top:2px}
+.ex-list b{font-weight:400;color:var(--sand)}
+@media (max-width:860px){.ex-grid{grid-template-columns:1fr}}
+
+/* ---------- footer ---------- */
+footer{background:var(--espresso-2);color:var(--mute);padding:56px 6vw 44px;border-top:1px solid var(--line-d)}
+.f-top{display:flex;justify-content:space-between;flex-wrap:wrap;gap:20px;align-items:baseline}
+.f-brand{font-family:var(--serif);font-size:1.1rem;letter-spacing:.34em;text-transform:uppercase;color:var(--sand)}
+.f-note{font-size:.68rem;line-height:1.9;letter-spacing:.04em;max-width:52ch}
+.f-note a{color:#c9a97f;border-bottom:1px solid rgba(201,169,127,.4)}
 </style>
-<script type="importmap">{"imports":{"three":"./museum/vendor/three.module.min.js"}}</script>
 </head>
-<body>
+<body id="top">
+<div id="bar"></div>
 
-<iframe class="navframe" id="navFrame" src="nav.html" title="site navigation"></iframe>
+<header id="hdr">
+  <div class="brand"><a href="#top">YEONSU AHN</a></div>
+  <nav class="dnav" id="nav">
+    <a href="#top" data-sec="hero">Home</a>
+    <a href="#gallery" data-sec="gallery">Art Gallery</a>
+    <a href="#journeys" data-sec="journeys">Cultural Journeys</a>
+    <a href="#journalism" data-sec="journalism">Journalism</a>
+    <a href="#extra" data-sec="extra">Extracurricular</a>
+  </nav>
+</header>
 
-<canvas class="webgl"></canvas>
-
-<div class="tourcard" id="card">
-  <span class="pl" id="tPl">Eighteen plates · Yeonsu Ahn · original work</span>
-  <div class="date" id="tDate">The Studio Wall</div>
-  <div class="med" id="tMed">charcoal · graphite · oil · mixed media</div>
-  <p id="tNote"></p>
-  <p class="ko" id="tKo"></p>
-</div>
-
-<div class="controls">
-  <button class="ctl" id="prevB" aria-label="previous">←</button>
-  <button class="ctl" id="nextB" aria-label="next">→</button>
-</div>
-<div class="hint" id="hint">press → · wheel · tap a frame to visit · Esc for the room</div>
-
-<div class="wallpage" id="wallJ">
-  <div class="wp-card">
-    <iframe title="Cultural Journeys" loading="lazy"></iframe>
+<!-- 1. every work on one screen, in order -->
+<section class="hero" id="gallery" data-theme="dark">
+  <div class="hero-head">
+    <h1>Eighteen works,<br><em>in one room.</em></h1>
+    <div class="hero-meta">Drawing · Painting · Installation<br>2023 — 2026</div>
   </div>
-</div>
-<div class="wallpage" id="wallP">
-  <div class="wp-card">
-    <iframe title="Press" loading="lazy"></iframe>
+  <div class="mosaic" id="mosaic">
+<figure class="tile" style="--i:1" data-reveal>
+  <img src="museum/art/_DSF7519.jpg" alt="Kept Warm" loading="lazy" decoding="async">
+  <figcaption><span class="tn">01</span><span class="tt">Kept Warm</span></figcaption>
+</figure>
+<figure class="tile" style="--i:2" data-reveal>
+  <img src="museum/art/_DSF7521.jpg" alt="Leaves by the Bed" loading="lazy" decoding="async">
+  <figcaption><span class="tn">02</span><span class="tt">Leaves by the Bed</span></figcaption>
+</figure>
+<figure class="tile" style="--i:3" data-reveal>
+  <img src="museum/art/_DSF7523.jpg" alt="City from Above" loading="lazy" decoding="async">
+  <figcaption><span class="tn">03</span><span class="tt">City from Above</span></figcaption>
+</figure>
+<figure class="tile" style="--i:4" data-reveal>
+  <img src="museum/art/_DSF7525.jpg" alt="Turned Over" loading="lazy" decoding="async">
+  <figcaption><span class="tn">04</span><span class="tt">Turned Over</span></figcaption>
+</figure>
+<figure class="tile" style="--i:5" data-reveal>
+  <img src="museum/art/_DSF7527.jpg" alt="What the Day Left" loading="lazy" decoding="async">
+  <figcaption><span class="tn">05</span><span class="tt">What the Day Left</span></figcaption>
+</figure>
+<figure class="tile" style="--i:6" data-reveal>
+  <img src="museum/art/_DSF7535.jpg" alt="Who Is Listening" loading="lazy" decoding="async">
+  <figcaption><span class="tn">06</span><span class="tt">Who Is Listening</span></figcaption>
+</figure>
+<figure class="tile" style="--i:7" data-reveal>
+  <img src="museum/art/_DSF7543.jpg" alt="Covered Valley" loading="lazy" decoding="async">
+  <figcaption><span class="tn">07</span><span class="tt">Covered Valley</span></figcaption>
+</figure>
+<figure class="tile" style="--i:8" data-reveal>
+  <img src="museum/art/_DSF7545.jpg" alt="Held Together" loading="lazy" decoding="async">
+  <figcaption><span class="tn">08</span><span class="tt">Held Together</span></figcaption>
+</figure>
+<figure class="tile" style="--i:9" data-reveal>
+  <img src="museum/art/_DSF7549.jpg" alt="Under the Ice" loading="lazy" decoding="async">
+  <figcaption><span class="tn">09</span><span class="tt">Under the Ice</span></figcaption>
+</figure>
+<figure class="tile" style="--i:10" data-reveal>
+  <img src="museum/art/_DSF7551.jpg" alt="The Shell" loading="lazy" decoding="async">
+  <figcaption><span class="tn">10</span><span class="tt">The Shell</span></figcaption>
+</figure>
+<figure class="tile" style="--i:11" data-reveal>
+  <img src="museum/art/_DSF7555.jpg" alt="Another Sky" loading="lazy" decoding="async">
+  <figcaption><span class="tn">11</span><span class="tt">Another Sky</span></figcaption>
+</figure>
+<figure class="tile" style="--i:12" data-reveal>
+  <img src="museum/art/_DSF7559.jpg" alt="Black Panels, Fish" loading="lazy" decoding="async">
+  <figcaption><span class="tn">12</span><span class="tt">Black Panels, Fish</span></figcaption>
+</figure>
+<figure class="tile" style="--i:13" data-reveal>
+  <img src="museum/art/_DSF7566.jpg" alt="Roots for a Head" loading="lazy" decoding="async">
+  <figcaption><span class="tn">13</span><span class="tt">Roots for a Head</span></figcaption>
+</figure>
+<figure class="tile" style="--i:14" data-reveal>
+  <img src="museum/art/_DSF7572.jpg" alt="Sea Inside a Shell" loading="lazy" decoding="async">
+  <figcaption><span class="tn">14</span><span class="tt">Sea Inside a Shell</span></figcaption>
+</figure>
+<figure class="tile" style="--i:15" data-reveal>
+  <img src="museum/art/_DSF7580.jpg" alt="Standing, Lying" loading="lazy" decoding="async">
+  <figcaption><span class="tn">15</span><span class="tt">Standing, Lying</span></figcaption>
+</figure>
+<figure class="tile" style="--i:16" data-reveal>
+  <img src="museum/art/_DSF7589.jpg" alt="One Line, Many Bodies" loading="lazy" decoding="async">
+  <figcaption><span class="tn">16</span><span class="tt">One Line, Many Bodies</span></figcaption>
+</figure>
+<figure class="tile" style="--i:17" data-reveal>
+  <img src="photos/art/performance/again_01.jpg" alt="Again" loading="lazy" decoding="async">
+  <figcaption><span class="tn">17</span><span class="tt">Again</span></figcaption>
+</figure>
+<figure class="tile" style="--i:18" data-reveal>
+  <img src="photos/art/performance/release_01.jpg" alt="Release" loading="lazy" decoding="async">
+  <figcaption><span class="tn">18</span><span class="tt">Release</span></figcaption>
+</figure>
   </div>
-</div>
-<div class="wallpage" id="wallE">
-  <div class="wp-card">
-    <iframe title="Extracurricular record" loading="lazy"></iframe>
+  <div class="hero-cue">Scroll <i></i></div>
+</section>
+
+<!-- 2. plate by plate -->
+<div class="plates" id="plates">
+<section class="plate" id="pl01" data-plate data-idx="1">
+  <div class="pl-media"><img src="museum/art/_DSF7519.jpg" alt="Kept Warm" loading="lazy" decoding="async"></div>
+  <div class="pl-text">
+    <p class="pl-kick">Plate 01 <span>/ 18</span></p>
+    <h3 class="pl-title">Kept Warm</h3>
+    <p class="pl-med">graphite on paper</p>
+    <p class="pl-blurb">A snow leopard and a hooded child keep the same silence; a cupped hand guards the last warm thing.</p>
   </div>
+</section>
+<section class="plate" id="pl02" data-plate data-idx="2">
+  <div class="pl-media"><img src="museum/art/_DSF7521.jpg" alt="Leaves by the Bed" loading="lazy" decoding="async"></div>
+  <div class="pl-text">
+    <p class="pl-kick">Plate 02 <span>/ 18</span></p>
+    <h3 class="pl-title">Leaves by the Bed</h3>
+    <p class="pl-med">graphite on paper</p>
+    <p class="pl-blurb">A drip stand waits by a bed while the leaves outside burn green, asking nothing of the body.</p>
+  </div>
+</section>
+<section class="plate" id="pl03" data-plate data-idx="3">
+  <div class="pl-media"><img src="museum/art/_DSF7523.jpg" alt="City from Above" loading="lazy" decoding="async"></div>
+  <div class="pl-text">
+    <p class="pl-kick">Plate 03 <span>/ 18</span></p>
+    <h3 class="pl-title">City from Above</h3>
+    <p class="pl-med">acrylic on canvas</p>
+    <p class="pl-blurb">A city laid out the way a child arranges sweets — trees kept in the seams, no one in sight.</p>
+  </div>
+</section>
+<section class="plate" id="pl04" data-plate data-idx="4">
+  <div class="pl-media"><img src="museum/art/_DSF7525.jpg" alt="Turned Over" loading="lazy" decoding="async"></div>
+  <div class="pl-text">
+    <p class="pl-kick">Plate 04 <span>/ 18</span></p>
+    <h3 class="pl-title">Turned Over</h3>
+    <p class="pl-med">oil on canvas</p>
+    <p class="pl-blurb">Head-down under the fall, lilies in her arms: water is the one place a body need not hold itself.</p>
+  </div>
+</section>
+<section class="plate" id="pl05" data-plate data-idx="5">
+  <div class="pl-media"><img src="museum/art/_DSF7527.jpg" alt="What the Day Left" loading="lazy" decoding="async"></div>
+  <div class="pl-text">
+    <p class="pl-kick">Plate 05 <span>/ 18</span></p>
+    <h3 class="pl-title">What the Day Left</h3>
+    <p class="pl-med">oil on canvas</p>
+    <p class="pl-blurb">A school day emptied onto a bed; every object still holding the shape of the hand.</p>
+  </div>
+</section>
+<section class="plate" id="pl06" data-plate data-idx="6">
+  <div class="pl-media"><img src="museum/art/_DSF7535.jpg" alt="Who Is Listening" loading="lazy" decoding="async"></div>
+  <div class="pl-text">
+    <p class="pl-kick">Plate 06 <span>/ 18</span></p>
+    <h3 class="pl-title">Who Is Listening</h3>
+    <p class="pl-med">acrylic on panel</p>
+    <p class="pl-blurb">Headphones over a face drawn twice — one looking out, one hearing from further away.</p>
+  </div>
+</section>
+<section class="plate" id="pl07" data-plate data-idx="7">
+  <div class="pl-media"><img src="museum/art/_DSF7543.jpg" alt="Covered Valley" loading="lazy" decoding="async"></div>
+  <div class="pl-text">
+    <p class="pl-kick">Plate 07 <span>/ 18</span></p>
+    <h3 class="pl-title">Covered Valley</h3>
+    <p class="pl-med">acrylic on canvas</p>
+    <p class="pl-blurb">Four black panels laid over the valley, as if the view had agreed to keep part of itself hidden.</p>
+  </div>
+</section>
+<section class="plate" id="pl08" data-plate data-idx="8">
+  <div class="pl-media"><img src="museum/art/_DSF7545.jpg" alt="Held Together" loading="lazy" decoding="async"></div>
+  <div class="pl-text">
+    <p class="pl-kick">Plate 08 <span>/ 18</span></p>
+    <h3 class="pl-title">Held Together</h3>
+    <p class="pl-med">acrylic and collage</p>
+    <p class="pl-blurb">Curled under water, flowers drifting through a body drawn thin enough to show the frame behind it.</p>
+  </div>
+</section>
+<section class="plate" id="pl09" data-plate data-idx="9">
+  <div class="pl-media"><img src="museum/art/_DSF7549.jpg" alt="Under the Ice" loading="lazy" decoding="async"></div>
+  <div class="pl-text">
+    <p class="pl-kick">Plate 09 <span>/ 18</span></p>
+    <h3 class="pl-title">Under the Ice</h3>
+    <p class="pl-med">oil on canvas</p>
+    <p class="pl-blurb">A column crosses the frozen ground; below it the reflections hang down like dripping roots.</p>
+  </div>
+</section>
+<section class="plate" id="pl10" data-plate data-idx="10">
+  <div class="pl-media"><img src="museum/art/_DSF7551.jpg" alt="The Shell" loading="lazy" decoding="async"></div>
+  <div class="pl-text">
+    <p class="pl-kick">Plate 10 <span>/ 18</span></p>
+    <h3 class="pl-title">The Shell</h3>
+    <p class="pl-med">oil on canvas</p>
+    <p class="pl-blurb">At dusk a girl lies in the sand, a turtle\u2019s shell strapped to her back, waiting to come back different.</p>
+  </div>
+</section>
+<section class="plate" id="pl11" data-plate data-idx="11">
+  <div class="pl-media"><img src="museum/art/_DSF7555.jpg" alt="Another Sky" loading="lazy" decoding="async"></div>
+  <div class="pl-text">
+    <p class="pl-kick">Plate 11 <span>/ 18</span></p>
+    <h3 class="pl-title">Another Sky</h3>
+    <p class="pl-med">acrylic and gouache</p>
+    <p class="pl-blurb">Pink air, a blue stair climbing to a green door, fish swimming where the sky should be.</p>
+  </div>
+</section>
+<section class="plate" id="pl12" data-plate data-idx="12">
+  <div class="pl-media"><img src="museum/art/_DSF7559.jpg" alt="Black Panels, Fish" loading="lazy" decoding="async"></div>
+  <div class="pl-text">
+    <p class="pl-kick">Plate 12 <span>/ 18</span></p>
+    <h3 class="pl-title">Black Panels, Fish</h3>
+    <p class="pl-med">mixed media on panel</p>
+    <p class="pl-blurb">Two fighting fish, a spiral worked almost to a shell, and stones — each in its own square of dark.</p>
+  </div>
+</section>
+<section class="plate" id="pl13" data-plate data-idx="13">
+  <div class="pl-media"><img src="museum/art/_DSF7566.jpg" alt="Roots for a Head" loading="lazy" decoding="async"></div>
+  <div class="pl-text">
+    <p class="pl-kick">Plate 13 <span>/ 18</span></p>
+    <h3 class="pl-title">Roots for a Head</h3>
+    <p class="pl-med">installation — drawing, glass, red twigs</p>
+    <p class="pl-blurb">A head become a cave of hanging roots; beside it, under water, red twigs still drinking.</p>
+  </div>
+</section>
+<section class="plate" id="pl14" data-plate data-idx="14">
+  <div class="pl-media"><img src="museum/art/_DSF7572.jpg" alt="Sea Inside a Shell" loading="lazy" decoding="async"></div>
+  <div class="pl-text">
+    <p class="pl-kick">Plate 14 <span>/ 18</span></p>
+    <h3 class="pl-title">Sea Inside a Shell</h3>
+    <p class="pl-med">installation — diorama with painted sea</p>
+    <p class="pl-blurb">A painted sunset standing out of real sand; inside a turtle\u2019s shell, one lamp, one desk, one figure.</p>
+  </div>
+</section>
+<section class="plate" id="pl15" data-plate data-idx="15">
+  <div class="pl-media"><img src="museum/art/_DSF7580.jpg" alt="Standing, Lying" loading="lazy" decoding="async"></div>
+  <div class="pl-text">
+    <p class="pl-kick">Plate 15 <span>/ 18</span></p>
+    <h3 class="pl-title">Standing, Lying</h3>
+    <p class="pl-med">installation — mural and figures</p>
+    <p class="pl-blurb">One girl stands straight while two bodies lie below her — as if standing had to be paid for.</p>
+  </div>
+</section>
+<section class="plate" id="pl16" data-plate data-idx="16">
+  <div class="pl-media"><img src="museum/art/_DSF7589.jpg" alt="One Line, Many Bodies" loading="lazy" decoding="async"></div>
+  <div class="pl-text">
+    <p class="pl-kick">Plate 16 <span>/ 18</span></p>
+    <h3 class="pl-title">One Line, Many Bodies</h3>
+    <p class="pl-med">drawing — ink and watercolour</p>
+    <p class="pl-blurb">One red line that never lifts: profiles, shoulders, hands — and a torso drawn from behind, no head.</p>
+  </div>
+</section>
+<section class="plate" id="pl17" data-plate data-idx="17">
+  <div class="pl-media"><img src="photos/art/performance/again_01.jpg" alt="Again" loading="lazy" decoding="async"></div>
+  <div class="pl-text">
+    <p class="pl-kick">Plate 17 <span>/ 18</span></p>
+    <h3 class="pl-title">Again</h3>
+    <p class="pl-med">performance — three frames, replayed</p>
+    <p class="pl-blurb">Three takes of one held moment: the invitation has to be made again, each time from the start.</p>
+  </div>
+</section>
+<section class="plate" id="pl18" data-plate data-idx="18">
+  <div class="pl-media"><img src="photos/art/performance/release_01.jpg" alt="Release" loading="lazy" decoding="async"></div>
+  <div class="pl-text">
+    <p class="pl-kick">Plate 18 <span>/ 18</span></p>
+    <h3 class="pl-title">Release</h3>
+    <p class="pl-med">performance — five frames, replayed</p>
+    <p class="pl-blurb">The brace that held her spine is unlaced until only a laugh is left — then broken into a heart, beside the hammer.</p>
+  </div>
+</section>
 </div>
-<div class="homepage" id="wallH">
-  <div class="hp-inner">
-    <div class="hp-top">
-      <p class="hp-kick">Artist &amp; Scholar · 2018 &mdash; 2026</p>
-      <h1 class="hp-name">YEONSU AHN</h1>
+<div id="counter"><b id="cnum">01</b><s>/ 18</s></div>
+
+<!-- 3. cultural journeys -->
+<section class="journeys" id="journeys" data-theme="light">
+  <div class="sec-head">
+    <div>
+      <p class="kicker">Cultural Journeys</p>
+      <h2>Rooms worth travelling for.</h2>
     </div>
-    <p class="hp-lede">An eight-year record of drawing, looking, and wandering &mdash; assembled as a working archive for art-college admission. Every plate is an original; every journey is first-hand.</p>
-    <div class="hp-bottom">
-      <span class="hp-rule"></span>
-      <p class="hp-meta">Works · Exhibitions · Records &nbsp;—&nbsp; Student at Cheongshim International Academy, Class of 2026</p>
+    <p>Seventeen museum visits, photographed and written on site — what the work did, and what it was like to stand in front of it.</p>
+  </div>
+  <div class="jrs">
+<article class="jr" data-reveal>
+  <div class="jr-cover"><img src="photos/thumb/IMG_9941.jpg" alt="" loading="lazy" decoding="async">
+    <span class="jr-count">29 photographs</span></div>
+  <div class="jr-body">
+    <h3>1st Arrondissement, Paris (2023-09-22)</h3>
+    <p class="jr-story">The historical heart of Paris, home to the Louvre Museum and the Tuileries Garden. A testament to classical French art and architecture.</p>
+    <div class="jr-strip"><img src="photos/thumb/IMG_0182.jpg" alt="" loading="lazy" decoding="async"><img src="photos/thumb/IMG_4795.jpg" alt="" loading="lazy" decoding="async"><img src="photos/thumb/IMG_0197.jpg" alt="" loading="lazy" decoding="async"><img src="photos/thumb/IMG_0202.jpg" alt="" loading="lazy" decoding="async"></div>
+  </div>
+</article>
+<article class="jr" data-reveal>
+  <div class="jr-cover"><img src="photos/thumb/IMG_6363.jpg" alt="" loading="lazy" decoding="async">
+    <span class="jr-count">1 photographs</span></div>
+  <div class="jr-body">
+    <h3>Quartier de Clignancourt, Paris (2023-09-24)</h3>
+    <p class="jr-story">Includes the vibrant and artistic Montmartre area, historically a gathering place for world-renowned artists and bohemian culture.</p>
+    
+  </div>
+</article>
+<article class="jr" data-reveal>
+  <div class="jr-cover"><img src="photos/thumb/IMG_4970.jpg" alt="" loading="lazy" decoding="async">
+    <span class="jr-count">7 photographs</span></div>
+  <div class="jr-body">
+    <h3>Chaillot, Paris (2023-09-25)</h3>
+    <p class="jr-story">Renowned for its monumental Palais de Chaillot and the Trocadéro gardens, offering some of the most iconic views of the Eiffel Tower.</p>
+    <div class="jr-strip"><img src="photos/thumb/IMG_7113.jpg" alt="" loading="lazy" decoding="async"><img src="photos/thumb/IMG_7119.jpg" alt="" loading="lazy" decoding="async"><img src="photos/thumb/IMG_7175.jpg" alt="" loading="lazy" decoding="async"><img src="photos/thumb/IMG_7178.jpg" alt="" loading="lazy" decoding="async"></div>
+  </div>
+</article>
+<article class="jr" data-reveal>
+  <div class="jr-cover"><img src="photos/thumb/IMG_6688.jpg" alt="" loading="lazy" decoding="async">
+    <span class="jr-count">1 photographs</span></div>
+  <div class="jr-body">
+    <h3>Place d&#x27;Armes, Versailles (2023-09-27)</h3>
+    <p class="jr-story">The grand entrance to the Palace of Versailles, a symbol of the absolute monarchy of the Ancien Régime and unparalleled opulence.</p>
+    
+  </div>
+</article>
+<article class="jr" data-reveal>
+  <div class="jr-cover"><img src="photos/thumb/IMG_4744.jpg" alt="" loading="lazy" decoding="async">
+    <span class="jr-count">9 photographs</span></div>
+  <div class="jr-body">
+    <h3>KG Landstraße, Vienna (2024-02-06)</h3>
+    <p class="jr-story">Home to the stunning Belvedere Palace, showcasing masterpieces of Austrian art including Gustav Klimt&#x27;s &#x27;The Kiss&#x27;.</p>
+    <div class="jr-strip"><img src="photos/thumb/IMG_4852.jpg" alt="" loading="lazy" decoding="async"><img src="photos/thumb/IMG_4908.jpg" alt="" loading="lazy" decoding="async"><img src="photos/thumb/IMG_4926.jpg" alt="" loading="lazy" decoding="async"><img src="photos/thumb/IMG_5225.jpg" alt="" loading="lazy" decoding="async"></div>
+  </div>
+</article>
+<article class="jr" data-reveal>
+  <div class="jr-cover"><img src="photos/thumb/IMG_6157.jpg" alt="" loading="lazy" decoding="async">
+    <span class="jr-count">5 photographs</span></div>
+  <div class="jr-body">
+    <h3>KG Schönbrunn, Vienna (2024-02-08)</h3>
+    <p class="jr-story">The magnificent Schönbrunn Palace and its expansive gardens, the former summer residence of the Habsburg rulers.</p>
+    <div class="jr-strip"><img src="photos/thumb/IMG_4373.jpg" alt="" loading="lazy" decoding="async"><img src="photos/thumb/IMG_6179.jpg" alt="" loading="lazy" decoding="async"><img src="photos/thumb/IMG_6199.jpg" alt="" loading="lazy" decoding="async"><img src="photos/thumb/IMG_4428.jpg" alt="" loading="lazy" decoding="async"></div>
+  </div>
+</article>
+<article class="jr" data-reveal>
+  <div class="jr-cover"><img src="photos/thumb/IMG_7666.jpg" alt="" loading="lazy" decoding="async">
+    <span class="jr-count">16 photographs</span></div>
+  <div class="jr-body">
+    <h3>Hotel Fontana, Rome (2024-07-12)</h3>
+    <p class="jr-story">Located right opposite the breathtaking Trevi Fountain, capturing the essence of Roman romance and Baroque artistry.</p>
+    <div class="jr-strip"><img src="photos/thumb/IMG_7695.jpg" alt="" loading="lazy" decoding="async"><img src="photos/thumb/IMG_7776.jpg" alt="" loading="lazy" decoding="async"><img src="photos/thumb/IMG_8052.jpg" alt="" loading="lazy" decoding="async"><img src="photos/thumb/IMG_8072.jpg" alt="" loading="lazy" decoding="async"></div>
+  </div>
+</article>
+<article class="jr" data-reveal>
+  <div class="jr-cover"><img src="photos/thumb/IMG_8107.jpg" alt="" loading="lazy" decoding="async">
+    <span class="jr-count">5 photographs</span></div>
+  <div class="jr-body">
+    <h3>Caffetteria, Rome (2024-07-13)</h3>
+    <p class="jr-story">Experiencing the authentic Italian coffee culture amidst the ancient streets and vibrant piazzas of Rome.</p>
+    <div class="jr-strip"><img src="photos/thumb/IMG_8120.jpg" alt="" loading="lazy" decoding="async"><img src="photos/thumb/IMG_8123.jpg" alt="" loading="lazy" decoding="async"><img src="photos/thumb/IMG_8124.jpg" alt="" loading="lazy" decoding="async"><img src="photos/thumb/IMG_8125.jpg" alt="" loading="lazy" decoding="async"></div>
+  </div>
+</article>
+<article class="jr" data-reveal>
+  <div class="jr-cover"><img src="photos/thumb/IMG_8748.jpg" alt="" loading="lazy" decoding="async">
+    <span class="jr-count">11 photographs</span></div>
+  <div class="jr-body">
+    <h3>Vatican Art Gallery, Rome (2024-07-15)</h3>
+    <p class="jr-story">Housing an immense collection of art amassed by the Catholic Church throughout the centuries, including works by Raphael and Caravaggio.</p>
+    <div class="jr-strip"><img src="photos/thumb/IMG_8765.jpg" alt="" loading="lazy" decoding="async"><img src="photos/thumb/IMG_3100.jpg" alt="" loading="lazy" decoding="async"><img src="photos/thumb/IMG_8772.jpg" alt="" loading="lazy" decoding="async"><img src="photos/thumb/IMG_8809.jpg" alt="" loading="lazy" decoding="async"></div>
+  </div>
+</article>
+<article class="jr" data-reveal>
+  <div class="jr-cover"><img src="photos/thumb/IMG_3477.jpg" alt="" loading="lazy" decoding="async">
+    <span class="jr-count">8 photographs</span></div>
+  <div class="jr-body">
+    <h3>Quartiere 1, Florence (2024-07-16)</h3>
+    <p class="jr-story">The historic center of Florence, the birthplace of the Renaissance, filled with masterpieces like the Duomo and the Uffizi Gallery.</p>
+    <div class="jr-strip"><img src="photos/thumb/IMG_3507.jpg" alt="" loading="lazy" decoding="async"><img src="photos/thumb/IMG_3816.jpg" alt="" loading="lazy" decoding="async"><img src="photos/thumb/IMG_9132.jpg" alt="" loading="lazy" decoding="async"><img src="photos/thumb/IMG_3961.jpg" alt="" loading="lazy" decoding="async"></div>
+  </div>
+</article>
+<article class="jr" data-reveal>
+  <div class="jr-cover"><img src="photos/thumb/IMG_4356.jpg" alt="" loading="lazy" decoding="async">
+    <span class="jr-count">6 photographs</span></div>
+  <div class="jr-body">
+    <h3>Santa Croce, Venice (2024-07-19)</h3>
+    <p class="jr-story">A quieter, more authentic part of Venice where the historical charm of the floating city remains untouched.</p>
+    <div class="jr-strip"><img src="photos/thumb/IMG_4809.jpg" alt="" loading="lazy" decoding="async"><img src="photos/thumb/IMG_4963.jpg" alt="" loading="lazy" decoding="async"><img src="photos/thumb/IMG_4969.jpg" alt="" loading="lazy" decoding="async"><img src="photos/thumb/IMG_4973.jpg" alt="" loading="lazy" decoding="async"></div>
+  </div>
+</article>
+<article class="jr" data-reveal>
+  <div class="jr-cover"><img src="photos/thumb/IMG_9864.jpg" alt="" loading="lazy" decoding="async">
+    <span class="jr-count">8 photographs</span></div>
+  <div class="jr-body">
+    <h3>Altstadt, Zurich (2024-07-24)</h3>
+    <p class="jr-story">The picturesque Old Town of Zurich, with its narrow cobblestone streets, medieval guilds, and stunning views of the Limmat river.</p>
+    <div class="jr-strip"><img src="photos/thumb/IMG_9872.jpg" alt="" loading="lazy" decoding="async"><img src="photos/thumb/IMG_5142.jpg" alt="" loading="lazy" decoding="async"><img src="photos/thumb/IMG_5154.jpg" alt="" loading="lazy" decoding="async"><img src="photos/thumb/IMG_5162.jpg" alt="" loading="lazy" decoding="async"></div>
+  </div>
+</article>
+<article class="jr" data-reveal>
+  <div class="jr-cover"><img src="photos/thumb/IMG_6817.jpg" alt="" loading="lazy" decoding="async">
+    <span class="jr-count">2 photographs</span></div>
+  <div class="jr-body">
+    <h3>New Town, Prague (2025-06-02)</h3>
+    <p class="jr-story">Founded by Charles IV in the 14th century, blending historical Gothic architecture with modern urban energy in the heart of Prague.</p>
+    <div class="jr-strip"><img src="photos/thumb/IMG_6853.jpg" alt="" loading="lazy" decoding="async"></div>
+  </div>
+</article>
+<article class="jr" data-reveal>
+  <div class="jr-cover"><img src="photos/thumb/IMG_6595.jpg" alt="" loading="lazy" decoding="async">
+    <span class="jr-count">9 photographs</span></div>
+  <div class="jr-body">
+    <h3>Hradčany, Prague (2025-06-02)</h3>
+    <p class="jr-story">The Castle District, dominating the city skyline and guarding centuries of Bohemian history within the walls of Prague Castle.</p>
+    <div class="jr-strip"><img src="photos/thumb/IMG_6628.jpg" alt="" loading="lazy" decoding="async"><img src="photos/thumb/IMG_6632.jpg" alt="" loading="lazy" decoding="async"><img src="photos/thumb/IMG_6634.jpg" alt="" loading="lazy" decoding="async"><img src="photos/thumb/IMG_6647.jpg" alt="" loading="lazy" decoding="async"></div>
+  </div>
+</article>
+<article class="jr" data-reveal>
+  <div class="jr-cover"><img src="photos/thumb/IMG_6911.jpg" alt="" loading="lazy" decoding="async">
+    <span class="jr-count">2 photographs</span></div>
+  <div class="jr-body">
+    <h3>Stubenviertel, Vienna (2025-06-03)</h3>
+    <p class="jr-story">A historic neighborhood within the Innere Stadt, characterized by its elegant aristocratic palaces and traditional Viennese charm.</p>
+    <div class="jr-strip"><img src="photos/thumb/IMG_6924.jpg" alt="" loading="lazy" decoding="async"></div>
+  </div>
+</article>
+<article class="jr" data-reveal>
+  <div class="jr-cover"><img src="photos/thumb/IMG_1609.jpg" alt="" loading="lazy" decoding="async">
+    <span class="jr-count">4 photographs</span></div>
+  <div class="jr-body">
+    <h3>夢洲, Osaka (2025-07-21)</h3>
+    <p class="jr-story">Yumeshima, an artificial island serving as a symbol of futuristic urban development and the site for Expo 2025.</p>
+    <div class="jr-strip"><img src="photos/thumb/IMG_1656.jpg" alt="" loading="lazy" decoding="async"><img src="photos/thumb/IMG_1657.jpg" alt="" loading="lazy" decoding="async"><img src="photos/thumb/IMG_1661.jpg" alt="" loading="lazy" decoding="async"></div>
+  </div>
+</article>
+<article class="jr" data-reveal>
+  <div class="jr-cover"><img src="photos/thumb/IMG_9212.jpg" alt="" loading="lazy" decoding="async">
+    <span class="jr-count">6 photographs</span></div>
+  <div class="jr-body">
+    <h3>Musée Jacquemart-André, Paris (2025-12-30)</h3>
+    <p class="jr-story">A private museum displaying an exquisite collection of art in a lavish 19th-century Parisian mansion.</p>
+    <div class="jr-strip"><img src="photos/thumb/IMG_9222.jpg" alt="" loading="lazy" decoding="async"><img src="photos/thumb/IMG_9264.jpg" alt="" loading="lazy" decoding="async"><img src="photos/thumb/IMG_9273.jpg" alt="" loading="lazy" decoding="async"><img src="photos/thumb/IMG_6812.jpg" alt="" loading="lazy" decoding="async"></div>
+  </div>
+</article>
+</div>
+</section>
+
+<!-- 4. journalism -->
+<section class="journal" id="journalism" data-theme="light">
+  <div class="sec-head">
+    <div>
+      <p class="kicker">Journalism</p>
+      <h2>Writing on art, for the record.</h2>
     </div>
+    <p>Eleven pieces as a student reporter for the Herald — exhibition reviews, artist interviews, and the questions a viewer asks in the room.</p>
+  </div>
+  <div class="clips">
+<a class="clip" href="https://www.heraldinsight.co.kr/news/articleView.html?idxno=6708" target="_blank" rel="noopener" data-reveal>
+  <div class="clip-media"><img src="https://cdn.heraldinsight.co.kr/news/photo/202609/6708_12475_4940.jpg" alt="Exhibition view — photograph by YEONSU AHN" loading="lazy" decoding="async"></div>
+  <div class="clip-body">
+    <p class="clip-meta"><span>Clipping 11 · Arts</span><span class="cdot"></span><span>2026-09-18</span></p>
+    <h3>KAWS’s Friends and Neighbors opens at Space K Seoul</h3>
+    <blockquote>“Two versions of the same beloved character locked in an argument neither one can win, which turns out to be the closest thing this show offers to a definition of what it means to live beside someone else.”</blockquote>
+    <div class="tags"><span class="tg">Space K Seoul</span><span class="tg">Jul 23 – Dec 27, 2026</span><span class="tg">14–20 new works</span></div>
+    <span class="clip-go">Read the original at Herald Insight</span>
+  </div>
+</a>
+<a class="clip" href="https://www.heraldinsight.co.kr/news/articleView.html?idxno=6631" target="_blank" rel="noopener" data-reveal>
+  <div class="clip-media"><img src="photos/press/6631.jpg" alt="Exhibition view — photograph by YEONSU AHN" loading="lazy" decoding="async"></div>
+  <div class="clip-body">
+    <p class="clip-meta"><span>Clipping 10 · Arts</span><span class="cdot"></span><span>2026-08-11</span></p>
+    <h3>“This Is (Not) Conceptual Art” is exhibited at MMCA Seoul</h3>
+    <blockquote>“The exhibition frames Korean conceptual art not as a repetition of Western dematerialization but as a set of responses shaped by the country’s own unique historical conditions. In an era saturated with capital and image, the show’s central question, what counts as conceptual art at all, still feels worth asking.”</blockquote>
+    <div class="tags"><span class="tg">MMCA Seoul</span><span class="tg">Jun 19 – Oct 11, 2026</span><span class="tg">24 artists · ~140 works</span></div>
+    <span class="clip-go">Read the original at Herald Insight</span>
+  </div>
+</a>
+<a class="clip" href="https://www.heraldinsight.co.kr/news/articleView.html?idxno=6503" target="_blank" rel="noopener" data-reveal>
+  <div class="clip-media"><img src="photos/press/6503.jpg" alt="Exhibition view — photograph by YEONSU AHN" loading="lazy" decoding="async"></div>
+  <div class="clip-body">
+    <p class="clip-meta"><span>Clipping 09 · Arts</span><span class="cdot"></span><span>2026-07-08</span></p>
+    <h3>Centre Pompidou Hanwha presents the Cubists: Inventing the Modern Vision</h3>
+    <blockquote>“The exhibition, a collaborative effort between the Centre Pompidou in Paris and Centre Pompidou Hanwha, features 112 works by 54 artists, including 91 pieces from the Paris collection alongside 21 works by 11 Korean modern and contemporary artists in a special section titled ‘Korea Focus.’”</blockquote>
+    <div class="tags"><span class="tg">Centre Pompidou Hanwha</span><span class="tg">54 artists · 112 works</span><span class="tg">Yoido, Seoul</span></div>
+    <span class="clip-go">Read the original at Herald Insight</span>
+  </div>
+</a>
+<a class="clip" href="https://www.heraldinsight.co.kr/news/articleView.html?idxno=6430" target="_blank" rel="noopener" data-reveal>
+  <div class="clip-media"><img src="photos/press/6430.jpg" alt="Exhibition view — photograph by YEONSU AHN" loading="lazy" decoding="async"></div>
+  <div class="clip-body">
+    <p class="clip-meta"><span>Clipping 08 · Arts</span><span class="cdot"></span><span>2026-06-09</span></p>
+    <h3>Seoul Arts Center’s Hangaram Design Museum presents Fernando Botero</h3>
+    <blockquote>“Rather than presenting his career in strict chronological order, the exhibition is organized into six thematic sections: ‘Versions,’ ‘Latin America,’ ‘Religion,’ ‘Bullfight,’ ‘Still Life,’ and ‘Circus’ — allowing visitors to follow the major subjects that shaped Botero’s work over six decades.”</blockquote>
+    <div class="tags"><span class="tg">Hangaram Design Museum</span><span class="tg">Seoul Arts Center</span><span class="tg">Fernando Botero</span></div>
+    <span class="clip-go">Read the original at Herald Insight</span>
+  </div>
+</a>
+<a class="clip" href="https://www.heraldinsight.co.kr/news/articleView.html?idxno=6393" target="_blank" rel="noopener" data-reveal>
+  <div class="clip-media"><img src="photos/press/6393.jpg" alt="Exhibition view — photograph by YEONSU AHN" loading="lazy" decoding="async"></div>
+  <div class="clip-body">
+    <p class="clip-meta"><span>Clipping 07 · Arts</span><span class="cdot"></span><span>2026-06-01</span></p>
+    <h3>MMCA Seoul presents Damien Hirst’s largest Korean exhibition to date</h3>
+    <blockquote>“Spanning over 50 works across four sections, the exhibition traces Hirst’s artistic evolution from his earliest experiments at Goldsmiths, University of London, to his most iconic large-scale installations — offering Korean audiences an unprecedented encounter with one of contemporary art’s most provocative figures.”</blockquote>
+    <div class="tags"><span class="tg">MMCA Seoul</span><span class="tg">Mar 20 – Jun 28, 2026</span><span class="tg">Damien Hirst</span></div>
+    <span class="clip-go">Read the original at Herald Insight</span>
+  </div>
+</a>
+<a class="clip" href="https://www.heraldinsight.co.kr/news/articleView.html?idxno=6256" target="_blank" rel="noopener" data-reveal>
+  <div class="clip-media"><img src="photos/press/6256.jpg" alt="Exhibition view — photograph by YEONSU AHN" loading="lazy" decoding="async"></div>
+  <div class="clip-body">
+    <p class="clip-meta"><span>Clipping 06 · Arts</span><span class="cdot"></span><span>2026-04-07</span></p>
+    <h3>MMCA Seoul opens its doors to six decades of Korean art</h3>
+    <blockquote>“The exhibition draws from a collection of approximately 11,800 works accumulated over more than fifty years of acquisitions and includes nine pieces from the Lee Kun-hee Collection,” organized “around six thematic clusters — abstraction, experimentation, figuration, hybridity, conceptual art, and documentary.”</blockquote>
+    <div class="tags"><span class="tg">MMCA Seoul</span><span class="tg">through May 3, 2026</span><span class="tg">Korean Contemporary Art Highlights</span></div>
+    <span class="clip-go">Read the original at Herald Insight</span>
+  </div>
+</a>
+<a class="clip" href="https://www.heraldinsight.co.kr/news/articleView.html?idxno=6254" target="_blank" rel="noopener" data-reveal>
+  <div class="clip-media"><img src="photos/press/6254.jpg" alt="Exhibition view — photograph by YEONSU AHN" loading="lazy" decoding="async"></div>
+  <div class="clip-body">
+    <p class="clip-meta"><span>Clipping 05 · Arts</span><span class="cdot"></span><span>2026-04-07</span></p>
+    <h3>The MMCA invites decay into its walls</h3>
+    <blockquote>“Its Korean title draws from the word sak-da, a verb that carries two opposite registers at once: to rot and decay, and to ferment and ripen into something better. That ambivalence forms the show’s central argument.” — “Sak-da: The Poetics of Decomposition” asks what happens when the museum’s promise of permanence is refused.</blockquote>
+    <div class="tags"><span class="tg">MMCA Seoul</span><span class="tg">through May 3, 2026</span><span class="tg">15 artists &amp; collectives</span></div>
+    <span class="clip-go">Read the original at Herald Insight</span>
+  </div>
+</a>
+<a class="clip" href="https://www.heraldinsight.co.kr/news/articleView.html?idxno=6125" target="_blank" rel="noopener" data-reveal>
+  <div class="clip-media"><img src="https://cdn.heraldinsight.co.kr/news/photo/202602/6125_11466_3015.jpg" alt="Exhibition view — photograph by YEONSU AHN" loading="lazy" decoding="async"></div>
+  <div class="clip-body">
+    <p class="clip-meta"><span>Clipping 04 · Arts</span><span class="cdot"></span><span>2026-02-06</span></p>
+    <h3>The Musée Jacquemart-André hosts a major exhibition dedicated to Georges de La Tour</h3>
+    
+    <div class="tags"><span class="tg">Musée Jacquemart-André</span><span class="tg">Paris</span><span class="tg">Georges de La Tour</span></div>
+    <span class="clip-go">Read the original at Herald Insight</span>
+  </div>
+</a>
+<a class="clip" href="https://www.heraldinsight.co.kr/news/articleView.html?idxno=6034" target="_blank" rel="noopener" data-reveal>
+  <div class="clip-media"><img src="https://cdn.heraldinsight.co.kr/news/photo/202601/6034_11301_433.jpg" alt="Exhibition view — photograph by YEONSU AHN" loading="lazy" decoding="async"></div>
+  <div class="clip-body">
+    <p class="clip-meta"><span>Clipping 03 · Arts</span><span class="cdot"></span><span>2026-01-06</span></p>
+    <h3>Dongdaemun Design Plaza hosts Jean-Michel Basquiat exhibition</h3>
+    
+    <div class="tags"><span class="tg">Dongdaemun Design Plaza</span><span class="tg">Seoul</span><span class="tg">Jean-Michel Basquiat</span></div>
+    <span class="clip-go">Read the original at Herald Insight</span>
+  </div>
+</a>
+<a class="clip" href="https://www.heraldinsight.co.kr/news/articleView.html?idxno=5966" target="_blank" rel="noopener" data-reveal>
+  <div class="clip-media"><img src="https://cdn.heraldinsight.co.kr/news/photo/202512/5966_11182_837.jpg" alt="Exhibition view — photograph by YEONSU AHN" loading="lazy" decoding="async"></div>
+  <div class="clip-body">
+    <p class="clip-meta"><span>Clipping 02 · Arts</span><span class="cdot"></span><span>2025-12-11</span></p>
+    <h3>Leeum museum hosts Lee Bul solo exhibition</h3>
+    
+    <div class="tags"><span class="tg">Leeum Museum of Art</span><span class="tg">Seoul</span><span class="tg">Lee Bul</span></div>
+    <span class="clip-go">Read the original at Herald Insight</span>
+  </div>
+</a>
+<a class="clip" href="https://www.heraldinsight.co.kr/news/articleView.html?idxno=5907" target="_blank" rel="noopener" data-reveal>
+  <div class="clip-media"><img src="https://cdn.heraldinsight.co.kr/news/photo/202511/5907_11102_4131.jpg" alt="Exhibition view — photograph by YEONSU AHN" loading="lazy" decoding="async"></div>
+  <div class="clip-body">
+    <p class="clip-meta"><span>Clipping 01 · Arts</span><span class="cdot"></span><span>2025-11-19</span></p>
+    <h3>MMCA presents the modern art of Korea</h3>
+    
+    <div class="tags"><span class="tg">MMCA Seoul</span><span class="tg">Korean modern art</span><span class="tg">10 clippings</span></div>
+    <span class="clip-go">Read the original at Herald Insight</span>
+  </div>
+</a>
+  </div>
+</section>
+
+<!-- 5. extracurricular -->
+<section class="extra" id="extra" data-theme="dark">
+  <div class="sec-head">
+    <div>
+      <p class="kicker">Extracurricular</p>
+      <h2>Filed, held, and awarded.</h2>
+    </div>
+    <p>A patent application, twelve school roles, the studio work outside school, and sixteen honours between 2023 and 2026.</p>
+  </div>
+  <div class="ex-grid">
+<div class="ex-block">
+  <h3>Filed patent</h3>
+  <p class="sub">Certificate of application · Korean Intellectual Property Office</p>
+  <div class="record">
+    <h4>Smart 3D-printed lumbar orthosis with variable ventilation, reflecting patient-customised body data and surgical history</h4>
+    
+    <div class="facts"><div><dt>Application no.</dt><dd>10-2026-0194336</dd></div><div><dt>Filing date</dt><dd>11 Oct 2026</dd></div><div><dt>Applicant / Inventor</dt><dd>YEONSU AHN</dd></div><div><dt>Certificate issued</dt><dd>29 Oct 2026</dd></div></div>
+    <p class="note-line">Design work carried out as <b>EMMA Spinal Brace</b>, a lattice-structured brace designed during recovery from spinal surgery in 2023. The filing is at application stage: no request for examination and no claims were submitted at filing (provisional specification), so no registration has been granted.</p>
   </div>
 </div>
+<div class="ex-block">
+  <h3>Leadership &amp; service</h3>
+  <p class="sub">Within school</p>
+  <table class="ledger">
+    <caption>Role held, by years active</caption>
+    <thead><tr><th scope="col">Years</th><th scope="col">Organisation</th><th scope="col">Role</th></tr></thead>
+    <tbody><tr><td>4 yrs</td><td><b>CSIAMUN</b></td><td>Head Chair of Crisis &middot; President of the Security Council</td></tr><tr><td>2023&ndash;</td><td><b>CSIAVANK</b></td><td>Head &mdash; ran a conference for 300+ students</td></tr><tr><td>2024&ndash;2025</td><td><b>Smart Eco Farm</b></td><td>Head of Web Designing Team</td></tr><tr><td>2024&ndash;2025</td><td><b>Football Team</b></td><td>Head Designer</td></tr><tr><td>4 yrs</td><td><b>Communication Department</b></td><td>Head of Design</td></tr><tr><td>4 yrs</td><td><b>Omid for Girls</b></td><td>World History tutor, 2 hrs weekly</td></tr><tr><td>2023&ndash;2025</td><td><b>Avengers</b></td><td>Leader &mdash; English-language book service</td></tr><tr><td>2023&ndash;2025</td><td><b>KNHBA</b></td><td>Signed an MOU with the basketball association and hosted a tournament</td></tr><tr><td>2023&ndash;2024</td><td><b>Peace Designer</b></td><td>Member &middot; UN Vienna Youth Conference</td></tr><tr><td>2023&ndash;2026</td><td><b>The Planning Department</b></td><td>Member</td></tr><tr><td>2023&ndash;2024</td><td><b>Drama Club &middot; Flag Corps</b></td><td>Staff member &middot; Leader</td></tr><tr><td>2023</td><td><b>SkyBlueTimes</b></td><td>Member &mdash; school newspaper</td></tr></tbody>
+  </table>
+</div>
+<div class="ex-block">
+  <h3>Studio, work &amp; exhibitions</h3>
+  <p class="sub">Beyond school</p>
+  <ul class="ex-list"><li><span>2026</span><span>Cornell Pre-College Online Drawing — completed with grade A, July 2026.</span></li>
+<li><span>2026</span><span>Venice exhibition — paintings on social issues shown in Venice.</span></li>
+<li><span>2026</span><span>D-Paper — art exhibition, raised $1,000.</span></li>
+<li><span>2025–</span><span>Hope Library — intern, illustrating Korean folktales.</span></li>
+<li><span>4 yrs</span><span>EMREI — web designer and illustrator, earning $600 a month.</span></li>
+<li><span>2026</span><span>Herald Student Reporters — 30th term, Feb–Jul 2026. See Journalism .</span></li>
+<li><span>2024</span><span>ETOCS — member.</span></li>
+<li><span>2023</span><span>EMMA Spinal Brace — brace designed during surgical recovery; basis of the 2026 patent filing.</span></li></ul>
+</div>
+<div class="ex-block">
+  <h3>Awards &amp; honours</h3>
+  <p class="sub">Sixteen, 2023 — 2026</p>
+  <ul class="ex-list"><li><span>2026</span><span>AP Scholar of Distinction</span></li>
+<li><span>2026</span><span>Outstanding Talent Award in the Arts</span></li>
+<li><span>2026</span><span>Outstanding Service Award</span></li>
+<li><span>2026</span><span>CSIAMUN Crisis — Best Delegate</span></li>
+<li><span>2026</span><span>Academic Excellence Award — AP Studio Art: Drawing II</span></li>
+<li><span>2025</span><span>No Such Innocence — shortlisted artist</span></li>
+<li><span>2025</span><span>Korea Institute of Design Promotion Award</span></li>
+<li><span>2025</span><span>International Society Research and Analysis — essay competition, Grand Prize</span></li>
+<li><span>2025</span><span>Herald Student Reporters — winner, 30th term</span></li>
+<li><span>2025</span><span>Business Black Box — 3rd place</span></li>
+<li><span>2025</span><span>Outstanding Talent Award in the Humanities</span></li>
+<li><span>2025</span><span>Academic Excellence Award — Music and Theater I</span></li>
+<li><span>2024</span><span>Sorodha International Art Competition — 2nd place</span></li>
+<li><span>2024</span><span>Outstanding Talent Award in Social Sciences</span></li>
+<li><span>2023</span><span>TTbiz Bloomberg — grand finalist</span></li>
+<li><span>2023</span><span>CSIAMUN ECOSOC — Honorable Mention</span></li></ul>
+</div>
+  </div>
+</section>
 
-<script type="module">
-import * as THREE from './museum/vendor/three.module.min.js';
+<footer>
+  <div class="f-top">
+    <div class="f-brand">YEONSU AHN</div>
+    <div class="f-note">
+      Version 2 — one page, no 3D. The three-dimensional gallery remains as Version 1 at
+      <a href="gallery.html?auto=0">gallery.html</a>.
+    </div>
+  </div>
+</footer>
 
-/* Chair note 10-31: every plate here is Yeonsu's own work from photo/art — not reproductions.
-   The big serif line carries a TITLE, not a date: the scans were all made on one afternoon and
-   carry no work dates, so any year printed there would have been invented. Under it the medium,
-   then a short reading of what the plate actually shows. Several plates come out of the scoliosis
-   surgery and are written as the body remembering itself, not as clinical record. */
-const WORKS=[
-// ONE story in eighteen plates, read left to right. This array order IS the hang order and the
-// tour order: the visitor walks Pl.01 -> Pl.18 without ever stepping back. Captions are held to a
-// single breath each so the card reads as a label beside the work, not as an essay over it.
- ['Kept Warm','museum/art/_DSF7519.jpg','graphite on paper',
-  'A snow leopard and a hooded child keep the same silence; a cupped hand guards the last warm thing.',
-   ''],
- ['Leaves by the Bed','museum/art/_DSF7521.jpg','graphite on paper',
-  'A drip stand waits by a bed while the leaves outside burn green, asking nothing of the body.',
-   ''],
- ['City from Above','museum/art/_DSF7523.jpg','acrylic on canvas',
-  'A city laid out the way a child arranges sweets — trees kept in the seams, no one in sight.',
-   ''],
- ['Turned Over','museum/art/_DSF7525.jpg','oil on canvas',
-  'Head-down under the fall, lilies in her arms: water is the one place a body need not hold itself.',
-   ''],
- ['What the Day Left','museum/art/_DSF7527.jpg','oil on canvas',
-  'A school day emptied onto a bed; every object still holding the shape of the hand.',
-   ''],
- ['Who Is Listening','museum/art/_DSF7535.jpg','acrylic on panel',
-  'Headphones over a face drawn twice — one looking out, one hearing from further away.',
-   ''],
- ['Covered Valley','museum/art/_DSF7543.jpg','acrylic on canvas',
-  'Four black panels laid over the valley, as if the view had agreed to keep part of itself hidden.',
-   ''],
- ['Held Together','museum/art/_DSF7545.jpg','acrylic and collage',
-  'Curled under water, flowers drifting through a body drawn thin enough to show the frame behind it.',
-   ''],
- ['Under the Ice','museum/art/_DSF7549.jpg','oil on canvas',
-  'A column crosses the frozen ground; below it the reflections hang down like dripping roots.',
-   ''],
- ['The Shell','museum/art/_DSF7551.jpg','oil on canvas',
-  'At dusk a girl lies in the sand, a turtle\u2019s shell strapped to her back, waiting to come back different.',
-   ''],
- ['Another Sky','museum/art/_DSF7555.jpg','acrylic and gouache',
-  'Pink air, a blue stair climbing to a green door, fish swimming where the sky should be.',
-   ''],
- ['Black Panels, Fish','museum/art/_DSF7559.jpg','mixed media on panel',
-  'Two fighting fish, a spiral worked almost to a shell, and stones — each in its own square of dark.',
-   ''],
- ['Roots for a Head','museum/art/_DSF7566.jpg','installation — drawing, glass, red twigs',
-  'A head become a cave of hanging roots; beside it, under water, red twigs still drinking.',
-   ''],
- ['Sea Inside a Shell','museum/art/_DSF7572.jpg','installation — diorama with painted sea',
-  'A painted sunset standing out of real sand; inside a turtle\u2019s shell, one lamp, one desk, one figure.',
-   ''],
- ['Standing, Lying','museum/art/_DSF7580.jpg','installation — mural and figures',
-  'One girl stands straight while two bodies lie below her — as if standing had to be paid for.',
-   ''],
- ['One Line, Many Bodies','museum/art/_DSF7589.jpg','drawing — ink and watercolour',
-  'One red line that never lifts: profiles, shoulders, hands — and a torso drawn from behind, no head.',
-   ''],
- ['Again','photos/art/performance/again_01.jpg','performance — three frames, replayed',
-  'Three takes of one held moment: the invitation has to be made again, each time from the start.',
-   '',
-   ['photos/art/performance/again_01.jpg','photos/art/performance/again_02.jpg','photos/art/performance/again_03.jpg']],
- ['Release','photos/art/performance/release_01.jpg','performance — five frames, replayed',
-  'The brace that held her spine is unlaced until only a laugh is left — then broken into a heart, beside the hammer.',
-   '',
-   ['photos/art/performance/release_01.jpg','photos/art/performance/release_02.jpg','photos/art/performance/release_03.jpg','photos/art/performance/release_04.jpg','photos/art/performance/release_05.jpg']],
-];
-window.WORKS=WORKS;
-// hangs: [index, wall('back'|'left'), along-wall coord, y, size]  — back wall runs on x, left wall on z.
-// The two walls meet at a 90° corner (x=-W/2, z=-D/2); works straddle both faces.
-// 18 plates: 9 on the back wall, 9 on the left wall in two groups with the
-// EC sheet given its own bay. Pitch is 3.35 m on the back and 2.80 m on the left against 0.58-1.00 m
-// frames — the generous spacing asked for when the room was doubled. Both runs are centred on their wall,
-// so the wall left over at each end is the same on both sides instead of pooling at one corner.
-const HANGS=[
-// One continuous route, never a step backwards. Pl.01 starts on the LEFT wall at the entrance end
-// and walks toward the back corner; Pl.10 picks up at that corner and runs along the BACK wall to its
-// far end, where Pl.18 finishes. Pitch is uniform per wall (2.80 m left, 3.35 m back) so the eye travels
-// one way at a steady beat; heights step down a little as the frames grow (s 1.80 / l 1.72 / x 1.68).
-  [0,'left',10,1.72,'l'],[1,'left',7.2,1.8,'s'],[2,'left',4.4,1.72,'l'],
-  [3,'left',1.6,1.8,'s'],[4,'left',-1.2,1.72,'l'],[5,'left',-4,1.8,'s'],
-  [6,'left',-6.8,1.72,'l'],[7,'left',-9.6,1.8,'s'],[8,'left',-12.4,1.72,'l'],
-  [9,'back',-13.4,1.8,'s'],[10,'back',-10.05,1.72,'l'],[11,'back',-6.7,1.8,'s'],
-  [12,'back',-3.35,1.72,'l'],[13,'back',0,1.8,'s'],[14,'back',3.35,1.72,'l'],
-  [15,'back',6.7,1.8,'s'],[16,'back',10.05,1.68,'x'],[17,'back',13.4,1.68,'x'],
-];
+<script>
+(function(){
+  'use strict';
+  var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var clamp = function(v,a,b){ return v<a?a:(v>b?b:v); };
 
-const SIZE={s:0.58,l:0.78,x:1.00};
+  /* --- the mosaic arrives in order, then the page takes over --- */
+  addEventListener('load', function(){ document.body.classList.add('ready'); });
 
-const cv=document.querySelector('canvas.webgl');
-const renderer=new THREE.WebGLRenderer({canvas:cv,antialias:true});
-renderer.setSize(innerWidth,innerHeight);              // three owns canvas style+buffer incl. DPR (true)
-renderer.setPixelRatio(Math.min(2,devicePixelRatio));
-renderer.outputColorSpace=THREE.SRGBColorSpace;
-THREE.ColorManagement.enabled=true;                    // deterministic colour on every display scale factor
-renderer.toneMapping=THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure=1.16;
-renderer.shadowMap.enabled=true;
-renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+  /* --- scroll driven motion, one rAF frame at a time --- */
+  var hdr   = document.getElementById('hdr');
+  var bar   = document.getElementById('bar');
+  var plates = [].slice.call(document.querySelectorAll('.plate'));
+  var counter = document.getElementById('counter');
+  var cnum = document.getElementById('cnum');
+  var hero = document.querySelector('.hero');
+  var mosaic = document.getElementById('mosaic');
+  var navLinks = [].slice.call(document.querySelectorAll('#nav a'));
 
-const scene=new THREE.Scene();
-scene.background=new THREE.Color(0xe9e8e3);
-const FOCUS_FOV=32;                                    // tight museum framing for a single plate
-const ROOM_FOV_CAP=60;                                 // establishing shot never wider than this
-const MOBILE=matchMedia('(max-width:760px)').matches||/iPhone|iPad|Android/i.test(navigator.userAgent);
-const camera=new THREE.PerspectiveCamera(44,innerWidth/innerHeight,0.1,120);
-const _probe=new THREE.PerspectiveCamera(FOCUS_FOV,innerWidth/innerHeight,0.1,120); // math-only camera
+  // DOM order, top to bottom — the active-link sweep walks this list in sequence
+  var sections = [
+    {el:document.getElementById('gallery'),   key:'hero',       theme:'dark'},
+    {el:document.getElementById('plates'),    key:'gallery',    theme:'dark'},
+    {el:document.getElementById('journeys'),  key:'journeys',   theme:'light'},
+    {el:document.getElementById('journalism'),key:'journalism', theme:'light'},
+    {el:document.getElementById('extra'),     key:'extra',      theme:'dark'}
+  ];
 
-/* ---- IBL: procedural softbox environment baked through PMREM — every material gains real specular
-   response and bounce light, which is what makes CG interiors read as photographic ---- */
-(function makeEnv(){
-  const pm=new THREE.PMREMGenerator(renderer); pm.compileEquirectangularShader();
-  const es=new THREE.Scene();
-  es.add(new THREE.Mesh(new THREE.BoxGeometry(12,7,12),
-    new THREE.MeshBasicMaterial({color:0xf0efe9,side:THREE.BackSide})));
-  const soft=(w,h,x,y,z,c)=>{ const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),
-    new THREE.MeshBasicMaterial({color:c})); m.position.set(x,y,z); m.lookAt(0,1.5,0); es.add(m); };
-  soft(7,4,0,6.4,0,0xffffff); soft(4,2,-6,4.2,3,0xfdf4e2); soft(4,2,6,4.2,-3,0xeef2f6); // key + warm/cool fills
-  scene.environment=pm.fromScene(es,0.04).texture;
-  try{ scene.environmentIntensity=0.55; }catch(e){}       // older bundles ignore this harmlessly
-  pm.dispose();
-})();
+  function frame(){
+    var vh = innerHeight;
+    var doc = document.documentElement;
+    var max = doc.scrollHeight - vh;
+    var y = scrollY;
 
-/* ---- SSAO composite: HBAO-flavoured screen-space contact darkening (no addons — self-contained pass) ---- */
-const rt=new THREE.WebGLRenderTarget(2,2,{minFilter:THREE.LinearFilter,magFilter:THREE.LinearFilter});
-rt.depthTexture=new THREE.DepthTexture(2,2); rt.depthTexture.type=THREE.UnsignedIntType;
-const aoMat=new THREE.ShaderMaterial({depthTest:false,depthWrite:false,uniforms:{
-  tColor:{value:rt.texture}, tDepth:{value:rt.depthTexture},
-  uRes:{value:new THREE.Vector2(2,2)}, uTan:{value:new THREE.Vector2(0.4,0.4)},
-  uNearFar:{value:new THREE.Vector3(0.1,120,0)}, uProj:{value:camera.projectionMatrix},
-  uRadius:{value:0.5}, uPower:{value:1.5}, uBias:{value:0.03}},
-  vertexShader:'varying vec2 vUv;void main(){vUv=uv;gl_Position=vec4(position.xy,0.,1.);}',
-  fragmentShader:`precision highp float;
-varying vec2 vUv;
-uniform sampler2D tColor,tDepth; uniform vec2 uRes,uTan; uniform vec3 uNearFar;
-uniform mat4 uProj; uniform float uRadius,uPower,uBias;
-float linz(float d){ return (2.0*uNearFar.x*uNearFar.y)/(uNearFar.y+uNearFar.x-(d*2.0-1.0)*(uNearFar.y-uNearFar.x)); }
-float hash(vec2 p){ return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453); }
-vec3 viewAt(vec2 uv,float dist){ vec2 p=uv*2.0-1.0; return vec3(p.x*uTan.x,p.y*uTan.y,-1.0)*dist; }
-void main(){
-  float d=texture2D(tDepth,vUv).x;
-  if(d>=1.0){ gl_FragColor=vec4(pow(texture2D(tColor,vUv).rgb,vec3(1.0/2.2)),1.0); return; }
-  float dist=linz(d);
-  vec3 vp=viewAt(vUv,dist);
-  vec3 n=normalize(cross(dFdx(vp),dFdy(vp))); if(n.z<0.0) n=-n;
-  float ang=hash(vUv*uRes)*6.2831853;
-  mat2 rot=mat2(cos(ang),-sin(ang),sin(ang),cos(ang));
-  float ao=0.0;
-  for(int i=0;i<12;i++){
-    float fi=float(i);
-    float a=fi*2.3999632, r=sqrt((fi+0.5)/12.0);
-    vec3 k=normalize(vec3(cos(a)*r,sin(a)*r,mix(0.15,1.0,(fi+1.0)/12.0)));
-    k.xy=rot*k.xy;
-    if(dot(k,n)<=0.0) continue;
-    vec3 sp=vp+k*uRadius;
-    vec4 clip=uProj*vec4(sp,1.0);
-    vec2 su=(clip.xy/clip.w)*0.5+0.5;
-    if(su.x<0.0||su.x>1.0||su.y<0.0||su.y>1.0) continue;
-    float sd=texture2D(tDepth,su).x;
-    if(sd>=1.0) continue;
-    float dz=(-sp.z)-linz(sd);
-    if(dz>uBias && dz<uRadius) ao+=pow(1.0-dz/uRadius,1.5)*dot(k,n);
-  }
-  ao=clamp(1.0-(ao/6.0)*uPower,0.0,1.0);
-  vec3 col=texture2D(tColor,vUv).rgb*mix(1.0,ao,0.75);
-  gl_FragColor=vec4(pow(col,vec3(1.0/2.2)),1.0);
-}`});
-const postScene=new THREE.Scene(); postScene.add(new THREE.Mesh(new THREE.PlaneGeometry(2,2),aoMat));
-const postCam=new THREE.OrthographicCamera(-1,1,1,-1,0,1);
+    if(bar) bar.style.transform = 'scaleX(' + (max > 0 ? Math.min(1, y / max) : 0) + ')';
+    if(hdr) hdr.classList.toggle('stuck', y > 40);
 
-
-/* ---- room: warm minimalism — limewash walls, oak and terracotta ---- */
-const W=36,D=28,H=4.4;                                     // the old 18x14 room, doubled: width and depth carry the extra spacing,
-// limewash: a slightly warm, imperfect matte — reads as hand-applied mineral paint
-const wallMat=new THREE.MeshStandardMaterial({color:0xdccfb9,roughness:0.99});
-const floorMat=new THREE.MeshPhysicalMaterial({color:0xc4b096,roughness:0.62,clearcoat:0.12,clearcoatRoughness:0.6}); // warm honed stone
-const floor=new THREE.Mesh(new THREE.PlaneGeometry(W,D),floorMat);
-floor.rotation.x=-Math.PI/2; floor.receiveShadow=true; scene.add(floor);
-const back=new THREE.Mesh(new THREE.PlaneGeometry(W,H),wallMat);
-back.position.set(0,H/2,-D/2); back.receiveShadow=true; scene.add(back);
-const front=back.clone(); front.position.z=D/2; front.rotation.y=Math.PI; scene.add(front);
-const left=new THREE.Mesh(new THREE.PlaneGeometry(D,H),wallMat);
-left.rotation.y=Math.PI/2; left.position.set(-W/2,H/2,0); left.receiveShadow=true; scene.add(left);
-const right=left.clone(); right.rotation.y=-Math.PI/2; right.position.x=W/2; scene.add(right);
-// oak reveal at the corner — a warm line instead of a white pilaster
-const corner=new THREE.Mesh(new THREE.BoxGeometry(0.08,H,0.08),
-  new THREE.MeshStandardMaterial({color:0xa9875e,roughness:0.55}));
-corner.position.set(-W/2+0.04,H/2,-D/2+0.04); scene.add(corner);
-// a low oak datum line running the walls at 0.9m — the trend detail that ties the room together
-// It must sit *behind* the picture plane. At +0.012 its front face (-12.978) stood 0.002m proud of
-// the artwork (-12.980), so the band was painted straight across the canvases. Flush to the wall now.
-const oakLine=new THREE.MeshStandardMaterial({color:0xbf9c70,roughness:0.6});
-const dl1=new THREE.Mesh(new THREE.BoxGeometry(W,0.035,0.02),oakLine); dl1.position.set(0,0.9,-D/2+0.001); scene.add(dl1);
-const dl2=new THREE.Mesh(new THREE.BoxGeometry(0.02,0.035,D),oakLine); dl2.position.set(-W/2+0.001,0.9,0); scene.add(dl2);
-
-/* ---- ceiling: warm slab, a discreet track around both walls ---- */const fixtureMat=new THREE.MeshStandardMaterial({color:0x6b5947,roughness:0.55,metalness:0.35});
-const headMat=new THREE.MeshStandardMaterial({color:0x4a3d30,roughness:0.5,metalness:0.4});
-const lensMat=new THREE.MeshStandardMaterial({color:0xfff0d6,emissive:0xffd9a4,emissiveIntensity:1.6});
-const trimMat=new THREE.MeshStandardMaterial({color:0xe0d4c2,roughness:0.92});
-(function makeCeil(){
-  const ceil=new THREE.Mesh(new THREE.PlaneGeometry(W,D),new THREE.MeshStandardMaterial({color:0xd8cebd,roughness:0.99}));
-  ceil.rotation.x=Math.PI/2; ceil.position.y=H; ceil.receiveShadow=true; scene.add(ceil);
-  // Chair note 12-04: the two plaster pendants are gone. They hung low enough to read as a bare shade in the
-  // middle of the shot and fought the flat, calm ceiling. The mood they carried is kept, but as architecture:
-  // a warm cove at the ceiling line where each pendant's point light used to sit, so the room still glows from
-  // above without an object hanging in the frame.
-  const shadeMat=new THREE.MeshStandardMaterial({color:0xf2e8d8,roughness:0.88,side:THREE.DoubleSide});
-  // shadeMat is unused since the pendants came out; kept so a future fixture has the same plaster on hand.
-  const cordMat=new THREE.MeshStandardMaterial({color:0x4a4137,roughness:0.92,metalness:0.0});
-  function coveGlow(x,z,drop){
-    const pl=new THREE.PointLight(0xffd9a4,3.0,9,1.9); pl.position.set(x,H-drop,z); scene.add(pl);
-  }
-  coveGlow(-9.6,-2.4,0.7); coveGlow(3.2,-6.8,0.85);
-  // a single slim track; it is the only thing on the ceiling now that the pendants are out
-  function rail(x1,z1,x2,z2,tilt){
-    const len=Math.hypot(x2-x1,z2-z1);
-    const r=new THREE.Mesh(new THREE.BoxGeometry(len,0.05,0.05),fixtureMat);
-    r.position.set((x1+x2)/2,H-0.4,(z1+z2)/2); r.rotation.y=-Math.atan2(z2-z1,x2-x1); scene.add(r);
-    const n=Math.max(5,Math.round(len/2.4));
-    for(let i=0;i<n;i++){
-      const t=(i+0.5)/n, x=x1+(x2-x1)*t, z=z1+(z2-z1)*t;
-      const g=new THREE.Group(); g.position.set(x,H-0.4,z);
-      const stem=new THREE.Mesh(new THREE.CylinderGeometry(0.025,0.025,0.18,8),fixtureMat); stem.position.y=-0.09; g.add(stem);
-      const head=new THREE.Group(); head.position.y=-0.2; head.rotation.copy(tilt);
-      const body=new THREE.Mesh(new THREE.CylinderGeometry(0.07,0.05,0.22,14),headMat);
-      const yoke=new THREE.Mesh(new THREE.TorusGeometry(0.085,0.012,8,14),headMat); yoke.rotation.y=Math.PI/2;
-      const lens=new THREE.Mesh(new THREE.CircleGeometry(0.044,14),lensMat); lens.position.y=-0.112; lens.rotation.x=-Math.PI/2;
-      head.add(body,yoke,lens); g.add(head); scene.add(g);
+    /* the opening mosaic recedes as the plates take over */
+    if(!reduce && hero && mosaic){
+      var p = clamp(y / (vh * 0.9), 0, 1);
+      mosaic.style.transform = 'translateY(' + (p * -26) + 'px) scale(' + (1 - p * 0.05) + ')';
+      mosaic.style.opacity = String(1 - p * 0.55);
     }
-  }
-  rail(-15.2,-D/2+1.7,15.2,-D/2+1.7,new THREE.Euler(0.7,0,0));
-  rail(-W/2+1.7,-10.4,-W/2+1.7,11.2,new THREE.Euler(0,0,-0.7));
-  // baseboards in pale oak
-  const bb1=new THREE.Mesh(new THREE.BoxGeometry(W,0.11,0.04),trimMat); bb1.position.set(0,0.055,-D/2+0.02); scene.add(bb1);
-  const bb2=new THREE.Mesh(new THREE.BoxGeometry(0.04,0.11,D),trimMat); bb2.position.set(-W/2+0.02,0.055,0); scene.add(bb2);
-  // bouclé bench — a wool seat on four oak legs. A single flat box at 0.44 m read as a grey slab
-  // lying on the floor, so the seat is thinner and the legs give it a profile against the stone.
-  const benchMat=new THREE.MeshStandardMaterial({color:0xd8cbb6,roughness:1.0,metalness:0.0});
-  const seat=new THREE.Mesh(new THREE.BoxGeometry(1.9,0.16,0.78),benchMat);
-  seat.position.y=0.38; seat.castShadow=seat.receiveShadow=true;
-  const bench=new THREE.Group(); bench.add(seat);
-  for(const [lx,lz] of [[-0.82,-0.30],[0.82,-0.30],[-0.82,0.30],[0.82,0.30]]){
-    const leg=new THREE.Mesh(new THREE.BoxGeometry(0.09,0.30,0.09),oakLine);
-    leg.position.set(lx,0.15,lz); leg.castShadow=true; bench.add(leg);
-  }
-  bench.position.set(6.0,0,-3.6); bench.rotation.y=-Math.PI/6; scene.add(bench);
-})();
 
-/* ---- decoration: ceramic vessels on plinths, terracotta disc ---- */
-// Chair note 12-02: the arched niche in the rear wall is gone. It read as an unexplained blank recess rather
-// than as architecture, and it was the only reason the rear run sat off-centre. With it out, the nine rear
-// plates hang symmetrically about the room's mid-line, so both ends of that wall breathe by the same 4.6 m.
-(function makeSculptures(){
-  const clay =new THREE.MeshPhysicalMaterial({color:0xc07a52,roughness:0.78,clearcoat:0.1,clearcoatRoughness:0.6});
-  const cream=new THREE.MeshPhysicalMaterial({color:0xefe3d1,roughness:0.82});
-  const oak  =new THREE.MeshStandardMaterial({color:0xb8945f,roughness:0.68});
-  function plinth(x,z,h){ const p=new THREE.Mesh(new THREE.BoxGeometry(0.95,h,0.95),oak);
-    p.position.set(x,h/2,z); p.castShadow=p.receiveShadow=true; scene.add(p); return h; }
-  // three hand-thrown vessels of different heights — the ceramic still-life
-  const v1=new THREE.Mesh(new THREE.CylinderGeometry(0.3,0.18,0.72,28),clay);
-  v1.position.set(-9.0,plinth(-9.0,-4.8,0.8)+0.36,-4.8); v1.castShadow=true; scene.add(v1);
-  const v2=new THREE.Mesh(new THREE.CylinderGeometry(0.16,0.28,0.5,28),cream);
-  v2.position.set(-9.0,plinth(-9.0,-4.8,0.8)+0.25,-7.6); v2.castShadow=true; scene.add(v2);
-  const v3=new THREE.Mesh(new THREE.SphereGeometry(0.34,28,18),clay);
-  v3.position.set(-12.0,plinth(-12.0,3.2,0.62)+0.34,3.2); v3.scale.y=1.25; v3.castShadow=true; scene.add(v3);
-  // a terracotta disc on a low oak block: the one strong colour in the room
-  const disc=new THREE.Mesh(new THREE.CylinderGeometry(0.62,0.62,0.09,48),clay);
-  disc.position.set(2.0,plinth(2.0,-4.0,0.5)+0.66,-4.0); disc.rotation.set(Math.PI/2,0,0.4); disc.castShadow=true; scene.add(disc);
-})();
-
-/* lighting: warm minimalism — soft ambient wash, two cove points carry the mood, spots only seat the frames */
-const amb=new THREE.AmbientLight(0xffe9cc,0.16); scene.add(amb);
-const hemi=new THREE.HemisphereLight(0xfff1dc,0x6b5a47,0.30); scene.add(hemi);
-const sun=new THREE.DirectionalLight(0xffe4c0,0.42);
-sun.position.set(-12,22,14); sun.castShadow=true;
-sun.shadow.mapSize.set(MOBILE?1024:2048,MOBILE?1024:2048);
-sun.shadow.camera.left=-40; sun.shadow.camera.right=40;
-sun.shadow.camera.top=34; sun.shadow.camera.bottom=-34;
-sun.shadow.bias=-0.0004; sun.shadow.radius=8;
-scene.add(sun,sun.target);
-function trackSpot(x,z,tx,tz,i){ const s=new THREE.SpotLight(0xffd9a4,i||2.6,11,0.5,0.95,1.4);
-  s.position.set(x,H-0.6,z); s.target.position.set(tx,1.6,tz); scene.add(s,s.target); return s; }
-const spots=[];
-
-/* ---- one work, several frames: some pieces are a performance held in three photographs. A work whose
-   WORKS entry carries a sixth field (the frame list) plays those frames on its own plate, in place, at
-   SEQ_MS. The plate keeps its geometry — the frames are cropped to one aspect — so the hang never jumps;
-   the change runs through the render loop rather than a timer, so a hidden tab simply stops advancing. ---- */
-const SEQ_MS=1500;
-const seqItems=[];
-function queueFrames(rec,frames){
-  const tex=[];
-  frames.forEach(f=>loader.load(f,t=>{ t.colorSpace=THREE.SRGBColorSpace;
-    tex.push(t);
-    if(tex.filter(Boolean).length===frames.length){ rec._seqTex=tex; if(!rec._seqAt) rec._seqAt=performance.now(); }
-  }));
-  seqItems.push(rec);
-}
-
-/* ---- framed works: warm minimalism — limewash walls, oak and terracotta ---- */
-const loader=new THREE.TextureLoader();
-const items=[];
-for(const [i,wall,u,y,size] of HANGS){
-  const [title,file,med,en,ko,seq]=WORKS[i];
-  const frames=seq&&seq.length?seq:[file];
-  const grp=new THREE.Group();
-  if(wall==='back'){ grp.position.set(u,y,-D/2+0.02); }
-  else { grp.position.set(-W/2+0.02,y,u); grp.rotation.y=Math.PI/2; }
-  const h=SIZE[size];
-  const art=new THREE.Mesh(new THREE.PlaneGeometry(1,1));
-  const paperW=h*0.80, paperH=h*1.12;
-  // three-layer moulding: outer shadow moulding, inner gilt/wood fillet, mat board
-  const mould=new THREE.Mesh(new THREE.PlaneGeometry(paperW+0.20,paperH+0.20),
-    new THREE.MeshStandardMaterial({color:0x8a6b45,roughness:0.62,metalness:0.05}));
-  const fillet=new THREE.Mesh(new THREE.PlaneGeometry(paperW+0.085,paperH+0.085),
-    new THREE.MeshPhysicalMaterial({color:0xc9a878,roughness:0.5,metalness:0.12,clearcoat:0.25,clearcoatRoughness:0.3}));
-  const paper=new THREE.Mesh(new THREE.PlaneGeometry(paperW,paperH),
-    new THREE.MeshStandardMaterial({color:0xf3ece0,roughness:0.94}));
-  mould.position.z=-0.026; fillet.position.z=-0.014; paper.position.z=-0.006;
-  art.castShadow=paper.castShadow=true;
-  grp.add(mould,fillet,paper,art); scene.add(grp);
-  const rec={i,wall,u,y,size,h,title,file,med,en,ko,grp,art,paper,frame:fillet,mould,
-    w:h, hh:h, ring:null,_pose:null};
-  loader.load(file,t=>{ t.colorSpace=THREE.SRGBColorSpace;
-    if(frames.length>1) queueFrames(rec,frames);
-    const a=t.image.width/t.image.height;
-    let ah,aw;
-    if(a>=1){ aw=Math.min(1.75,Math.max(0.95,h*1.5)); ah=aw/a; if(ah<h*0.52){ah=h*0.52;aw=ah*a;} }
-    else { ah=Math.min(1.75,Math.max(0.62,h*1.15)); aw=ah*a; }
-    art.scale.set(aw,ah,1); art.material=new THREE.MeshStandardMaterial({map:t,roughness:0.86});
-    const pw=Math.max(aw,0.4)+0.16, ph=ah+0.18;
-    paper.geometry.dispose(); paper.geometry=new THREE.PlaneGeometry(pw,ph);
-    fillet.geometry.dispose(); fillet.geometry=new THREE.PlaneGeometry(pw+0.14500000000000002,ph+0.14500000000000002);
-    mould.geometry.dispose();  mould.geometry=new THREE.PlaneGeometry(pw+0.31,ph+0.31);
-    // A frame whose outer moulding dips through the 0.9m oak datum gets the band drawn across the
-    // artwork. Lift such a frame just clear of the line. Deterministic per aspect (runs after load).
-    const datum=0.9, clear=0.06;
-    const bottom=grp.position.y-(ph+0.31)/2;
-    if(bottom<datum+clear){ grp.position.y+=datum+clear-bottom; rec.y=grp.position.y; }
-    rec._pose=null;
-    wallIdle=0;
-    if(mode==='room'||(mode==='wall'&&wallOpen==='H')){
-      ovPose=overviewPose();
-      camera.fov=ovPose.fov; camera.updateProjectionMatrix();
-      if(mode==='wall'){ camera.position.copy(ovPose.pos); camera.lookAt(ovPose.look); }
+    /* each plate drifts in as it reaches the middle of the screen */
+    var best = null, bestD = 1e9;
+    for(var i=0;i<plates.length;i++){
+      var el = plates[i], r = el.getBoundingClientRect();
+      var vis = clamp((vh - r.top) / (vh * 0.92), 0, 1);
+      if(vis > 0.32) el.classList.add('in');
+      if(!reduce){
+        var img = el.querySelector('.pl-media img');
+        if(img && r.bottom > 0 && r.top < vh){
+          var q = clamp((vh - r.top) / (vh + r.height), 0, 1);
+          img.style.transform = 'scale(' + (1.06 - q * 0.06) + ')';
+        }
+      }
+      /* how much of this plate is actually on screen — a 1px sliver at the seam counts as nothing */
+      var shown = Math.min(r.bottom, vh) - Math.max(r.top, 0);
+      var ratio = shown > 0 ? shown / Math.min(r.height, vh) : 0;
+      var d = Math.abs((r.top + r.height/2) - vh/2);
+      if(ratio > 0.35 && d < bestD){ bestD = d; best = i; }
     }
-  });
-  spots.push(trackSpot(wall==='back'?u:-W/2+2.2, wall==='back'?-D/2+2.2:u,
-                       wall==='back'?u:-W/2,      wall==='back'?-D/2:u));
-  items.push(rec);
-}
-
-/* ---- HOME plate removed on request: the vinyl-label sign stood at the empty far end of the left wall, left of the hung works ---- */
-
-/* ---- wall sheets: fly into the wall, then lift the plain DOM page over the screen ---- */
-let wallOpen=null;                      // 'J' | 'P' | null
-const wallJ=document.getElementById('wallJ'), wallP=document.getElementById('wallP'), wallE=document.getElementById('wallE'), homeEl=document.getElementById('wallH');
-const WALLS={ J:{el:wallJ,files:['journeys.html'],
-    pose:new THREE.Vector3(W/2-0.04,1.72,-2), eye:new THREE.Vector3(W/2-3.4,1.72,-2)},        // east wall (bare)
-              P:{el:wallP,files:['articles.html'],
-    pose:new THREE.Vector3(-5,1.62,D/2-0.04), eye:new THREE.Vector3(-5,1.62,D/2-3.4)},    // front wall — journalism
-              /* Chair note 11-01: the EC record belongs beside journalism — the same wall, the next
-                 space along. It hangs on the FRONT wall six metres right of the press sheet, so the
-                 two read as one section walked in order, while the gallery keeps its own two walls
-                 (left + back) uninterrupted for the eighteen plates. */
-              E:{el:wallE,files:['ec.html'],
-    pose:new THREE.Vector3(1,1.62,D/2-0.04), eye:new THREE.Vector3(1,1.62,D/2-3.2)} };
-function setNav(k){ const nf=document.getElementById('navFrame');   // tell the overlaid nav which section is live
-  if(nf && nf.contentWindow) nf.contentWindow.postMessage('nav:'+k,'*'); }
-function navSync(){ setNav(wallOpen==='H'?'home':wallOpen==='J'?'travel':wallOpen==='P'?'press':wallOpen==='E'?'ec':'gallery'); }  // the frame may load after we boot — replay the state
-addEventListener('load',navSync);
-function openWall(k){
-  const prev=wallOpen;                                                       // the sheet we are leaving, if any
-  wallOpen=k; card.classList.remove('show'); hint.classList.remove('show');
-  document.body.classList.add('sheet');
-  items.forEach(r=>{ if(r.ring) r.ring.material.opacity=0; });
-  const w=WALLS[k];
-  /* A wall may hold more than one sheet (press holds the reporting column and
-     the EC record). Every pane is loaded on first visit; loading only the
-     first one left the companion pane blank for the rest of the session. */
-  w.el.querySelectorAll('iframe').forEach((f,i)=>{ if(!f.src) f.src=w.files[i]+'?wall=1'; });
-  /* Chair note 10-29: when the hop pulls the camera back, the sheet must stay up until
-     the retreat is under way — dropping it at takeoff left the whole flight staring at a
-     bare wall. Bare slides between sheets still drop at takeoff. */
-  const backing=((prev==='P'&&k==='E')||(prev==='E'&&k==='P'));
-  if(prev && prev!==k && !backing){ const p=WALLS[prev]; if(p) p.el.classList.remove('show'); }
-  const m=new THREE.Matrix4().lookAt(w.eye,w.pose,new THREE.Vector3(0,1,0));
-  const flight={p:w.eye.clone(),q:new THREE.Quaternion().setFromRotationMatrix(m),fov:50};
-  /* Chair note 10-29: P and E hang 18 units apart on the SAME plane, so hopping between
-     them was a straight sideways track that never left the wall — it read as one room
-     with a sliding page rather than a move. Give that hop a backing-off control point:
-     the quadratic bezier pulls the camera into the room (~6.5 behind the wall line) at
-     the midpoint, then re-approaches the new panel. Pure P<->E only; every other
-     transition keeps its direct path. */
-  if(backing){
-    const mid=w.eye.clone().add(WALLS[prev].eye).multiplyScalar(0.5);
-    flight.arc=new THREE.Vector3(mid.x, mid.y+0.3, mid.z-6.5);
-    /* The wall behind these two sheets is a bare plane, so a retreat alone shows nothing.
-       The sheet we are leaving now shrinks into the wall while the camera pulls back,
-       which is what makes the move read as stepping back before crossing. */
-    const left=WALLS[prev].el; left.classList.add('recede');
-    setTimeout(()=>{ left.classList.remove('show'); left.classList.remove('recede'); }, 1250);
-  }
-  fly(flight,()=>{
-    mode='wall'; w.el.classList.remove('recede'); w.el.classList.add('show');          // DOM rises after the flight lands
-    navSync();                                                                // highlight the section that actually arrived
-  });
-}
-function closeWall(){
-  if(!wallOpen) return;
-  document.body.classList.remove('sheet');
-  wallJ.classList.remove('show'); wallP.classList.remove('show'); wallE.classList.remove('show'); homeEl.classList.remove('show');
-  wallOpen=null; room(); setNav('gallery');
-}
-function gotoRoom(done){ ovPose=overviewPose();
-  const m=new THREE.Matrix4().lookAt(ovPose.pos,ovPose.look,new THREE.Vector3(0,1,0));
-  fly({p:ovPose.pos.clone(),q:new THREE.Quaternion().setFromRotationMatrix(m),fov:ovPose.fov},done);
-}
-function openHome(){
-  if(wallOpen==='H') return;
-  wallOpen='H'; card.classList.remove('show'); hint.classList.remove('show');
-  document.body.classList.add('sheet');
-  items.forEach(r=>{ if(r.ring) r.ring.material.opacity=0; });
-  wallJ.classList.remove('show'); wallP.classList.remove('show'); wallE.classList.remove('show');   // whatever sheet was up, the wall empties first
-  const reveal=()=>{ mode='wall'; homeEl.classList.add('show'); setNav('home'); };
-  // HOME always arrives over the front view: unless we already stand in the room, move to the establishing shot first
-  if(mode==='room'){ reveal(); } else { gotoRoom(reveal); }
-}
-addEventListener('message',e=>{
-  if(e.data==='closeWall'){ closeWall(); return; }             // Esc pressed while a sheet has focus
-  if(typeof e.data==='string' && e.data.startsWith('nav:')){   // commands from the overlaid nav.html
-    const k=e.data.slice(4);
-    if(k==='home') openHome();
-    else if(k==='travel'){ closeWall(); openWall('J'); }
-    else if(k==='press'){ wallOpen==='E' ? openWall('P') : (closeWall(), openWall('P')); }
-    else if(k==='ec'){ wallOpen==='P' ? openWall('E') : (closeWall(), openWall('E')); }   // same wall, right-hand space
-    else if(k==='gallery'){ if(wallOpen) closeWall(); else room(); }
-  }
-});
-
-/* gold focus ring (added per item lazily) */
-function ringFor(rec){
-  if(rec.ring) return rec.ring;
-  const g=new THREE.PlaneGeometry(rec.art.scale.x+0.14,rec.art.scale.y+0.14);
-  const edges=new THREE.LineSegments(new THREE.EdgesGeometry(g),
-    new THREE.LineBasicMaterial({color:0xb98f3e,transparent:true,opacity:0}));
-  edges.position.z=0.01; rec.grp.add(edges); rec.ring=edges; return edges;
-}
-
-/* ---- tour state machine (manual only, no auto walk) ---- */
-let mode='idle';           // idle | fly | focus | room
-let cur=-1;
-function overviewPose(){ // stands in the open front-right corner, aims at the angular mid-bearing of the plates,
-  // and bisects for the deepest offset where the whole L-shaped collection fits the safe box
-  const box=new THREE.Box3(); const tmp=new THREE.Vector3(); const corners=[]; const plateCenters=[];
-  for(const r of items){ const w=r.art.scale.x,h=r.art.scale.y;
-    const c0=new THREE.Vector3(); r.art.getWorldPosition(c0); plateCenters.push(c0);
-    for(const q of [[-w/2,-h/2],[w/2,-h/2],[w/2,h/2],[-w/2,h/2]]){
-      tmp.set(q[0],q[1],0); r.art.localToWorld(tmp); box.expandByPoint(tmp); corners.push(tmp.clone()); } }
-  const EYE=2.34;
-  // The camera stands in the open front-right corner and takes in the corner: both walls meet in view and
-  // the whole L reads as one room. After the room doubled, a camera at the geometric mid-bearing had to
-  // cover >180 degrees of bearing — half the collection always fell behind it, and the old solver answered
-  // by bisecting the camera through a wall. Standing back in the corner caps that span at ~90 degrees.
-  const camX=W/2-1.5, camZ=D/2-1.5;
-  const bearing=(p)=>Math.atan2(p.z-camZ,p.x-camX);          // camera -> plate direction (in-room)
-  // Bearings here wrap: the left wall runs from -145° all the way round to +178°, so a plain mid-angle
-  // between the extremes points 90° away from every plate — it aimed the camera straight through the
-  // right wall. Measure the spread relative to the in-room diagonal instead, and pick the plates that
-  // actually sit in front of the corner before averaging, so the wrapped extremes cannot pollute it.
-  const REF=Math.atan2(-1,-1);                               // front-right corner -> back-left corner
-  const wrap=(a)=>{ let x=a-REF; while(x>Math.PI)x-=Math.PI*2; while(x<-Math.PI)x+=Math.PI*2; return x; };
-  // Chair note 11-01: the establishing shot must show the WHOLE collection, not a quorum of it. Two corners
-  // now carry plates, so the old aim (average of the plates visible from here, weight 1 per plate) leaned
-  // toward whichever wall held more works and pushed the far end of the other wall out of frame. Each corner
-  // is now ONE voice: take the plate nearest each corner (the outermost of that wall), split the bearings
-  // evenly, and aim at that mid-bearing. Symmetric by construction, so both walls get equal frame.
-  const kRef=new THREE.Vector2(1,-1).normalize();            // in-room diagonal, as a unit vector
-  const side=(p)=>{ const v=new THREE.Vector2(p.x-camX,p.z-camZ).normalize();
-    return (v.x*kRef.y-v.y*kRef.x)>=0?1:-1; };                // +1 = back-wall side, -1 = left-wall side
-  const outward=(p)=>Math.hypot(p.x-camX,p.z-camZ);
-  const extremes=[];
-  for(const s of [1,-1]){ const g=plateCenters.filter(p=>side(p)===s);
-    if(g.length){ extremes.push(g.reduce((a,b)=>outward(b)>outward(a)?b:a)); } }
-  const dLo=Math.min(...extremes.map(p=>wrap(bearing(p))));
-  const dHi=Math.max(...extremes.map(p=>wrap(bearing(p))));
-  // Chair note 12-01: the boot shot should sit a touch to the right so the right wall leads and the left wall
-  // opens away from the viewer. The offset is applied to the aim ONLY — the stand and lens are still solved
-  // against this rotated bearing below, so the turn cannot be silently undone by the fit search.
-  // Chair note 12-03: back off three degrees from the last framing — the view sat slightly too far right.
-  // Net offset is now 7 degrees right of the symmetric mid-bearing (+bearing = toward the viewer's right).
-  const YAW_OFF=THREE.MathUtils.degToRad(7);
-  const bMid=REF+(dLo+dHi)/2+YAW_OFF;
-  const ux=Math.cos(bMid), uz=Math.sin(bMid);
-  const look=new THREE.Vector3(camX+ux*30,2.44,camZ+uz*30);   // level with the plates: the whole L fits the
-  // vertical band, so the aim stays at eye height instead of lifting the walls into the floor
-  // Adaptive lens, solved backwards from the requirement: walk the stand out along the mid ray and, at each
-  // stand, bisect for the NARROWEST lens whose frustum still holds every mount corner of every plate inside a
-  // small safe box. The first stand that can do it with a sane lens wins — that is the closest stand where the
-  // whole collection is on screen, so the plates stay as large as completeness allows. A hard search for the
-  // largest cheap lens was rejected: at 30-46 degrees the L spans ~84 degrees and no stand inside the room fits it.
-  const SAFE_X=26, SAFE_TOP=18, SAFE_BOT=96;                  // px margins: room for the nav, the hint, the card
-  const fits=(p,fov)=>{ _probe.fov=fov; _probe.aspect=camera.aspect; _probe.updateProjectionMatrix();
-    _probe.position.copy(p); _probe.lookAt(look); _probe.updateMatrixWorld(true);
-    for(const c of corners){ const v=c.clone().project(_probe);
-      if(!(v.z<1)) return false;
-      const sx=(v.x*0.5+0.5)*innerWidth, sy=(-v.y*0.5+0.5)*innerHeight;
-      if(sx<SAFE_X||sx>innerWidth-SAFE_X||sy<SAFE_TOP||sy>innerHeight-SAFE_BOT) return false; }
-    return true; };
-  const FOV_MAX=innerWidth/innerHeight>=1.15?78:72;           // landscape holds the whole 75-degree span in one
-  // perspective frustum. A portrait phone physically cannot: 75 degrees of bearing in a 0.46 aspect needs a
-  // 122-degree vertical lens, and pushing toward it (88 was tried and measured) hands the screen to ceiling and
-  // floor until the room stops reading as a room. So portrait opens to 72 — the widest lens that still reads —
-  // and shows the near half of the collection; the landscape boot shows all eighteen.
-  const standAt=(e)=>new THREE.Vector3(camX+ux*e,EYE,camZ+uz*e);
-  let pos=standAt(1.0), bestFov=FOV_MAX, found=false;
-  for(let e=1.0;e<=26;e+=0.5){ const p=standAt(e);
-    if(fits(p,30)){ pos=p; bestFov=30; found=true; break; }   // narrowest lens already fits: nothing to solve
-    if(fits(p,FOV_MAX)){                                      // widest fits here: bisect for the NARROWEST lens
-      let lo=30,hi=FOV_MAX;                                    // that still holds every corner — a wider lens than
-      for(let k=0;k<14;k++){ const m=(lo+hi)/2; if(fits(p,m)) hi=m; else lo=m; }  // needed just adds empty room
-      pos=p; bestFov=hi; found=true; break; } }
-  if(!found){ pos=standAt(26); bestFov=FOV_MAX; }               // a room we cannot fit: widest lens, longest stand
-  return {pos,look,fov:bestFov}; }
-let ovPose=null;                                          // computed lazily once items + textures exist
-const camPos=new THREE.Vector3(); const camQuat=new THREE.Quaternion();
-function enterRoomPose(){ ovPose=overviewPose(); return ovPose; }
-(function initCam(){ const o=enterRoomPose(); camera.fov=o.fov; camera.updateProjectionMatrix();
-  const m=new THREE.Matrix4().lookAt(o.pos,o.look,new THREE.Vector3(0,1,0));
-  camera.position.copy(o.pos); camera.quaternion.copy(m); })();
-let from={p:new THREE.Vector3(),q:new THREE.Quaternion(),fov:44},to={p:new THREE.Vector3(),q:new THREE.Quaternion(),fov:44},ft=0,FDUR=1.7;
-
-/* ---------- framing solver ---------- */
-const cardEl=document.getElementById('card');
-function basePose(rec,dist){
-  const pos=rec.wall==='back'
-    ? new THREE.Vector3(rec.u, Math.max(1.25,rec.y-0.02), -D/2+dist)
-    : new THREE.Vector3(-W/2+dist, Math.max(1.25,rec.y-0.02), rec.u);
-  const look=rec.wall==='back'
-    ? new THREE.Vector3(rec.u,rec.y,-D/2)
-    : new THREE.Vector3(-W/2,rec.y,rec.u);
-  return {pos,look};
-}
-function applyPose(p,q){ _probe.position.copy(p); _probe.quaternion.copy(q); _probe.updateMatrixWorld(true); }
-function quatAt(p,l){ const m=new THREE.Matrix4().lookAt(p,l,new THREE.Vector3(0,1,0)); return new THREE.Quaternion().setFromRotationMatrix(m); }
-function artScreen(rec){
-  const c=new THREE.Vector3(); rec.art.getWorldPosition(c);
-  const v=c.clone().project(_probe);
-  // measure the FRAME, not just the picture: the outer moulding adds 0.245m above and below the
-  // image, so fitting the artwork alone let the frame run off the top and bottom of the screen.
-  const gp=rec.mould&&rec.mould.geometry&&rec.mould.geometry.parameters;
-  const h=gp?gp.height:(rec.art.scale.y+0.49);
-  const dist=_probe.position.distanceTo(c);
-  const vh=2*Math.tan(THREE.MathUtils.degToRad(_probe.fov/2))*dist;   // FOCUS fov, never the live fov
-  const hpx=h/vh*innerHeight;
-  return {x:(v.x*0.5+0.5)*innerWidth, y:(-v.y*0.5+0.5)*innerHeight, hpx, dist};
-}
-function poseFor(rec){
-  _probe.aspect=camera.aspect; _probe.fov=FOCUS_FOV; _probe.updateProjectionMatrix();
-  // plate centres on the SCREEN CENTRE; the caption (narrow, bottom-left) must stay clear of the frame
-  const cardR=38+Math.min(330,innerWidth*0.28)+10;
-  const zx0=innerWidth*0.04, zx1=innerWidth*0.96, zy0=112, zy1=innerHeight-90;
-  let dist=0.62;
-  let pose=basePose(rec,dist);
-  applyPose(pose.pos,quatAt(pose.pos,pose.look));
-  let s=artScreen(rec);
-  for(let k=0;k<40;k++){
-    const wpx=s.hpx*(rec.art.scale.x/rec.art.scale.y);
-    if((wpx<=(zx1-zx0) && s.hpx<=(zy1-zy0)) || (s.hpx<=innerHeight*0.84 && wpx<=innerWidth*0.92 && k>1)) break;
-    dist*=1.07; pose=basePose(rec,dist);
-    applyPose(pose.pos,quatAt(pose.pos,pose.look)); s=artScreen(rec);
-  }
-  const nx=rec.wall==='back'?new THREE.Vector3(1,0,0):new THREE.Vector3(0,0,-1);
-  const up=new THREE.Vector3(0,1,0);
-  const artC=new THREE.Vector3(); rec.art.getWorldPosition(artC);
-  const nl=artC.clone();
-  const box=(aim)=>{ applyPose(pose.pos,quatAt(pose.pos,aim));
-    let x0=1e9,x1=-1e9,y0=1e9,y1=-1e9;
-    // Corners of the OUTER MOULDING in group space. Two bugs fed the clipping here: the solver
-    // measured only the artwork (frame adds 0.245m top/bottom, 0.235m per side), and mapping
-    // art-local coords double-applied art.scale, under-reporting the box again.
-    const gp=rec.mould&&rec.mould.geometry&&rec.mould.geometry.parameters;
-    const w=gp?gp.width:rec.art.scale.x+0.47, h=gp?gp.height:rec.art.scale.y+0.49;
-    for(const [ax,ay] of [[-w/2,-h/2],[w/2,-h/2],[w/2,h/2],[-w/2,h/2]]){
-      const v=new THREE.Vector3(ax,ay,-0.026); rec.grp.localToWorld(v); v.project(_probe);
-      const sx=(v.x*0.5+0.5)*innerWidth, sy=(-v.y*0.5+0.5)*innerHeight;
-      if(sx<x0)x0=sx; if(sx>x1)x1=sx; if(sy<y0)y0=sy; if(sy>y1)y1=sy;}
-    return {cx:(x0+x1)/2, cy:(y0+y1)/2, h:y1-y0, w:x1-x0, x0, x1, y0, y1}; };
-  let b=box(nl);
-  for(let g=0; g<14 && (b.h>(zy1-zy0) || b.w>(zx1-zx0) || b.y0<zy0-8 || b.x1>zx1+8 || b.x0<zx0-8); g++){
-    dist*=1.08; pose=basePose(rec,dist); b=box(nl); }
-  const targetCx=(zx0+zx1)/2, targetCy=(zy0+zy1)/2;     // dead centre of the safe box
-  const P=0.25, SMAX=0.30;
-  const errOf=(aim)=>{ const c=box(aim); return {e:Math.hypot(c.cx-targetCx,(c.cy-targetCy)*1.2),c}; };
-  let best=errOf(nl);
-  for(let it=0; it<14; it++){
-    if(best.e<4) break;
-    const c0=best.c;
-    const a1=nl.clone().addScaledVector(nx,P), a2=nl.clone().addScaledVector(up,P);
-    const b1=box(a1), b2=box(a2);
-    const jcxX=(b1.cx-c0.cx)/P, jcyX=(b1.cy-c0.cy)/P, jcxY=(b2.cx-c0.cx)/P, jcyY=(b2.cy-c0.cy)/P;
-    const det=jcxX*jcyY-jcxY*jcyX;
-    if(!isFinite(det)||Math.abs(det)<1e-6) break;
-    let sx=(-jcyY*(c0.cx-targetCx)+jcxY*(c0.cy-targetCy))/det;
-    let sy=( jcxX*(c0.cy-targetCy)-jcyX*(c0.cx-targetCx))/det;
-    const m=Math.hypot(sx,sy); if(m>SMAX){ sx*=SMAX/m; sy*=SMAX/m; }
-    let t=1, step=null;
-    for(let ls=0; ls<4; ls++){
-      const trial=nl.clone().addScaledVector(nx,sx*t).addScaledVector(up,sy*t);
-      const r=errOf(trial);
-      if(r.e<best.e-0.4){ step={trial,r}; break; }
-      t*=0.5;
+    if(counter){
+      counter.classList.toggle('on', best !== null);
+      if(best !== null) cnum.textContent = ('0' + (best + 1)).slice(-2);
     }
-    if(!step) break;
-    nl.copy(step.trial); best=step.r;
+
+    /* header colour and the active link follow whatever is on screen */
+    var mid = y + vh * 0.4, live = sections[0];
+    for(var s=0;s<sections.length;s++){
+      var sec = sections[s];
+      if(sec.el && sec.el.offsetTop <= mid) live = sec;
+    }
+    if(hdr) hdr.classList.toggle('light', live.theme === 'light');
+    for(var n=0;n<navLinks.length;n++)
+      navLinks[n].classList.toggle('on', navLinks[n].dataset.sec === live.key);
+
+    ticking = false;
   }
-  // post-aim guard: the Newton nudge can push a tall plate over the nav line again — final retreat pass
-  for(let g=0; g<10; g++){
-    const c=box(nl);
-    if(c.y0>=zy0-4 && c.y1<=zy1+4 && c.x0>=Math.max(zx0-4,cardR) && c.x1<=zx1+4) break;
-    dist*=1.07; pose=basePose(rec,dist); }
-  const q=quatAt(pose.pos,nl);
-  applyPose(pose.pos,q);
-  return {p:pose.pos.clone(),q,look:nl.clone()};
-}
-const ease=p=>p<0.5?4*p*p*p:1-Math.pow(-2*p+2,3)/2;
-function fly(pose,done){ if(!pose||!pose.p||!pose.q){console.error('bad pose',pose);return;}
-  from={p:camera.position.clone(),q:camera.quaternion.clone(),fov:camera.fov};
-  to=pose; ft=0; mode='fly'; flyDone=done||null; }
-let flyDone=null;
 
-const card=document.getElementById('card'),tPl=document.getElementById('tPl'),
-      tDate=document.getElementById('tDate'),tMed=document.getElementById('tMed'),
-      tNote=document.getElementById('tNote'),tKo=document.getElementById('tKo'),
-      hint=document.getElementById('hint');
-function showCard(i){ const [title, , med,en,ko]=WORKS[i];
-  tPl.textContent='Pl. '+String(i+1).padStart(2,'0')+' · Yeonsu Ahn · original work';
-  tDate.textContent=title; tMed.textContent=med; tNote.textContent=en; tKo.textContent=ko; tKo.style.display=ko?'':'none';
-  card.classList.add('show'); }
+  var ticking = false;
+  function onScroll(){ if(!ticking){ ticking = true; requestAnimationFrame(frame); } }
+  addEventListener('scroll', onScroll, {passive:true});
+  addEventListener('resize', onScroll);
+  frame();
 
-function focus(i,walk){
-  const rec=items.find(r=>r.i===i); if(!rec) return;
-  cur=i; hint.classList.remove('show');
-  items.forEach(r=>{ if(r.ring) r.ring.material.opacity=0; });
-  showCard(i);
-  rec._pose=null;
-  const fp=poseFor(rec); fp.fov=FOCUS_FOV;
-  if(walk) fp.arc=new THREE.Vector3(W/2-10,1.9,D/2-5);   // control point: the walk-around past the entrance
-  fly(fp,()=>{ ringFor(rec).material.opacity=1; mode='focus'; });
-}
-function room(){ cur=-1; card.classList.remove('show');
-  items.forEach(r=>{ if(r.ring) r.ring.material.opacity=0; });
-  ovPose=overviewPose();
-  const m=new THREE.Matrix4().lookAt(ovPose.pos,ovPose.look,new THREE.Vector3(0,1,0));
-  fly({p:ovPose.pos.clone(),q:new THREE.Quaternion().setFromRotationMatrix(m),fov:ovPose.fov},()=>{mode='room'; setNav('gallery');});
-  hint.classList.add('show'); }
-
-const order=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17];   // = WORKS order = hang order: one pass, left to right
-// The tour is ONE unbroken line from Pl.01 to Pl.18. Every → moves to the plate physically next along
-// the wall, so the camera only ever slides one way and the eye never has to travel back; ← retraces the
-// same line in reverse. Only the wrap from Pl.18 to Pl.01 takes the walk-around control point.
-function next(){ const w=cur>=0 && order.indexOf(cur)===order.length-1;
-  let k=cur<0?0:order.indexOf(cur)+1; if(k>=order.length)k=0; focus(order[k],w); }
-function prev(){ const w=cur>=0 && order.indexOf(cur)===0;
-  let k=cur<0?order.length-1:order.indexOf(cur)-1; if(k<0)k=order.length-1; focus(order[k],w); }
-
-/* The museum opens on the front view. The HOME sheet lifted over it is the
-   default landing; ?auto=0 lands straight in the room with no sheet (used by
-   index.html), while nav clicks still raise HOME normally. */
-(function boot(){
-  ovPose=overviewPose(); mode='room';
-  camera.fov=ovPose.fov; camera.position.copy(ovPose.pos);
-  const m=new THREE.Matrix4().lookAt(ovPose.pos,ovPose.look,new THREE.Vector3(0,1,0));
-  camera.quaternion.copy(m); camera.updateProjectionMatrix();
-  const auto=(new URLSearchParams(location.search)).get('auto');
-  // Chair note 12-05: the gallery-direct landing used to fake an open sheet by setting wallOpen='G'. Nothing
-  // ever opened, but every input gate keyed on `wallOpen` (pointer click, wheel, arrow keys) went dead — so
-  // arriving from the nav's GALLERY link left the whole overview unclickable, while pressing Escape (which
-  // calls closeWall and clears the flag) quietly fixed it. The flag now means only what it says: a real DOM
-  // sheet is up. Landing in the room opens nothing, so it stays null.
-  if(auto==='0'){ setNav('gallery'); }  // gallery-direct landing
-  else { openHome(); }
-  // deep link straight into a single plate: ?work=N — used for deterministic framing checks.
-  // Applies the pose immediately: fly() is a rAF animation and never settles under a
-  // virtual-time screenshot budget, which made deep links capture the room instead.
-  const wk=(new URLSearchParams(location.search)).get('work');
-  if(wk!==null && wk!=='' && !Number.isNaN(+wk)) setTimeout(()=>{
-    const rec=items.find(r=>r.i===+wk);
-    if(!rec) return;
-    cur=+wk; rec._pose=null; showCard(+wk);
-    const fp=poseFor(rec); fp.fov=FOCUS_FOV;
-    from={p:camera.position.clone(),q:camera.quaternion.clone(),fov:camera.fov};
-    to=fp; ft=1; flyDone=null; mode='focus';
-    camera.position.copy(fp.p); camera.quaternion.copy(fp.q);
-    camera.fov=FOCUS_FOV; camera.updateProjectionMatrix();
-    if(rec.ring) rec.ring.material.opacity=1;
-  },80);
+  /* --- blocks that are simply revealed, not driven --- */
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ if(e.isIntersecting) e.target.classList.add('in'); });
+  }, {rootMargin:'0px 0px -12% 0px', threshold:0.12});
+  document.querySelectorAll('.clip, .jr, .ex-block').forEach(function(el){ io.observe(el); });
 })();
-document.getElementById('nextB').onclick=next;
-document.getElementById('prevB').onclick=prev;
-
-addEventListener('keydown',e=>{
-  if(e.key==='Escape' && wallOpen){ closeWall(); return; }
-  if(wallOpen) return;                              // sheets own the keyboard while open
-  if(e.key==='ArrowRight'||e.key==='ArrowDown') next();
-  if(e.key==='ArrowLeft'||e.key==='ArrowUp') prev();
-  if(e.key==='Escape') room();
-});
-let wAcc=0,wT=0,busy=false;
-addEventListener('wheel',e=>{ if(wallOpen) return;                       // plain DOM sheet scrolls natively — no relay, no 3D transform cost
-  if(mode==='fly')return; const n=performance.now();
-  if(n-wT>700) wAcc=0; wAcc+=e.deltaY; wT=n;
-  if(Math.abs(wAcc)>120){ wAcc>0?next():prev(); wAcc=0; wT=performance.now(); } }, {passive:false});
-let tx=null;
-addEventListener('touchstart',e=>tx=e.touches[0].clientX,{passive:true});
-addEventListener('touchend',e=>{if(tx==null)return;const d=e.changedTouches[0].clientX-tx;
-  if(Math.abs(d)>46)(d<0?next:prev)(); tx=null;},{passive:true});
-
-/* click a work in the room to jump to it */
-  const ray=new THREE.Raycaster(); const mouse=new THREE.Vector2();
-addEventListener('pointerdown',e=>{ if(wallOpen||e.target.closest('.controls,.intro,.tourcard'))return;  // a scanned sheet, the intro, or the caption card owns the click; the bare overview does not
-  mouse.set(e.clientX/innerWidth*2-1,-(e.clientY/innerHeight)*2+1);
-  ray.setFromCamera(mouse,camera);
-  const hits=ray.intersectObjects(items.map(r=>r.art));
-  if(hits.length){ const rec=items.find(r=>r.art===hits[0].object); focus(rec.i); } });
-
-function resize(){ renderer.setSize(innerWidth,innerHeight);
-  renderer.setPixelRatio(Math.min(MOBILE?1.5:2,devicePixelRatio)); // phones: fewer shaded pixels, steadier fps
-  const pr=Math.min(2,devicePixelRatio);
-  rt.setSize(Math.floor(innerWidth*pr),Math.floor(innerHeight*pr));
-  aoMat.uniforms.uRes.value.set(innerWidth*pr,innerHeight*pr);
-  camera.aspect=innerWidth/innerHeight;
-  if(mode==='idle'||mode==='room'){ ovPose=overviewPose(); camera.fov=ovPose.fov; }
-  camera.updateProjectionMatrix();
-  items.forEach(r=>{ r._pose=null; }); }
-addEventListener('resize',resize); resize();
-(function watchDPR(){ // moving the window to another display changes devicePixelRatio without a resize event
-  const mq=matchMedia(`(resolution: ${devicePixelRatio}dppx)`);
-  mq.addEventListener('change',()=>{ resize(); watchDPR(); },{once:true});
-})();
-
-const clock=new THREE.Clock();
-window.__dbg={get mode(){return mode;},get cur(){return cur;},get wall(){return wallOpen;},
-  seq(){ return seqItems.map(r=>{ const c=new THREE.Vector3(); r.art.getWorldPosition(c);
-    return {i:r.i, k:r._seqK, n:r._seqTex?r._seqTex.length:0, at:[+c.x.toFixed(2),+c.y.toFixed(2),+c.z.toFixed(2)]}; }); },
-  overview(){ const o=overviewPose(); return {center:o.look.toArray().map(v=>+v.toFixed(2)),
-    pos:o.pos.toArray().map(v=>+v.toFixed(2)), fov:+o.fov.toFixed(1)}; },
-  camAt(){ const r=cur>=0?items.find(x=>x.i===cur):null; if(!r) return null;
-    const c=new THREE.Vector3(); r.art.getWorldPosition(c);
-    return {cam:camera.position.toArray().map(v=>+v.toFixed(2)), art:c.toArray().map(v=>+v.toFixed(2)),
-            d:+camera.position.distanceTo(c).toFixed(2)}; },
-  expose(v){ renderer.toneMappingExposure=v; return v; },
-  dim(k){ amb.intensity*=k; hemi.intensity*=k; sun.intensity*=k; return [amb.intensity,hemi.intensity,sun.intensity]; },
-  band(){ const py=(x,y,z)=>{ const v=new THREE.Vector3(x,y,z).project(camera); return +((-v.y*0.5+0.5)).toFixed(3); };
-    return { ceilLine: py(0,H,-D/2), floorLine: py(0,0,-D/2), midWall: py(0,1.6,-D/2) }; },
-  sceneInfo(){ return {W,D,H}; },
-  tryOv(d,fov,ly){ const box=new THREE.Box3(); const tmp=new THREE.Vector3();
-    for(const r of items){ const w=r.art.scale.x,h=r.art.scale.y;
-      for(const q of [[-w/2,-h/2],[w/2,-h/2],[w/2,h/2],[-w/2,h/2]]){ tmp.set(q[0],q[1],0); r.art.localToWorld(tmp); box.expandByPoint(tmp); } }
-    const center=box.getCenter(new THREE.Vector3());
-    const dir=new THREE.Vector3((W/2-1.5-center.x)*0,-1.4,-1.4).normalize(); // (legacy sampler; not used in live framing)
-    const look=center.clone(); look.y=ly;
-    const pos=center.clone().addScaledVector(dir,d); pos.y=ly;
-    camera.fov=fov; camera.position.copy(pos); camera.lookAt(look); camera.updateProjectionMatrix();
-    mode='room'; ovPose={pos:pos.clone(),look:look.clone(),fov};
-    const bb=()=>{ let x0=1e9,x1=-1e9,y0=1e9,y1=-1e9; const pts=[];
-      for(const r of items){ const w=r.art.scale.x,h=r.art.scale.y;
-        for(const q of [[-w/2,-h/2],[w/2,h/2]]){ tmp.set(q[0],q[1],0); r.art.localToWorld(tmp); pts.push(tmp.clone().project(camera)); } } }
-    return {ok:true}; },
-  visible(){ let n=0; const list=[];
-    for(const r of items){ const wp=new THREE.Vector3(); r.grp.getWorldPosition(wp);
-      const v=wp.clone().project(camera);
-      const on=v.x>-1.05&&v.x<1.05&&v.y>-1.05&&v.y<1.05&&v.z<1;
-      if(on){n++;list.push(r.i);} }
-    return {visible:n,ids:list}; },
-  fixtures(){ let rails=0,heads=0,panels=0; scene.traverse(o=>{ if(o.geometry){
-    if(o.geometry.type==='BoxGeometry'&&Math.abs(o.position.y-(H-0.44))<0.02) rails++;
-    if(o.geometry.type==='CylinderGeometry'&&o.parent&&o.parent.parent&&o.geometry.parameters&&o.geometry.parameters.radiusTop===0.085) heads++;
-    if(o.geometry.type==='PlaneGeometry'&&o.material&&o.material.color&&o.material.color.getHex()===0xffffff&&Math.abs(o.position.y-(H-0.185))<0.01) panels++; }});
-    return {rails,heads,panels,spotlights:spots.length,ssao:true}; },
-  focusBox(){ if(cur<0) return null; const r=items.find(x=>x.i===cur); if(!r) return null;
-    const w=r.art.scale.x, h=r.art.scale.y; const pts=[[-w/2,-h/2],[w/2,-h/2],[w/2,h/2],[-w/2,h/2]]; const cs=[];
-    for(const [px,py] of pts){ const v=new THREE.Vector3(px,py,0); r.art.localToWorld(v); v.project(camera);
-      cs.push([(v.x*0.5+0.5)*innerWidth,(-v.y*0.5+0.5)*innerHeight]); }
-    const xs=cs.map(c=>c[0]), ys=cs.map(c=>c[1]);
-    const x0=Math.min(...xs),x1=Math.max(...xs),y0=Math.min(...ys),y1=Math.max(...ys);
-    return {x0:Math.round(x0),x1:Math.round(x1),y0:Math.round(y0),y1:Math.round(y1),
-      cxOff:+(((x0+x1)/2)/innerWidth-0.5).toFixed(3), cyOff:+(((y0+y1)/2)/innerHeight-0.5).toFixed(3),
-      vw:innerWidth,vh:innerHeight}; },
-  coverage(){ // every plate corner, projected — a plate counts only when all four corners are on screen
-    const res=[]; let full=0, cut=0, out=0; const xs=[],ys=[];
-    for(const r of items){ const w=r.art.scale.x,h=r.art.scale.y; let ok=4;
-      for(const [px,py] of [[-w/2,-h/2],[w/2,-h/2],[w/2,h/2],[-w/2,h/2]]){
-        const v=new THREE.Vector3(px,py,0); r.art.localToWorld(v); v.project(camera);
-        const sx=(v.x*0.5+0.5)*innerWidth, sy=(-v.y*0.5+0.5)*innerHeight;
-        if(!(v.z<1&&sx>=0&&sx<=innerWidth&&sy>=0&&sy<=innerHeight)) ok--;
-        xs.push(sx); ys.push(sy); }
-      if(ok===4) full++; else if(ok>0) cut++; else out++;
-      res.push({i:r.i,state:ok===4?'ok':(ok>0?'cut':'out'),corners:ok}); }
-    const e=camera.matrixWorld.elements;
-    const yaw=+(Math.atan2(-e[10],-e[8])*180/Math.PI).toFixed(2);   // camera forward bearing, world degrees
-    return {full,cut,out,total:items.length,yaw,
-      spanX:Math.round((Math.max(...xs)-Math.min(...xs))/innerWidth*100),
-      spanY:Math.round((Math.max(...ys)-Math.min(...ys))/innerHeight*100),
-      cam:camera.position.toArray().map(v=>+v.toFixed(2)), fov:+camera.fov.toFixed(1),
-      detail:res.map(r=>`${String(r.i+1).padStart(2,'0')}:${r.state}`).join(' ')}; },
-  corners(){ const out=[]; for(const r of items){ const w=r.art.scale.x,h=r.art.scale.y;
-    for(const [px,py] of [[-w/2,-h/2],[w/2,-h/2],[w/2,h/2],[-w/2,h/2]]){
-      const v=new THREE.Vector3(px,py,0); r.art.localToWorld(v);
-      out.push([+v.x.toFixed(3),+v.y.toFixed(3),+v.z.toFixed(3),r.i]); } }
-    return out; },
-  screenOf(i){ // projected centre of plate i in px — the click tests need a real target, not a guess
-    const r=items.find(x=>x.i===i); if(!r) return null;
-    const v=new THREE.Vector3(); r.art.getWorldPosition(v); v.project(camera);
-    return {x:Math.round((v.x*0.5+0.5)*innerWidth), y:Math.round((-v.y*0.5+0.5)*innerHeight),
-      w:+(r.art.scale.x).toFixed(2), h:+(r.art.scale.y).toFixed(2)}; }};
-let wallIdle=0;                        // the wall is static once we land — repaint the 3D only then, DOM scroll runs free
-renderer.setAnimationLoop(()=>{
-  const dt=Math.min(clock.getDelta(),0.05);
-  if(mode==='fly'){ ft+=dt/(to.arc?2.6:FDUR);          // the wrap-around walk gets its own, slower timing
-    const p=ease(Math.min(1,ft));
-    if(to.arc){ const inv=1-p; camera.position.set(0,0,0)   // quadratic bezier: right end → entrance → left end
-        .addScaledVector(from.p,inv*inv).addScaledVector(to.arc,2*inv*p).addScaledVector(to.p,p*p); }
-    else camera.position.lerpVectors(from.p,to.p,p);
-    camera.quaternion.slerpQuaternions(from.q,to.q,p);
-    if(to.fov!==undefined){ camera.fov=from.fov+(to.fov-from.fov)*p; camera.updateProjectionMatrix(); }
-    if(ft>=1){ mode=flyDone?'focus':'room'; const f=flyDone; flyDone=null; f&&f(); }
-  } else if(mode==='focus'&&cur>=0){
-    const rec=items.find(r=>r.i===cur);
-    const t=rec._pose||(rec._pose=poseFor(rec));
-    camera.position.lerp(t.p,0.08);
-    camera.lookAt(t.look);                              // direct aim every frame — frame held at centre
-    if(rec.ring) rec.ring.material.opacity=0.75+0.25*Math.sin(clock.elapsedTime*2.2);
-  } else if(mode==='room'&&ovPose){
-    camera.position.copy(ovPose.pos);
-    camera.lookAt(ovPose.look);                         // level 0° establishing shot — no drift
-  }
-  if(mode!=='wall') wallIdle=0; else wallIdle++;
-  if(seqItems.length&&mode!=='fly'){ const now=performance.now();
-    for(const r of seqItems){ if(!r._seqTex) continue;
-      const k=Math.floor((now-r._seqAt)/SEQ_MS)%r._seqTex.length;
-      if(k!==r._seqK){ r._seqK=k; r.art.material.map=r._seqTex[k]; } } }
-  if(wallIdle<=1){                     // one settled frame, then WebGL rests and the compositor gets the machine back
-  aoMat.uniforms.uProj.value=camera.projectionMatrix;      // fov changes per mode — keep the ray cone exact
-  const th=Math.tan(THREE.MathUtils.degToRad(camera.fov/2));
-  aoMat.uniforms.uTan.value.set(th*camera.aspect,th);
-  renderer.setRenderTarget(rt); renderer.render(scene,camera); renderer.setRenderTarget(null);
-  renderer.render(postScene,postCam);
-  }
-});
-addEventListener('resize',()=>{ wallIdle=0; });
 </script>
 </body>
 </html>
